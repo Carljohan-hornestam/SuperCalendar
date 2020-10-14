@@ -1,5 +1,5 @@
-<mxfile host="app.diagrams.net" modified="2020-10-14T09:42:19.700Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36" etag="mgOUz1u0VaSkOuvjyqib" version="13.7.7" type="github">
-  <diagram id="mtcsN6Ltq_OjmTKMSVJv" name="Page-1">
+<mxfile host="app.diagrams.net" modified="2020-10-14T09:46:09.576Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36" etag="nTXA4OXVzdCJZQb4eF-y" version="13.7.7" type="github">
+  <diagram id="mtcsN6Ltq_OjmTKMSVJv" name="ER-diagram">
     <mxGraphModel dx="1422" dy="804" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -15,12 +15,6 @@
         </mxCell>
         <mxCell id="mDrmKwzOYlJqISJByXZ0-3" value="+id&#xa;+userName&#xa;+email&#xa;+password" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" vertex="1" parent="mDrmKwzOYlJqISJByXZ0-2">
           <mxGeometry y="30" width="140" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="mDrmKwzOYlJqISJByXZ0-15" value="Theme (VG)" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" vertex="1" parent="1">
-          <mxGeometry x="40" y="530" width="160" height="120" as="geometry" />
-        </mxCell>
-        <mxCell id="mDrmKwzOYlJqISJByXZ0-16" value="+id&#xa;+bgColor&#xa;+fgColor, etc...&#xa;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" vertex="1" parent="mDrmKwzOYlJqISJByXZ0-15">
-          <mxGeometry y="30" width="160" height="90" as="geometry" />
         </mxCell>
         <mxCell id="mDrmKwzOYlJqISJByXZ0-4" value="Event" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=20;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" vertex="1" parent="1">
           <mxGeometry x="500" y="40" width="200" height="180" as="geometry" />
@@ -96,6 +90,18 @@
               <mxPoint x="10" y="340" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="2ZHHT8wz6dpNzkdanSGD-1" value="Friends (VG++)" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="270" y="520" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="2ZHHT8wz6dpNzkdanSGD-2" value="+id&#xa;+userId&#xa;+friendId" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" vertex="1" parent="2ZHHT8wz6dpNzkdanSGD-1">
+          <mxGeometry y="30" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="mDrmKwzOYlJqISJByXZ0-15" value="Theme (VG)" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="520" width="160" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="mDrmKwzOYlJqISJByXZ0-16" value="+id&#xa;+bgColor&#xa;+fgColor, etc...&#xa;" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" vertex="1" parent="mDrmKwzOYlJqISJByXZ0-15">
+          <mxGeometry y="30" width="160" height="90" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
