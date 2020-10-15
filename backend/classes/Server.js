@@ -13,7 +13,7 @@ module.exports = class Server {
   constructor(port = 3000) {
     this.port = port;
     this.startServer();
-    new RestApi(this.app, path.join(__dirname, '../database/example-database.db'));
+    new RestApi(this.app, path.join(__dirname, '../database/SuperCalendar.db'));
     this.setupRoutes();
     this.serveStaticFiles();
   }
@@ -28,22 +28,16 @@ module.exports = class Server {
     // start the webserver 
     this.app.listen(
       this.port,
-      () => console.log('Listening on port 3000')
+      () => console.log('Listening on port', this.port )
     );
   }
 
   setupRoutes() {
     // Tell express to answer a certain thing
     // when someone goes to the url /random-number
-    this.app.get('/random-number', (request, response) => {
-      response.json({ aRandomNumber: Math.random() });
-    });
-
-    // Another route (note: request and response as arguments
-    // are ofthen shortened to req and res)
-    this.app.get('/now', (req, res) => {
-      res.json({ now: new Date() });
-    });
+    // this.app.get('/random-number', (request, response) => {
+    //   response.json({ aRandomNumber: Math.random() });
+    // });
   }
 
   serveStaticFiles() {
@@ -54,5 +48,4 @@ module.exports = class Server {
     // that let us serve files from a folder (www)
     this.app.use(express.static('www'));
   }
-
 }

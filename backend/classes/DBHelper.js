@@ -1,7 +1,7 @@
 // Require the better-sqlite3 SQLite driver
 const sqlite3 = require('better-sqlite3');
 
-module.exports = class DbHandler {
+module.exports = class DBHelper {
 
   constructor(pathToDb) {
     this.db = sqlite3(pathToDb);
