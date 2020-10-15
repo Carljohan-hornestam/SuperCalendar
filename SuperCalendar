@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2020-10-15T14:09:17.972Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36" etag="LaAHw7gr0VAE0gzemO5K" version="13.8.0" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-15T14:13:43.133Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36" etag="iiWZXvUOWEMfic0lhODq" version="13.8.0" type="github">
   <diagram id="mtcsN6Ltq_OjmTKMSVJv" name="ER-diagram">
-    <mxGraphModel dx="1662" dy="804" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1385" dy="670" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -24,13 +24,14 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="mDrmKwzOYlJqISJByXZ0-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;endArrow=none;endFill=0;startArrow=ERmany;startFill=0;exitX=-0.001;exitY=0.705;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="mDrmKwzOYlJqISJByXZ0-5" target="mDrmKwzOYlJqISJByXZ0-12" edge="1">
+        <mxCell id="mDrmKwzOYlJqISJByXZ0-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;endArrow=none;endFill=0;startArrow=ERmany;startFill=0;exitX=-0.004;exitY=0.78;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="mDrmKwzOYlJqISJByXZ0-5" target="mDrmKwzOYlJqISJByXZ0-12" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="330" y="380" as="targetPoint" />
             <mxPoint x="460" y="171" as="sourcePoint" />
             <Array as="points">
-              <mxPoint x="420" y="173" />
+              <mxPoint x="420" y="184" />
               <mxPoint x="420" y="362" />
+              <mxPoint x="450" y="362" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -40,8 +41,14 @@
         <mxCell id="mDrmKwzOYlJqISJByXZ0-7" value="+id&#xa;+eventId&#xa;+userId" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" parent="mDrmKwzOYlJqISJByXZ0-6" vertex="1">
           <mxGeometry y="30" width="160" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="mDrmKwzOYlJqISJByXZ0-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.009;entryY=0.19;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;startFill=0;endArrow=ERmany;endFill=0;exitX=1.011;exitY=0.129;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="mDrmKwzOYlJqISJByXZ0-3" target="mDrmKwzOYlJqISJByXZ0-5" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="mDrmKwzOYlJqISJByXZ0-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=ERmany;endFill=0;entryX=0.006;entryY=0.237;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="mDrmKwzOYlJqISJByXZ0-3" target="mDrmKwzOYlJqISJByXZ0-5" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="499" y="87" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="250" y="90" />
+              <mxPoint x="250" y="95" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="mDrmKwzOYlJqISJByXZ0-11" value="Category" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" parent="1" vertex="1">
           <mxGeometry x="450" y="320" width="160" height="100" as="geometry" />
@@ -100,7 +107,7 @@
         <mxCell id="mDrmKwzOYlJqISJByXZ0-4" value="Event" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=20;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" parent="1" vertex="1">
           <mxGeometry x="501" y="36" width="200" height="184" as="geometry" />
         </mxCell>
-        <mxCell id="mDrmKwzOYlJqISJByXZ0-5" value="+id&#xa;+calenderOwner (User.id)&#xa;+creator (User.id)&#xa;+startDateTime: DateTime not null&#xa;+endDateTime: DateTime not null&#xa;+title; String, not null&#xa;+description: String null&#xa;+location: String, not null&#xa;+categoryId: int, not null&#xa;+recurringEvent: boolean&#xa;+recurringInterval: enum" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" parent="mDrmKwzOYlJqISJByXZ0-4" vertex="1">
+        <mxCell id="mDrmKwzOYlJqISJByXZ0-5" value="+id&#xa;+owner (User.id)&#xa;+creator (User.id)&#xa;+startDateTime: DateTime not null&#xa;+endDateTime: DateTime not null&#xa;+title; String, not null&#xa;+description: String null&#xa;+location: String, not null&#xa;+categoryId: int, not null&#xa;+recurringEvent: boolean&#xa;+recurringInterval: enum" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" parent="mDrmKwzOYlJqISJByXZ0-4" vertex="1">
           <mxGeometry y="20" width="200" height="164" as="geometry" />
         </mxCell>
       </root>
