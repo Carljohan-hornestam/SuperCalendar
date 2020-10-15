@@ -10,15 +10,19 @@ module.exports = class RestApi {
     // get all the tables in the database
     this.db = new DBHelper(dbPath);
     // add rest routes for each table
+    this.loggedInUserId = -1;
     for (let table of this.getAllTables()) {
-      this.setupGetRoutes(table);
-      this.setupPostRoute(table);
-      this.setupPutRoute(table);
-      this.setupDeleteRoute(table);
-      // we will write methods that setup
-      // put, post and delete routes too later!
+      if (table != "Participants") {
+        this.setupGetRoutes(table);
+        this.setupPostRoute(table);
+        this.setupPutRoute(table);
+        this.setupDeleteRoute(table);
+        // we will write methods that setup
+        // put, post and delete routes too later!
+      }
     }
     this.setupLoginRoutes();
+    this.setupInvitationRoutes();
   }
 
   getAllTables() {
@@ -127,11 +131,67 @@ module.exports = class RestApi {
     // skall detta implementeras här
 
     this.app.post(this.routePrefix + "/login", (req, res) => {
+      this.loggedInUserId = req.body.id;
+      console.log("i login ", this.loggedInUserId);
       res.json({ success: true }), req.body;
     });
 
     this.app.post(this.routePrefix + "/logout", (req, res) => {
+      this.loggedInUserId = -1;
       res.json({ success: true }), req.body;
     });
+  }
+
+  setupInvitationRoutes() {
+    this.app.get(this.routePrefix + "/events/invitations/get", (req, res) => {
+      if (this.loggedInUserId === -1) {
+        res.json({ success: false });
+      } else {
+        res.json(
+          this.db.select(
+            `SELECT * FROM PendingInvitations WHERE invitedUserId = ${this.loggedInUserId}`
+          )
+        ),
+          req.body;
+      }
+    });
+
+    this.app.post(
+      this.routePrefix + "/events/invitations/reply",
+      (req, res) => {
+        console.log(req, "PARAMETRAR");
+        const { userId, pendingInvitationId, accept } = req.body;
+        console.log("loggedInUserId: ", this.loggedInUserId);
+        console.log("userId: ", userId);
+        if (this.loggedInUserId === -1 || this.loggedInUserId != userId) {
+          res.json({ success: false });
+        } else {
+          if (accept) {
+            let invite = this.db.select(
+              `SELECT * FROM PendingInvitations WHERE id = ${pendingInvitationId}`
+            )[0];
+            if (invite === undefined) {
+              res.status(404);
+              res.json({ error: 404 });
+            }
+            let event = this.db.select(
+              `SELECT * FROM Events WHERE id = ${invite.eventId}`
+            )[0];
+            event.owner = this.loggedInUserId;
+            event.id = undefined;
+            this.db.run(
+              /*sql*/ `
+          INSERT INTO Events (${Object.keys(event)})
+          VALUES (${Object.keys(event).map((x) => "$" + x)})
+        `,
+              event
+            );
+          }
+          // ta bort pendinginvitation
+          this.db.run(`DELETE FROM PendingInvitations WHERE id = ${pendingInvitationId}`)
+          res.json({ success: true });
+        }
+      }
+    );
   }
 };
