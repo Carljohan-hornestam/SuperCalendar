@@ -1,29 +1,19 @@
-import React, { useState, useEffect } from "react";
-import Person from './components/Person'
+import React from 'react';
+import ListPersons from "./ListPersons"
+import {BrowserRouter as Router, Route} from "react-router-dom" 
+import EditPerson from './EditPerson';
 
 export default function App() {
-  const [allPersons, setAllPersons] = useState([]);
-
-  async function fetchPersons() {
-    setAllPersons(await (await fetch("api/persons")).json());
-  }
-
-  useEffect(() => {
-    fetchPersons();
-  }, []);
-
   return (
-    <div className="container">
-      <div className="row">
-      <div className="col">
-      <h3 className="badge badge-primary">A list of all persons!</h3>
+    <Router>
+      <div className="container">
+        <Route path="/person/:id">
+          <EditPerson />      
+        </Route>
+        <Route exact path="/">
+          <ListPersons />
+        </Route>
       </div>
-      </div>
-      <div className="row">
-      {allPersons.map(person => (
-        <Person key={person.id}{...person}/>
-      ))}
-      </div>
-      </div>
+    </Router>
   );
 }
