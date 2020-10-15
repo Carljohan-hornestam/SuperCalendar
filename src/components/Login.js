@@ -1,7 +1,11 @@
-import React, {useState, useEffect} from 'react'
-import {Link} from 'react-router-dom'
+import React, {useState} from 'react'
+import {Link, Redirect} from 'react-router-dom'
 
 export default function Login () {
+
+    const [state, setState] = useState({
+        redirect : false
+    })
 
     const [formData, setFormData] = useState({
         email: "",
@@ -15,7 +19,8 @@ export default function Login () {
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify(formData)
         })).json()
-        //Fix a redirect on successful login to calendar view
+        //Check if login was successful
+        setState({redirect: true})
       }
 
       const handleInputChange = e => setFormData({
@@ -26,6 +31,7 @@ export default function Login () {
       let {email, password} = formData
 
     return (
+        state.redirect === true? <Redirect to="/mycalendar" /> : (
         <div className="justify-content-center row">
             <div className="col-12 col-lg-6 text-center">
                 <h1>Logga in</h1>
@@ -37,5 +43,6 @@ export default function Login () {
                 </form>
             </div>
         </div>
+    )
     )
 }
