@@ -1,7 +1,7 @@
 import React from 'react';
-import ListPersons from "./ListPersons"
+import ListPersons from "./components/ListPersons"
 import {BrowserRouter as Router, Route} from "react-router-dom" 
-import EditPerson from './EditPerson';
+import EditPerson from './components/EditPerson';
 
 export default function App() {
   return (
