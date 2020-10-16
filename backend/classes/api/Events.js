@@ -15,8 +15,7 @@ router.get("/", (req, res) => {
   }
 });
 
-router.get("/invitations/get", (req, res) => {
-  console.log("currentuserId: ", CurrentUserId.currentUserId);
+router.get("/invitations", (req, res) => {
   if (CurrentUserId.currentUserId === -1) {
     res.json({ success: false });
   } else {
@@ -29,11 +28,8 @@ router.get("/invitations/get", (req, res) => {
 });
 
 router.post("/invitations/reply", (req, res) => {
-  console.log(req, "PARAMETRAR");
   const { userId, pendingInvitationId, accept } = req.body;
-  console.log("loggedInUserId: ", this.loggedInUserId);
-  console.log("userId: ", userId);
-  if (this.loggedInUserId === -1 || this.loggedInUserId !== userId) {
+  if (CurrentUserId.currentUserId === -1 || CurrentUserId.currentUserId !== userId) {
     res.json({ success: false });
   } else {
     if (accept) {
@@ -47,7 +43,8 @@ router.post("/invitations/reply", (req, res) => {
       let event = db.select(
         `SELECT * FROM Events WHERE id = ${invite.eventId}`
       )[0];
-      event.owner = this.loggedInUserId;
+      event.ownerId = CurrentUserId.currentUserId;
+      event.parentId = event.id
       event.id = undefined;
       db.run(
         /*sql*/ `
