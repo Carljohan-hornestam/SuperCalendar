@@ -17,10 +17,15 @@ export default function Login () {
         let result = await (await fetch("/api/login", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(formData)
+          //body: JSON.stringify(formData)
+          body: JSON.stringify({id:2})
         })).json()
         //Check if login was successful
-        setState({redirect: true})
+
+        console.log("Loginpage, login (result.success): ", result.success);
+        if(result.success === true){
+          setState({redirect: true})
+        }
       }
 
       const handleInputChange = e => setFormData({
@@ -31,7 +36,7 @@ export default function Login () {
       let {email, password} = formData
 
     return (
-        state.redirect === true? <Redirect to="/mycalendar" /> : (
+        state.redirect === true? <Redirect push={true} to="/mycalendar" /> : (
         <div className="justify-content-center row">
             <div className="col-12 col-lg-6 text-center">
                 <h1>Logga in</h1>
