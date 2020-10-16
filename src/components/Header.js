@@ -33,13 +33,13 @@ export default function Header() {
             <NavItem>
                 <Link className="nav-link text-center" to="/profile">
                   <span className="d-block d-md-none">Profil</span>
-                  <FontAwesomeIcon size="2x" className="d-none d-md-block" icon={faUserEdit}/>
+                  <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faUserEdit}/>
                 </Link>
               </NavItem>
               <NavItem>
                 <Link className="nav-link text-center" onClick={logout} to="/login">
                   <span className="d-block d-md-none">Logga ut</span>
-                  <FontAwesomeIcon size="2x" className="d-none d-md-block" icon={faSignOutAlt}/>
+                  <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faSignOutAlt}/>
                 </Link>
               </NavItem> 
             </Nav>) 
@@ -48,13 +48,13 @@ export default function Header() {
               <NavItem>
                   <Link className="nav-link text-center" to="/register">
                     <span className="d-block d-md-none">Registrera</span> 
-                    <FontAwesomeIcon size="2x" className="d-none d-md-block" icon={faUserPlus}/>
+                    <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faUserPlus}/>
                   </Link>
               </NavItem> 
               <NavItem>
                 <Link className="nav-link text-center" to="/login">
                   <span className="d-block d-md-none">Logga in</span> 
-                  <FontAwesomeIcon size="2x" className="d-none d-md-block" icon={faSignInAlt}/>
+                  <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faSignInAlt}/>
                 </Link>
               </NavItem> 
             </Nav>
