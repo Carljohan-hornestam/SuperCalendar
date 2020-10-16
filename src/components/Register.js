@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
 import {Link} from 'react-router-dom'
+import {Button, Input} from "reactstrap"
 
 export default function Register () {
-
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -17,6 +17,7 @@ export default function Register () {
           body: JSON.stringify(formData)
         })).json()
         //On successful registration, login and redirect to calendar view
+        console.log("Register obj: ", result);
       }
 
       const handleInputChange = e => setFormData({
@@ -31,10 +32,10 @@ export default function Register () {
             <div className="col-12 col-lg-6 text-center">
                 <h1>Registrera</h1>
                 <form className="d-inline-flex flex-column w-75 w-lg-100" onSubmit={register}>
-                    <input className="mt-3 p-1" type="text" value={username} name="username" placeholder="Användarnamn" onChange={handleInputChange}></input>
-                    <input className="mt-3 p-1" type="email" value={email} name="email" placeholder="Epost" onChange={handleInputChange}></input>
-                    <input className="mt-3 p-1" type="password" value={password} name="password" placeholder="Password" onChange={handleInputChange}></input>
-                    <div className="text-center"><button type="submit" className="btn btn-primary mt-3 w-50">Registrera</button></div>
+                    <Input className="mt-3 p-1" type="text" value={username} name="username" placeholder="Användarnamn" onChange={handleInputChange} required></Input>
+                    <Input className="mt-3 p-1" type="email" value={email} name="email" placeholder="Epost" onChange={handleInputChange} required></Input>
+                    <Input className="mt-3 p-1" type="password" value={password} name="password" placeholder="Password" onChange={handleInputChange} required></Input>
+                    <div className="text-center"><Button type="submit" color="primary" className="mt-3 w-50">Registrera</Button></div>
                     <Link to="/login" className="mt-3">Har du redan ett konto? Logga in här.</Link>
                 </form>
             </div>
