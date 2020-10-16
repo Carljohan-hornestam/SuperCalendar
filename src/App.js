@@ -4,10 +4,13 @@ import {BrowserRouter as Router, Route} from "react-router-dom"
 import EditPerson from './components/EditPerson';
 import Register from './components/Register'
 import Login from './components/Login'
+import Header from "./components/Header"
+import Footer from './components/Footer';
 
 export default function App() {
   return (
     <Router>
+      <Header />
       <div className="container">
         <Route path="/person/:id">
           <EditPerson />      
@@ -22,6 +25,7 @@ export default function App() {
           <Login />
         </Route>
       </div>
+      <Footer/>
     </Router>
   );
 }
