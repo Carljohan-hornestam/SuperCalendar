@@ -2,7 +2,7 @@ module.exports = {
   // run react-dev-server (true) or serve build (false)
   dev: true,
   // whether to open the react site in a browser at start
-  openInBrowser: true,
+  openInBrowser: false,
   // path to your own backend api
   // (set to empty string if yo don't have an internal JS-based api)
   pathToAPI: './backend/index',

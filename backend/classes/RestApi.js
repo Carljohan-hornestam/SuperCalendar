@@ -14,7 +14,7 @@ module.exports = class RestApi {
     this.loggedInUserId = -1;
     for (let table of this.getAllTables()) {
       if (table !== "Participants") {
-        this.setupGetRoutes(table);
+        //this.setupGetRoutes(table);
         this.setupPostRoute(table);
         this.setupPutRoute(table);
         this.setupDeleteRoute(table);
@@ -23,7 +23,6 @@ module.exports = class RestApi {
       }
     }
     // this.setupLoginRoutes();
-    this.setupInvitationRoutes();
   }
 
   getAllTables() {
@@ -117,81 +116,5 @@ module.exports = class RestApi {
         )
       );
     });
-  }
-
-  setupLoginRoutes() {
-    // create a post
-    // this.app.post(this.routePrefix + '/' + table, (req, res) => {
-    //   res.json(db.run(/*sql*/`
-    //     INSERT INTO ${table} (${Object.keys(req.body)})
-    //     VALUES (${Object.keys(req.body).map(x => '$' + x)})
-    //   `, req.body));
-    // });
-
-    // efter att vi har lärt oss inloggning med sessioner och cookies
-    // skall detta implementeras här
-
-    this.app.post(this.routePrefix + "/login", (req, res) => {
-      this.loggedInUserId = req.body.id;
-      console.log("i login ", this.loggedInUserId);
-      res.json({ success: true });
-    });
-
-    this.app.post(this.routePrefix + "/logout", (req, res) => {
-      this.loggedInUserId = -1;
-      res.json({ success: true });
-    });
-  }
-
-  setupInvitationRoutes() {
-    this.app.get(this.routePrefix + "/events/invitations/get", (req, res) => {
-      if (this.loggedInUserId === -1) {
-        res.json({ success: false });
-      } else {
-        res.json(
-          db.select(
-            /* sql */ `SELECT * FROM PendingInvitations WHERE invitedUserId = ${this.loggedInUserId}`
-          )
-        );
-      }
-    });
-
-    this.app.post(
-      this.routePrefix + "/events/invitations/reply",
-      (req, res) => {
-        console.log(req, "PARAMETRAR");
-        const { userId, pendingInvitationId, accept } = req.body;
-        console.log("loggedInUserId: ", this.loggedInUserId);
-        console.log("userId: ", userId);
-        if (this.loggedInUserId === -1 || this.loggedInUserId != userId) {
-          res.json({ success: false });
-        } else {
-          if (accept) {
-            let invite = db.select(
-              `SELECT * FROM PendingInvitations WHERE id = ${pendingInvitationId}`
-            )[0];
-            if (invite === undefined) {
-              res.status(404);
-              res.json({ error: 404 });
-            }
-            let event = db.select(
-              `SELECT * FROM Events WHERE id = ${invite.eventId}`
-            )[0];
-            event.owner = this.loggedInUserId;
-            event.id = undefined;
-            db.run(
-                    /*sql*/ `
-                INSERT INTO Events (${Object.keys(event)})
-                VALUES (${Object.keys(event).map((x) => "$" + x)})
-              `,
-              event
-            );
-          }
-          // ta bort pendinginvitation
-          db.run(`DELETE FROM PendingInvitations WHERE id = ${pendingInvitationId}`)
-          res.json({ success: true });
-        }
-      }
-    );
   }
 };
