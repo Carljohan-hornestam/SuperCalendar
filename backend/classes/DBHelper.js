@@ -1,10 +1,22 @@
 // Require the better-sqlite3 SQLite driver
 const sqlite3 = require('better-sqlite3');
+const {PathToDb} = require('./DbPath')
 
-module.exports = class DBHelper {
+let instance;
 
-  constructor(pathToDb) {
-    this.db = sqlite3(pathToDb);
+module.exports = {
+  getInstance() {
+    if (!instance) {
+      // only the first call to getInstance will use these options to create an instance
+      instance = new DBHelper();
+    } 
+    return instance;
+  }
+}
+
+class DBHelper {
+  constructor() {
+    this.db = sqlite3(PathToDb);
   }
 
   select(sql, parameters) {
@@ -22,5 +34,4 @@ module.exports = class DBHelper {
     // run (the correct method if it does not return data)
     return parameters ? statement.run(parameters) : statement.run();
   }
-
 }
