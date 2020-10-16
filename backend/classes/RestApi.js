@@ -1,18 +1,19 @@
-const DBHelper = require("./DBHelper");
+// Our database utility helper; singleton
+const db = require("./DBHelper").getInstance();
 
 module.exports = class RestApi {
-  constructor(app, dbPath, routePrefix = "/api") {
+  constructor(app, db, routePrefix = "/api") {
     // app is supposed to be an Express web server instance
     this.app = app;
     // the routeprefix is what each url in
     // the REST api should begin with
     this.routePrefix = routePrefix;
     // get all the tables in the database
-    this.db = new DBHelper(dbPath);
+    // db = db;
     // add rest routes for each table
     this.loggedInUserId = -1;
     for (let table of this.getAllTables()) {
-      if (table != "Participants") {
+      if (table !== "Participants") {
         this.setupGetRoutes(table);
         this.setupPostRoute(table);
         this.setupPutRoute(table);
@@ -21,7 +22,7 @@ module.exports = class RestApi {
         // put, post and delete routes too later!
       }
     }
-    this.setupLoginRoutes();
+    // this.setupLoginRoutes();
     this.setupInvitationRoutes();
   }
 
@@ -32,7 +33,7 @@ module.exports = class RestApi {
     // if you have ES6 String HTML installed
     // as a VSC extension then you will get
     // syntax highlighting of SQL-syntax)
-    return this.db
+    return db
       .select(
         /*sql*/ `
       SELECT 
@@ -51,11 +52,11 @@ module.exports = class RestApi {
     let rp = this.routePrefix;
     // get all posts
     this.app.get(rp + "/" + table, (req, res) => {
-      res.json(this.db.select("SELECT * FROM " + table));
+      res.json(db.select("SELECT * FROM " + table));
     });
     // get a post by id
     this.app.get(rp + "/" + table + "/:id", (req, res) => {
-      let result = this.db.select(
+      let result = db.select(
         "SELECT * FROM " + table + " WHERE id = $id",
         // req.params includes the values of params
         // (things written with : before them in the route)
@@ -77,7 +78,7 @@ module.exports = class RestApi {
     // create a post
     this.app.post(this.routePrefix + "/" + table, (req, res) => {
       res.json(
-        this.db.run(
+        db.run(
           /*sql*/ `
         INSERT INTO ${table} (${Object.keys(req.body)})
         VALUES (${Object.keys(req.body).map((x) => "$" + x)})
@@ -92,7 +93,7 @@ module.exports = class RestApi {
     // update a post
     this.app.put(this.routePrefix + "/" + table + "/:id", (req, res) => {
       res.json(
-        this.db.run(
+        db.run(
           /*sql*/ `
         UPDATE ${table}
         SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
@@ -108,7 +109,7 @@ module.exports = class RestApi {
     // delete a post
     this.app.delete(this.routePrefix + "/" + table + "/:id", (req, res) => {
       res.json(
-        this.db.run(
+        db.run(
           /*sql*/ `
         DELETE FROM ${table} WHERE id = $id
       `,
@@ -121,7 +122,7 @@ module.exports = class RestApi {
   setupLoginRoutes() {
     // create a post
     // this.app.post(this.routePrefix + '/' + table, (req, res) => {
-    //   res.json(this.db.run(/*sql*/`
+    //   res.json(db.run(/*sql*/`
     //     INSERT INTO ${table} (${Object.keys(req.body)})
     //     VALUES (${Object.keys(req.body).map(x => '$' + x)})
     //   `, req.body));
@@ -133,12 +134,12 @@ module.exports = class RestApi {
     this.app.post(this.routePrefix + "/login", (req, res) => {
       this.loggedInUserId = req.body.id;
       console.log("i login ", this.loggedInUserId);
-      res.json({ success: true }), req.body;
+      res.json({ success: true });
     });
 
     this.app.post(this.routePrefix + "/logout", (req, res) => {
       this.loggedInUserId = -1;
-      res.json({ success: true }), req.body;
+      res.json({ success: true });
     });
   }
 
@@ -148,11 +149,10 @@ module.exports = class RestApi {
         res.json({ success: false });
       } else {
         res.json(
-          this.db.select(
-            `SELECT * FROM PendingInvitations WHERE invitedUserId = ${this.loggedInUserId}`
+          db.select(
+            /* sql */ `SELECT * FROM PendingInvitations WHERE invitedUserId = ${this.loggedInUserId}`
           )
-        ),
-          req.body;
+        );
       }
     });
 
@@ -167,28 +167,28 @@ module.exports = class RestApi {
           res.json({ success: false });
         } else {
           if (accept) {
-            let invite = this.db.select(
+            let invite = db.select(
               `SELECT * FROM PendingInvitations WHERE id = ${pendingInvitationId}`
             )[0];
             if (invite === undefined) {
               res.status(404);
               res.json({ error: 404 });
             }
-            let event = this.db.select(
+            let event = db.select(
               `SELECT * FROM Events WHERE id = ${invite.eventId}`
             )[0];
             event.owner = this.loggedInUserId;
             event.id = undefined;
-            this.db.run(
-              /*sql*/ `
-          INSERT INTO Events (${Object.keys(event)})
-          VALUES (${Object.keys(event).map((x) => "$" + x)})
-        `,
+            db.run(
+                    /*sql*/ `
+                INSERT INTO Events (${Object.keys(event)})
+                VALUES (${Object.keys(event).map((x) => "$" + x)})
+              `,
               event
             );
           }
           // ta bort pendinginvitation
-          this.db.run(`DELETE FROM PendingInvitations WHERE id = ${pendingInvitationId}`)
+          db.run(`DELETE FROM PendingInvitations WHERE id = ${pendingInvitationId}`)
           res.json({ success: true });
         }
       }
