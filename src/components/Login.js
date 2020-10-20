@@ -15,7 +15,7 @@ export default function Login () {
 
     async function login(e) {
         e.preventDefault()
-        let result = await (await fetch("/api/login", {
+        let result = await (await fetch("/api/auth/login", {
           method: "POST",
           headers: {"Content-Type": "application/json"},
           //body: JSON.stringify(formData)

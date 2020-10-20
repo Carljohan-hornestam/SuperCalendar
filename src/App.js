@@ -6,12 +6,17 @@ import Register from './components/Register'
 import Login from './components/Login'
 import Header from "./components/Header"
 import Footer from './components/Footer';
+import WeekDays from './components/WeekView';
+import {Container} from "reactstrap"
 
 export default function App() {
   return (
     <Router>
       <Header />
-      <div className="container">
+      <Container>
+        <Route path="/mycalendar">
+          <WeekDays/>
+        </Route>
         <Route path="/person/:id">
           <EditPerson />      
         </Route>
@@ -24,7 +29,7 @@ export default function App() {
         <Route exact path="/login">
           <Login />
         </Route>
-      </div>
+      </Container>
       <Footer/>
     </Router>
   );
