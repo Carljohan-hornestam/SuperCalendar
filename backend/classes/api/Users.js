@@ -3,6 +3,7 @@ const db = require("./utils/DBHelper").getInstance();
 
 router.get("/", (req, res) => {
   let result = db.select("SELECT * FROM Users");
+  // Remove the password from the returned object
   return res.json(result.map(r => {
     delete r.password
     return r
@@ -18,6 +19,7 @@ router.get("/:id", (req, res) => {
   );
   // if a post with the id exists return the post
   if (result.length > 0) {
+    // Remove the password from the returned object
     delete result[0].password
     res.json(result[0]);
   }

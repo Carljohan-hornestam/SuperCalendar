@@ -1,5 +1,12 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+
+### Install Redis (in-memory database, used for Sessions)
+- Windows: https://github.com/tporadowski/redis/releases (Current version: 5.0.9 msi)
+- Unix: https://redis.io/download
+- Make sure you have redis in your services.msc (systemctl) and have it autostart on boot
+
 ## Available Scripts
 
 In the project directory, you can run:
