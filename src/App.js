@@ -7,6 +7,7 @@ import Login from './components/Login'
 import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/CalendarMonthView';
+import WeekView from './components/WeekView';
 
 export default function App() {
   return (
@@ -21,6 +22,9 @@ export default function App() {
         </Route>
         <Route exact path="/mycalendar">
           <Calendar />
+        </Route>
+        <Route exact path="/myweek">
+          <WeekView />
         </Route>
         <Route exact path="/register">
           <Register />

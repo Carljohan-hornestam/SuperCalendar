@@ -11,13 +11,13 @@ export default function Footer(){
         <div className="navbar bg-dark text-white">
           <span><FontAwesomeIcon icon={faCopyright} />SuperCalendar</span> 
           <span>
-            <Link>
+            <Link to="/">
               <FontAwesomeIcon color="white" size="2x" className="m-2" icon={faTwitterSquare} />
             </Link>
-            <Link>
+            <Link to="/">
               <FontAwesomeIcon color="white" size="2x" className="m-2" icon={faInstagramSquare} />
             </Link>
-            <Link>
+            <Link to="/">
               <FontAwesomeIcon color="white" size="2x" className="m-2" icon={faFacebookSquare} />
             </Link>
           </span>
