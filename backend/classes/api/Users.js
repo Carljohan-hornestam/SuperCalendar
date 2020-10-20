@@ -1,9 +1,12 @@
-let CurrentUserId = require("./GlobalVar");
 const router = require("express").Router();
-const db = require("./../DBHelper").getInstance();
+const db = require("./utils/DBHelper").getInstance();
 
 router.get("/", (req, res) => {
-  res.json(db.select("SELECT * FROM Users"));
+  let result = db.select("SELECT * FROM Users");
+  return res.json(result.map(r => {
+    delete r.password
+    return r
+  }))
 });
 
 router.get("/:id", (req, res) => {
@@ -11,10 +14,11 @@ router.get("/:id", (req, res) => {
     "SELECT * FROM Users WHERE id = $id",
     // req.params includes the values of params
     // (things written with : before them in the route)
-    { id: req.params.id }
+    { id: req.session.user.id }
   );
   // if a post with the id exists return the post
   if (result.length > 0) {
+    delete result[0].password
     res.json(result[0]);
   }
   // else send a 404 (does not exist)
@@ -38,8 +42,7 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   if (
-    CurrentUserId.currentUserId === -1 ||
-    CurrentUserId.currentUserId != req.params.id
+    !req.session.user || req.session.user.id !== req.params.id
   ) {
     res.json({ success: false });
   } else {
@@ -57,8 +60,7 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
   if (
-    CurrentUserId.currentUserId === -1 ||
-    CurrentUserId.currentUserId != req.params.id
+    !req.session.user || req.session.user.id !== req.params.id
   ) {
     res.json({ success: false });
   } else {

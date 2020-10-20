@@ -1,13 +1,12 @@
-let CurrentUserId = require("./GlobalVar");
 const router = require("express").Router();
-const db = require("./../DBHelper").getInstance();
+const db = require("./utils/DBHelper").getInstance();
 
 router.get("/", (req, res) => {
-  if (CurrentUserId.currentUserId === -1) {
+  if (!req.session.user) {
     res.json({ success: false });
   } else {
     let str = /* sql */ `SELECT * FROM Events 
-    WHERE (creatorId = ${CurrentUserId.currentUserId} OR ownerId = ${CurrentUserId.currentUserId})` 
+    WHERE (creatorId = ${req.session.user.id} OR ownerId = ${req.session.user.id})` 
     console.log('i get events, str: ', str);
     res.json(
       db.select(str)
@@ -16,12 +15,12 @@ router.get("/", (req, res) => {
 });
 
 router.get("/invitations", (req, res) => {
-  if (CurrentUserId.currentUserId === -1) {
+  if (!req.session.user) {
     res.json({ success: false });
   } else {
     res.json(
       db.select(
-        /* sql */ `SELECT * FROM PendingInvitations WHERE invitedUserId = ${CurrentUserId.currentUserId}`
+        /* sql */ `SELECT * FROM PendingInvitations WHERE invitedUserId = ${req.session.user.id}`
       )
     );
   }
@@ -29,7 +28,7 @@ router.get("/invitations", (req, res) => {
 
 router.post("/invitations/reply", (req, res) => {
   const { userId, pendingInvitationId, accept } = req.body;
-  if (CurrentUserId.currentUserId === -1 || CurrentUserId.currentUserId !== userId) {
+  if (!req.session.user || req.session.user.id !== userId) {
     res.json({ success: false });
   } else {
     if (accept) {
@@ -43,7 +42,7 @@ router.post("/invitations/reply", (req, res) => {
       let event = db.select(
         `SELECT * FROM Events WHERE id = ${invite.eventId}`
       )[0];
-      event.ownerId = CurrentUserId.currentUserId;
+      event.ownerId = req.session.user.id;
       event.parentId = event.id
       event.id = undefined;
       db.run(

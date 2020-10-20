@@ -3,23 +3,15 @@
 // import PathToDb from './Constants'
 
 const express = require('express');
-const RestApi = require('./RestApi');
-
-// Our database utility helper; singleton
-const DBHelper = require("./DBHelper").getInstance();
+const encryptor = require('./api/utils/PasswordEncryptor');
 
 // module.exports exports something
 // a class, a function etc so that it is
 // reachable from other code that requires the file
 module.exports = class Server {
-
-  // The constructor runs
-  // when someone writes new Server()
   constructor(port = 3000) {
     this.port = port;
     this.startServer();
-    new RestApi(this.app, DBHelper);
-    // new RestApi(this.app, path.join(__dirname, '../database/SuperCalendar.db'));
     this.setupRoutes();
     this.serveStaticFiles();
   }
@@ -31,6 +23,11 @@ module.exports = class Server {
     // post and put request (do this before starting the server)
     // express.json is middleware that adds this functionality
     this.app.use(express.json());
+    this.app.use('*', encryptor({
+      // Our settings for the encryptor
+      salt: 'veryUnusual%butDontChangeAfterDBhasDataX'
+    }));
+    this.app.use('*', require('./session.js'))
     this.app.use('/api', require('./api'))
 
     // start the webserver 
