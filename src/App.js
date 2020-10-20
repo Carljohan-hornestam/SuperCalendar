@@ -8,15 +8,13 @@ import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/CalendarMonthView';
 import WeekView from './components/WeekView';
+import {Container} from "reactstrap"
 
 export default function App() {
   return (
     <Router>
       <Header />
       <Container>
-        <Route path="/mycalendar">
-          <WeekDays/>
-        </Route>
         <Route path="/person/:id">
           <EditPerson />      
         </Route>

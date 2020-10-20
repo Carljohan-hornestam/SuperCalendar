@@ -13,6 +13,7 @@ export default function WeekView() {
   const [value, setValue] = useState(moment())
   const [year, setYear] = useState([])
   const [week, setWeek] = useState([])
+  const n = 24
 
   useEffect(() => {
     getYear()
@@ -84,13 +85,20 @@ export default function WeekView() {
     return value.clone().add(1, "week")
   }
 
+  const style = {
+    height: "70vh",
+    width: "100%",
+    marginBottom: "60px",
+    overflowY: "scroll"
+  }
+
   return (
     <div>
       <h2>Calendar</h2>
       <Row className="row bg-light">
-        <Col xs="auto"><FontAwesomeIcon size="2x" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
+        <Col xs="auto"><FontAwesomeIcon icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
-        <Col xs="auto" className="text-right"><FontAwesomeIcon size="2x" icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
+        <Col xs="auto" className="text-right"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
       </Row>
       <Row className="d-flex">
         {
@@ -106,11 +114,11 @@ export default function WeekView() {
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                    <Col key={day} className="text-center" onClick={() => setValue(day)}>
-                      <div className={dayStyles(day)}>
-                        {day.format("D")}
-                      </div>
-                    </Col>
+                  <Col key={day} className="text-center" onClick={() => setValue(day)}>
+                    <div className={dayStyles(day)}>
+                      {day.format("D")}
+                    </div>
+                  </Col>
                 )
               }
             </Row>
@@ -129,7 +137,11 @@ export default function WeekView() {
           )
         }
         </Row>
-
+        <Row style={style}>
+          {[...Array(n)].map((e, i) => (
+            <Col className="tid" xs="12" key={"tid"+i}><span>{i}</span></Col>
+          ))}
+        </Row>
       </div>
     </div>
   )
@@ -139,7 +151,7 @@ export default function WeekView() {
 
   
   let weeknumber = 42
-  const n = 25
+  const n = 24
 
   return (
     <>
