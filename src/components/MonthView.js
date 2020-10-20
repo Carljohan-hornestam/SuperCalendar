@@ -88,7 +88,7 @@ export default function Calendar() {
     return (
         <div>
             <h2>Calendar</h2>
-            <Row className="row bg-light">
+            <Row className="bg-light">
                 <Col xs="auto"><FontAwesomeIcon icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} /></Col>
                 <Col className="text-center">
                     {getCurrentMonth()} {getCurrentYear()} <FontAwesomeIcon icon={faArrowAltCircleUp} onClick={() => setValue(getNextYear())} /> <FontAwesomeIcon icon={faArrowAltCircleDown} onClick={() => setValue(getPreviousYear())} />
