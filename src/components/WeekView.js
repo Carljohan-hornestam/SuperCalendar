@@ -11,10 +11,11 @@ export default function WeekView() {
 
   const [calendar, setCalendar] = useState([])
   const [value, setValue] = useState(moment())
-
-  
+  const [year, setYear] = useState([])
+  const [week, setWeek] = useState([])
 
   useEffect(() => {
+    getYear()
     const startDay = value.clone().startOf("week")
     const endDay = value.clone().endOf("week")
     const day = startDay.clone().subtract(1, "day")
@@ -29,8 +30,24 @@ export default function WeekView() {
     setCalendar(a)
   }, [value])
 
-  
   const days = moment.weekdaysShort(true)
+
+  async function getYear(){
+    let year = getCurrentYear()
+    let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + year)).json()
+    setYear(result)
+    getWeek(result)
+  }
+
+  function getWeek(year){
+    let data = year.dagar
+    let result = data.filter( (day) => {
+      if(parseInt(day.vecka) === parseInt(getCurrentWeek())){
+        return day
+      }
+    })
+    setWeek(result)
+  }
 
   function isSelected(day) {
     return value.isSame(day, "day")
@@ -51,6 +68,10 @@ export default function WeekView() {
     return ""
   }
 
+  function getCurrentYear(){
+    return value.format("YYYY")
+  }
+
   function getCurrentWeek() {
     return value.format("ww")
   }
@@ -67,9 +88,9 @@ export default function WeekView() {
     <div>
       <h2>Calendar</h2>
       <Row className="row bg-light">
-        <Col xs="auto"><FontAwesomeIcon icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
-        <Col className="text-center">Vecka {getCurrentWeek()}</Col>
-        <Col xs="auto" className="text-right"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
+        <Col xs="auto"><FontAwesomeIcon size="2x" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
+        <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
+        <Col xs="auto" className="text-right"><FontAwesomeIcon size="2x" icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
       </Row>
       <Row className="d-flex">
         {
@@ -79,22 +100,71 @@ export default function WeekView() {
         }
       </Row>
       <div>
+
         {
           calendar.map(week => 
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                  <Col key={day} className="text-center" onClick={() => setValue(day)}>
-                    <div className={dayStyles(day)}>
-                      {day.format("D")}
-                    </div>
-                  </Col>
+                    <Col key={day} className="text-center" onClick={() => setValue(day)}>
+                      <div className={dayStyles(day)}>
+                        {day.format("D")}
+                      </div>
+                    </Col>
                 )
               }
             </Row>
           )
         }
+        
+        <Row className="d-none d-lg-flex"> 
+        {
+          week.map(dag => 
+            <Col key={dag.datum} className="text-center">
+              {dag.namnsdag.map(namn => 
+                <span key={namn} className="mx-1">
+                  {namn}
+                </span>)}
+            </Col>
+          )
+        }
+        </Row>
+
       </div>
     </div>
   )
 }
+
+/*
+
+  
+  let weeknumber = 42
+  const n = 25
+
+  return (
+    <>
+    <Row className="text-center mt-3">
+      <Col>
+        <span>Vecka {weeknumber}</span>
+      </Col>
+    </Row>
+    <hr/>
+    <Row className="text-center">
+      <Col xs="12" md={{size: true}}></Col>
+      {week.map(dag => {
+        return (
+            <Col xs="12" md={{size: true}} key={dag["dag i vecka"]}>
+              <Col className="font-weight-bold">{dag.veckodag}</Col>
+              <Col key={dag.datum}>{dag.namnsdag.map(namn => <span key={namn} className="mx-1">{namn}</span>)}</Col>
+            </Col>
+        )
+      })}
+      </Row>
+      {[...Array(n)].map((e, i) => (
+        <Row key={"row"+i}>
+          <Col key={"col"+i} xs="12" md={{size: true}}><p key={i}>{i}:00</p></Col>
+        </Row>
+      ))}
+    </>
+  )
+} */
