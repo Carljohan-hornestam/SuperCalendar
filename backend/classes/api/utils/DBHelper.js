@@ -25,13 +25,23 @@ class DBHelper {
     let statement = this.db.prepare(sql);
     // here we use the statement with the method 
     // all that retrieves all data
-    return parameters ? statement.all(parameters) : statement.all();
+    let result
+    try {
+      result = parameters ? statement.all(parameters) : statement.all();
+    } catch (error) {
+      result = {error: error.name}
+    }
+    return result;
   }
 
   run(sql, parameters) {
     let statement = this.db.prepare(sql);
-    // here we use the statement with the method 
-    // run (the correct method if it does not return data)
-    return parameters ? statement.run(parameters) : statement.run();
+    let result
+    try {
+      result = parameters ? statement.run(parameters) : statement.run();
+    } catch (error) {
+      result = {error: error.name}
+    }
+    return result;
   }
 }
