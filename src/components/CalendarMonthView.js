@@ -3,7 +3,7 @@ import moment from "moment"
 import "moment/locale/sv"
 import {Row, Col} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faArrowAltCircleRight, faArrowAltCircleLeft} from "@fortawesome/free-solid-svg-icons"
+import {faArrowAltCircleRight, faArrowAltCircleLeft, faArrowAltCircleUp, faArrowAltCircleDown} from "@fortawesome/free-solid-svg-icons"
 
 export default function Calendar() {
     
@@ -45,12 +45,17 @@ export default function Calendar() {
         return day.isBefore(new Date(), "day")
     }
 
+    function sameMonth(day) {
+        return day.isSame(value, "month")
+    }
+
     function isToday(day) {
         return day.isSame(new Date(), "day")
     }
 
     function dayStyles(day) {
         if (beforeToday(day)) return "text-secondary"
+        if (!sameMonth(day)) return "text-secondary"
         if (isSelected(day)) return "bg-danger text-white"
         if (isToday(day)) return "bg-secondary text-white"
         return ""
@@ -72,12 +77,22 @@ export default function Calendar() {
         return value.format("YYYY")
     }
 
+    function getPreviousYear() {
+        return value.clone().subtract(1, "year")
+    }
+
+    function getNextYear() {
+        return value.clone().add(1, "year")
+    }
+
     return (
         <div>
             <h2>Calendar</h2>
             <Row className="row bg-light">
                 <Col xs="auto"><FontAwesomeIcon icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} /></Col>
-                <Col className="text-center">{getCurrentMonth()} {getCurrentYear()}</Col>
+                <Col className="text-center">
+                    {getCurrentMonth()} {getCurrentYear()} <FontAwesomeIcon icon={faArrowAltCircleUp} onClick={() => setValue(getNextYear())} /> <FontAwesomeIcon icon={faArrowAltCircleDown} onClick={() => setValue(getPreviousYear())} />
+                </Col>
                 <Col xs="auto" className="text-right"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextMonth())} /></Col>
             </Row>
             <Row className="d-flex">
