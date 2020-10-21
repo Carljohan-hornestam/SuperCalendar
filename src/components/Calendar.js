@@ -7,7 +7,7 @@ import {Container} from "reactstrap"
 export default function Calendar() {
     return (
         <Container>
-            <WeekView />
+            <MonthView />
             <ContainerView />
         </Container>)
 }

@@ -1,9 +1,10 @@
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useContext} from "react"
 import moment from "moment"
 import "moment/locale/sv"
 import {Row, Col} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faArrowAltCircleRight, faArrowAltCircleLeft, faArrowAltCircleUp, faArrowAltCircleDown} from "@fortawesome/free-solid-svg-icons"
+import { faArrowAltCircleRight, faArrowAltCircleLeft, faArrowAltCircleUp, faArrowAltCircleDown } from "@fortawesome/free-solid-svg-icons"
+import {Context} from "../App"
 
 export default function Calendar() {
     
@@ -11,6 +12,7 @@ export default function Calendar() {
 
     const [calendar, setCalendar] = useState([])
     const [value, setValue] = useState(moment())
+    let [context, updateContext] = useContext(Context)
 
     const startDay = value.clone().startOf("month").startOf("week")
     const endDay = value.clone().endOf("month").endOf("week")
@@ -85,6 +87,13 @@ export default function Calendar() {
         return value.clone().add(1, "year")
     }
 
+    let setSelectedDay = update => {
+        console.log("selectedDay IN value", update);
+        let day = update._d.toLocaleString().split(" ")[0]
+        updateContext({selectedDay: day})
+        console.log("selectedDay OUT value", day);
+    }
+
     return (
         <div>
             <h2>Calendar</h2>
@@ -110,7 +119,7 @@ export default function Calendar() {
                             <Col size="auto" className="bg-dark text-white">{moment(week[0]).format("w")}</Col>
                             {
                                 week.map(day =>
-                                    <Col className="text-center" onClick={() => setValue(day)}>
+                                    <Col className="text-center" onClick={() => { setValue(day); setSelectedDay(day); }}>
                                         <div className={dayStyles(day)}>
                                             {day.format("D")}
                                         </div>

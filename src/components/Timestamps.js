@@ -4,19 +4,16 @@ import {Row, Col} from 'reactstrap'
 export default function Timestamps() {
     
   const n = 24
-  const style = {
-    width: "50px",
-    height: "50px",
-    backgroundColor: "cadetblue"
-  }
   return (
-    <Col xs="auto">
-      {[...Array(n)].map((e, i) => (
-        <Col key={"row"+i}>
-          {i}
-        </Col>
+    
+    <Col xs="auto" className="text-right">
+    <Row><p className="font-weight-bold">Tid:</p></Row>
+        {[...Array(n)].map((e, i) => (
+          <Row key={"row"+i}>
+            <p className="font-weight-bold text-center">{i}</p>
+          </Row>
       ))}
-    </Col>
+      </Col>
   )
 }
 /**<p style={style} key={i}>
