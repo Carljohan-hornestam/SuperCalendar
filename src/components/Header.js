@@ -1,12 +1,13 @@
 import React, {useState} from "react"
-import {Link} from "react-router-dom"
+import {NavLink as RouterNavLink} from "react-router-dom"
 import {
   Collapse,
   Navbar,
   NavbarToggler,
   NavbarBrand,
   Nav,
-  NavItem
+  NavItem,
+  NavLink
 } from 'reactstrap'
 import Logo from "../images/supercalender.png"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -31,31 +32,31 @@ export default function Header() {
           {loggedIn ? (
             <Nav className="ml-auto" navbar>
             <NavItem>
-                <Link className="nav-link text-center" to="/profile">
+                <NavLink tag={RouterNavLink} className="nav-link text-center" to="/profile">
                   <span className="d-block d-md-none">Profil</span>
                   <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faUserEdit}/>
-                </Link>
+                </NavLink>
               </NavItem>
               <NavItem>
-                <Link className="nav-link text-center" onClick={logout} to="/login">
+                <NavLink tag={RouterNavLink} className="nav-link text-center" onClick={logout} to="/login">
                   <span className="d-block d-md-none">Logga ut</span>
                   <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faSignOutAlt}/>
-                </Link>
+                </NavLink>
               </NavItem> 
             </Nav>) 
             : ( 
             <Nav className="ml-auto" navbar>
               <NavItem>
-                  <Link className="nav-link text-center" to="/register">
+                  <NavLink  tag={RouterNavLink} className="nav-link text-center" to="/register">
                     <span className="d-block d-md-none">Registrera</span> 
                     <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faUserPlus}/>
-                  </Link>
+                  </NavLink>
               </NavItem> 
               <NavItem>
-                <Link className="nav-link text-center" to="/login">
+                <NavLink tag={RouterNavLink} className="nav-link text-center" to="/login">
                   <span className="d-block d-md-none">Logga in</span> 
                   <FontAwesomeIcon className="d-none d-md-block" size="2x" icon={faSignInAlt}/>
-                </Link>
+                </NavLink>
               </NavItem> 
             </Nav>
             )}

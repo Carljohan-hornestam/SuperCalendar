@@ -1,5 +1,17 @@
 import React from 'react'
+import {Col} from "reactstrap"
 
 export default function DayView() {
-    return (<div className="bg-primary w-100">Hej</div>)
+  return (
+		<Col className="d-flex">
+			<Col>Hej</Col>
+			<Col>Hej</Col>
+			<Col>Hej</Col>
+			<Col>Hej</Col>
+			<Col>Hej</Col>
+			<Col>Hej</Col>
+			<Col>Hej</Col>
+		</Col>
+
+	)
 }

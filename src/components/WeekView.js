@@ -134,37 +134,3 @@ export default function WeekView() {
     </div>
   )
 }
-
-/*
-
-  
-  let weeknumber = 42
-  const n = 25
-
-  return (
-    <>
-    <Row className="text-center mt-3">
-      <Col>
-        <span>Vecka {weeknumber}</span>
-      </Col>
-    </Row>
-    <hr/>
-    <Row className="text-center">
-      <Col xs="12" md={{size: true}}></Col>
-      {week.map(dag => {
-        return (
-            <Col xs="12" md={{size: true}} key={dag["dag i vecka"]}>
-              <Col className="font-weight-bold">{dag.veckodag}</Col>
-              <Col key={dag.datum}>{dag.namnsdag.map(namn => <span key={namn} className="mx-1">{namn}</span>)}</Col>
-            </Col>
-        )
-      })}
-      </Row>
-      {[...Array(n)].map((e, i) => (
-        <Row key={"row"+i}>
-          <Col key={"col"+i} xs="12" md={{size: true}}><p key={i}>{i}:00</p></Col>
-        </Row>
-      ))}
-    </>
-  )
-} */

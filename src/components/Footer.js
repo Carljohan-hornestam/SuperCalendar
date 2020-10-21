@@ -7,7 +7,7 @@ import {Link} from "react-router-dom"
 export default function Footer(){
 
   return (
-    <div className="footer fixed-bottom">
+    <footer className="footer fixed-bottom">
         <div className="navbar bg-dark text-white">
           <span><FontAwesomeIcon icon={faCopyright} />SuperCalendar</span> 
           <span>
@@ -22,7 +22,7 @@ export default function Footer(){
             </Link>
           </span>
         </div>
-    </div>
+    </footer>
   )
   
 }
