@@ -85,6 +85,17 @@ router.delete("/:id", (req, res) => {
   res.json(result)
 })
 
+router.get("/day/:startDateTime", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  let result = db.select(/* sql */ `SELECT * FROM Events 
+  WHERE startDateTime BETWEEN ($startDateTime + ', 00:00') AND ($startDateTime + ', 23:59')  AND  ownerId = ${req.session.user.id}`, req.params)
+  res.json(result)
+})
+
 router.get("/invitations", (req, res) => {
   if (!req.session.user) {
     res.json({ success: false });
