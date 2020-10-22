@@ -1,5 +1,5 @@
 // Our database utility helper; singleton
-const db = require("./DBHelper").getInstance();
+const db = require("./api/utils/DBHelper").getInstance();
 
 module.exports = class RestApi {
   constructor(app, db, routePrefix = "/api") {
