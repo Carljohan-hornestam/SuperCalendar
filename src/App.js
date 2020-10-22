@@ -7,6 +7,7 @@ import Login from './components/Login'
 import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/Calendar'
+import Event from './components/Event'
 
 export const Context = createContext()
 
@@ -48,6 +49,9 @@ export default function App() {
           </Route>
           <Route exact path="/login">
             <Login />
+          </Route>
+          <Route exact path="/event/:id">
+            <Event />
           </Route>
         </div>
         <Footer/>
