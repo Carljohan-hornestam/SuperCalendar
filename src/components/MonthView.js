@@ -16,7 +16,7 @@ export default function Calendar() {
     const [redDays, setRedDays] = useState([])
     let [context, updateContext] = useContext(Context)
 
-    
+
 
     useEffect(() => {
         getDaysInformation()
