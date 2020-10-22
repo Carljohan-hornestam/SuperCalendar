@@ -16,12 +16,16 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  if (!req.session.user || (req.session.user.id !== req.body.creatorId || req.session.user.id !== req.body.ownerId)) {
+ if (!req.session.user) {
     res.status(403)
     res.json({ success: false })
     return
   }
-   let result = db.run(/*sql*/ `
+
+  req.body.creatorId = req.session.user.id
+  req.body.ownerId = req.session.user.id
+  
+  let result = db.run(/*sql*/ `
   INSERT INTO Events (${Object.keys(req.body)}) 
   VALUES (${Object.keys(req.body).map(x => "$" + x)})
   `, req.body)
