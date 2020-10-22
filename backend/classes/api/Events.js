@@ -28,6 +28,32 @@ router.post("/", (req, res) => {
   res.json(str)
 })
 
+router.get("/:id", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false })
+    return
+  }
+  let result = db.select(/* sql */ `SELECT * FROM eventWParticipants 
+    WHERE eventId = ${req.params.id} OR parentId = ${req.params.id}`
+  )
+  //Check if user is a participant or creator, if NOT return
+  let checkUser = result.find(event => +event.ownerId === +req.session.user.id || +event.creatorId === +req.session.user.id)
+  if (checkUser === undefined) {
+    res.status(403)
+    res.json({ success: false })
+    return
+  }
+  
+  let mainEvent = result.find(x => +x.eventId === +req.params.id)
+  mainEvent.participants = result.map(x => {
+    if (+x.parentId === +req.params.id) {
+      return ({ "userName": x.userName, "email": x.email})
+    }
+  })
+  res.json(mainEvent)
+})
+
 router.get("/invitations", (req, res) => {
   if (!req.session.user) {
     res.json({ success: false });
