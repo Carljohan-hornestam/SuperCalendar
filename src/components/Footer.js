@@ -7,22 +7,22 @@ import {Link} from "react-router-dom"
 export default function Footer(){
 
   return (
-    <div className="footer fixed-bottom">
+    <footer className="footer fixed-bottom">
         <div className="navbar bg-dark text-white">
           <span><FontAwesomeIcon icon={faCopyright} />SuperCalendar</span> 
           <span>
-            <Link>
+            <Link to="/">
               <FontAwesomeIcon color="white" size="2x" className="m-2" icon={faTwitterSquare} />
             </Link>
-            <Link>
+            <Link to="/">
               <FontAwesomeIcon color="white" size="2x" className="m-2" icon={faInstagramSquare} />
             </Link>
-            <Link>
+            <Link to="/">
               <FontAwesomeIcon color="white" size="2x" className="m-2" icon={faFacebookSquare} />
             </Link>
           </span>
         </div>
-    </div>
+    </footer>
   )
   
 }
