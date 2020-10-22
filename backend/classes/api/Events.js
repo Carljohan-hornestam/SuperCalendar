@@ -3,6 +3,7 @@ const db = require("./utils/DBHelper").getInstance();
 
 router.get("/", (req, res) => {
   if (!req.session.user) {
+    res.status(403)
     res.json({ success: false });
   } else {
     let str = /* sql */ `SELECT * FROM Events 
@@ -15,7 +16,8 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  if (!req.session.user) {
+  if (!req.session.user || (req.session.user.id !== req.body.creatorId || req.session.user.id !== req.body.ownerId)) {
+    res.status(403)
     res.json({ success: false })
     return
   }
