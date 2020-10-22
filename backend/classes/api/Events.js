@@ -21,11 +21,11 @@ router.post("/", (req, res) => {
     res.json({ success: false })
     return
   }
-   let str = db.run(/*sql*/ `
+   let result = db.run(/*sql*/ `
   INSERT INTO Events (${Object.keys(req.body)}) 
   VALUES (${Object.keys(req.body).map(x => "$" + x)})
   `, req.body)
-  res.json(str)
+  res.json(result)
 })
 
 router.get("/:id", (req, res) => {
@@ -60,14 +60,29 @@ router.put("/:id", (req, res) => {
     res.json({ success: false})
     return
   }
-  let str = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  let result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
   WHERE id = $id AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
-  if (str.changes === 0) {
+  if (result.changes === 0) {
     res.status(403)
     res.json({ success: false})
     return
   }
-  res.json(str)
+  res.json(result)
+})
+
+router.delete("/:id", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  let result = db.run(/* sql */ `DELETE FROM Events WHERE id = $id AND ownerId = ${req.session.user.id}`, req.params)
+  if (result.changes === 0) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  res.json(result)
 })
 
 router.get("/invitations", (req, res) => {
