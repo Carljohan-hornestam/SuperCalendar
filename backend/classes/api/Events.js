@@ -54,6 +54,22 @@ router.get("/:id", (req, res) => {
   res.json(mainEvent)
 })
 
+router.put("/:id", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  let str = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  WHERE id = $id AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
+  if (str.changes === 0) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  res.json(str)
+})
+
 router.get("/invitations", (req, res) => {
   if (!req.session.user) {
     res.json({ success: false });
