@@ -12,12 +12,16 @@ export default function Calendar() {
 
     const [calendar, setCalendar] = useState([])
     const [value, setValue] = useState(moment())
+    const [year, setYear] = useState([])
+    const [redDays, setRedDays] = useState([])
     let [context, updateContext] = useContext(Context)
 
-    const startDay = value.clone().startOf("month").startOf("week")
-    const endDay = value.clone().endOf("month").endOf("week")
+    
 
     useEffect(() => {
+        getDaysInformation()
+        const startDay = value.clone().startOf("month").startOf("week")
+        const endDay = value.clone().endOf("month").endOf("week")
         const day = startDay.clone().subtract(1, "day")
         const a = []
         while(day.isBefore(endDay, "day")) {
@@ -33,11 +37,27 @@ export default function Calendar() {
 
     
     const days = moment.weekdaysShort(true)
-    const months = moment.months(true)
-    /*var check = moment(moment().toDate(), 'YYYY/MM/DD');
-    var month = check.format('MMMM');
-    var day   = check.format('D');
-    var year  = check.format('YYYY');*/
+
+    async function getDaysInformation(){
+        let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + value.format("YYYY"))).json()
+        setYear(result)
+        getAllRedDays(result)
+      }
+
+    function getAllRedDays(year){
+        let data = year.dagar
+        let result = data.filter( (day) => {
+          if(day["röd dag"] === "Ja"){
+            return day
+          }
+        })
+        console.log("månad: ", result);
+        setRedDays(result)
+    }
+
+    function isRedDay(day) {
+        return day.day() === 0 || redDays.find( (redDay) => redDay.datum === day.format("YYYY-MM-DD"))
+    }
 
     function isSelected(day) {
         return value.isSame(day, "day")
@@ -56,6 +76,7 @@ export default function Calendar() {
     }
 
     function dayStyles(day) {
+        if (isRedDay(day)) return "text-danger"
         if (beforeToday(day)) return "text-secondary"
         if (!sameMonth(day)) return "text-secondary"
         if (isSelected(day)) return "bg-danger text-white"
@@ -88,24 +109,26 @@ export default function Calendar() {
     }
 
     let setSelectedDay = update => {
-        console.log("selectedDay IN value", update);
-        let day = update._d.toLocaleString().split(" ")[0]
-        updateContext({selectedDay: day})
-        console.log("selectedDay OUT value", day);
+        //console.log("selectedDay IN value", update);
+        //console.log("selectedDay IN value", update.format("YYYY-MM-DD"));
+        //let day = update._d.toLocaleString().split(" ")[0]
+        updateContext({selectedDay: update.format("YYYY-MM-DD"), selectedWeek: update.format("w")})
+        //console.log("selectedDay OUT value", day);
     }
 
     return (
         <div>
             <h2>Calendar</h2>
             <Row className="bg-light">
-                <Col xs="auto"><FontAwesomeIcon icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} /></Col>
+                <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} /></Col>
                 <Col className="text-center">
-                    {getCurrentMonth()} {getCurrentYear()} <FontAwesomeIcon icon={faArrowAltCircleUp} onClick={() => setValue(getNextYear())} /> <FontAwesomeIcon icon={faArrowAltCircleDown} onClick={() => setValue(getPreviousYear())} />
+                    {getCurrentMonth()} {getCurrentYear()} 
+                    <FontAwesomeIcon className="ml-2 pointer" icon={faArrowAltCircleUp} onClick={() => setValue(getNextYear())} /> 
+                    <FontAwesomeIcon className="ml-1 pointer" icon={faArrowAltCircleDown} onClick={() => setValue(getPreviousYear())} /> 
                 </Col>
-                <Col xs="auto" className="text-right"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextMonth())} /></Col>
+                <Col xs="auto" className="text-right pointer"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextMonth())} /></Col>
             </Row>
             <Row className="d-flex">
-            <Col></Col>
                 {
                     days.map( day => {
                         return <Col className="bg-dark text-white text-center" key={day}>{day}</Col>   
@@ -115,16 +138,15 @@ export default function Calendar() {
             <div>
                 {
                     calendar.map(week => 
-                        <Row className="d-flex">
-                            <Col size="auto" className="bg-dark text-white">{moment(week[0]).format("w")}</Col>
+                        <Row className="d-flex" key={week}>
                             {
                                 week.map(day =>
-                                    <Col className="text-center" onClick={() => { setValue(day); setSelectedDay(day); }}>
+                                    <Col className="text-center pointer" onClick={(e) => { setValue(day); setSelectedDay(day);}} key={day}>
                                         <div className={dayStyles(day)}>
                                             {day.format("D")}
                                         </div>
                                     </Col>
-                                    )
+                                )
                             }
                         </Row>
                     )}
