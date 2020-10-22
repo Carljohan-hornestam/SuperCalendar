@@ -14,6 +14,18 @@ router.get("/", (req, res) => {
   }
 });
 
+router.post("/", (req, res) => {
+  if (!req.session.user) {
+    res.json({ success: false })
+    return
+  }
+   let str = db.run(/*sql*/ `
+  INSERT INTO Events (${Object.keys(req.body)}) 
+  VALUES (${Object.keys(req.body).map(x => "$" + x)})
+  `, req.body)
+  res.json(str)
+})
+
 router.get("/invitations", (req, res) => {
   if (!req.session.user) {
     res.json({ success: false });
