@@ -109,11 +109,7 @@ export default function Calendar() {
     }
 
     let setSelectedDay = update => {
-        //console.log("selectedDay IN value", update);
-        //console.log("selectedDay IN value", update.format("YYYY-MM-DD"));
-        //let day = update._d.toLocaleString().split(" ")[0]
         updateContext({selectedDay: update.format("YYYY-MM-DD"), selectedWeek: update.format("w")})
-        //console.log("selectedDay OUT value", day);
     }
 
     return (
