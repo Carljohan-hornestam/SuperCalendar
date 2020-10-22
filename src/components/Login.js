@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { Row, Col, Button, Form, FormGroup, Label, Input, Alert } from  "reactstrap";
+import { Row, Col, Button, Form, FormGroup, Input, Alert } from  "reactstrap";
 import { Context } from "../App";
 
 export default function Login() {
+  // eslint-disable-next-line
   const [state, setState] = useState({
     redirect: false,
   });
@@ -27,7 +28,6 @@ export default function Login() {
         body: JSON.stringify(formData),
       })
     ).json();
-    //Check if login was successful
 
     if (result.error) {
       setFormData({ email: "", password: "" });
@@ -39,7 +39,6 @@ export default function Login() {
   }
 
   if (redirect) {
-    // Redirect to front page
     return <Redirect to="/myCalendar" />;
   }
 
