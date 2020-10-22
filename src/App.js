@@ -1,4 +1,4 @@
-import React, {useState, createContext} from 'react';
+import React, {useState, useEffect, createContext} from 'react';
 import ListPersons from "./components/ListPersons"
 import {BrowserRouter as Router, Route} from "react-router-dom" 
 import EditPerson from './components/EditPerson';
@@ -17,6 +17,17 @@ export default function App() {
     ...contextVal,
     ...updates
   })
+
+  useEffect(() => {
+    updateContext({ waitingForUserState: true });
+    (async () => {
+      let result = await (await fetch('/api/auth/whoami')).json();
+      updateContext({ waitingForUserState: false });
+      if (result.error) { return; }
+      // add the user data to the context variable
+      updateContext({ user: result });
+    })();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   
   return (
     <Context.Provider value={[contextVal, updateContext]}>
