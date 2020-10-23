@@ -38,23 +38,27 @@ router.get("/:id", (req, res) => {
     res.json({ success: false })
     return
   }
-  let result = db.select(/* sql */ `SELECT * FROM eventWParticipants 
+  let event = db.select(/* sql */ `SELECT * FROM eventWParticipants 
     WHERE eventId = ${req.params.id} OR parentId = ${req.params.id}`
   )
   //Check if user is a participant or creator, if NOT return
-  let checkUser = result.find(event => +event.ownerId === +req.session.user.id || +event.creatorId === +req.session.user.id)
+  let checkUser = event.find(e => +e.ownerId === +req.session.user.id || +e.creatorId === +req.session.user.id)
   if (checkUser === undefined) {
     res.status(403)
     res.json({ success: false })
     return
   }
   
-  let mainEvent = result.find(x => +x.eventId === +req.params.id)
-  mainEvent.participants = result.map(x => {
+  let mainEvent = event.find(x => +x.eventId === +req.params.id)
+  mainEvent.participants = event.map(x => {
     if (+x.parentId === +req.params.id) {
       return ({ "userName": x.userName, "email": x.email})
     }
   })
+
+  let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = ${req.params.id}`, req.params)
+  mainEvent.invited = invited
+  
   res.json(mainEvent)
 })
 
@@ -107,8 +111,8 @@ router.get("/invitations", (req, res) => {
     res.json({ success: false });
   } else {
     res.json(
-      db.select(
-        /* sql */ `SELECT * FROM PendingInvitations WHERE invitedUserId = ${req.session.user.id}`
+      db.select(/* sql */`
+        SELECT * FROM PendingInvitations WHERE invitedUserId = ${req.session.user.id}`
       )
     );
   }
@@ -120,15 +124,52 @@ router.post("/invitations", (req, res) => {
     res.json({ success: false})
     return
   }
-  let array = []
+
+  // Checks if the logged in user is the creator of the event when trying to invite
+  let creatorCheck = db.select(/*sql*/`SELECT * FROM Events WHERE id = $eventId AND creatorId = ${req.session.user.id} `, req.body)
+  
+  if (creatorCheck.length === 0) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  let results = []
   req.body.participants.map( p => {
     let result = db.run(
     /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
     VALUES (${req.body.eventId}, ${p.id})`, {...req.body, ...p}
-  )
-  array.push(result)
+    )
+    if (result.error) {
+      results.push({"error": "User could not be / is already invited!"})
+    } else {
+      results.push(result)
+    }
   })
-  res.json(array)
+  res.json(results)
+})
+
+router.delete("/invitations/:eventId/:invitationId", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  console.log(req.session.user.id);
+  let creatorCheck = db.select(/*sql*/`SELECT * FROM Events WHERE id = $eventId AND creatorId = ${req.session.user.id} `, req.params)
+  console.log(creatorCheck);
+  if (creatorCheck.length === 0) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  let result
+  if (req.params.invitationId === "all") {
+    result = db.run(/*sql */`DELETE FROM PendingInvitations WHERE eventId = $eventId`, req.params);
+  } else {
+    result = db.run(/*sql */`DELETE FROM PendingInvitations WHERE eventId = $eventId AND id = $invitationId`, req.params);
+  }
+  
+  res.json(result)
 })
 
 router.post("/invitations/reply", (req, res) => {
