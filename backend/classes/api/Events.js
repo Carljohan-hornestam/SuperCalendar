@@ -89,14 +89,16 @@ router.delete("/:id", (req, res) => {
   res.json(result)
 })
 
-router.get("/day/:startDateTime", (req, res) => {
-  if (!req.session.user) {
+router.get("/date/:startDateTime", (req, res) => {
+  if (!req.session.user || req.params.startDateTime.length > 10) {
     res.status(403)
     res.json({ success: false})
     return
   }
+  let date = req.params.startDateTime + "%"
+  console.log(req.params.startDateTime);
   let result = db.select(/* sql */ `SELECT * FROM Events 
-  WHERE startDateTime BETWEEN ($startDateTime + ', 00:00') AND ($startDateTime + ', 23:59')  AND  ownerId = ${req.session.user.id}`, req.params)
+  WHERE startDateTime LIKE '${date}' AND  ownerId = ${req.session.user.id}`, req.params)
   res.json(result)
 })
 
