@@ -134,7 +134,7 @@ router.post("/invitations", (req, res) => {
     return
   }
   let results = []
-  req.body.participants.map( p => {
+  req.body.invitations.map( p => {
     let result = db.run(
     /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
     VALUES (${req.body.eventId}, ${p.id})`, {...req.body, ...p}
