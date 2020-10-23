@@ -114,6 +114,23 @@ router.get("/invitations", (req, res) => {
   }
 });
 
+router.post("/invitations", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false})
+    return
+  }
+  let array = []
+  req.body.participants.map( p => {
+    let result = db.run(
+    /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+    VALUES (${req.body.eventId}, ${p.id})`, {...req.body, ...p}
+  )
+  array.push(result)
+  })
+  res.json(array)
+})
+
 router.post("/invitations/reply", (req, res) => {
   const { userId, pendingInvitationId, accept } = req.body;
   if (!req.session.user || req.session.user.id !== userId) {
