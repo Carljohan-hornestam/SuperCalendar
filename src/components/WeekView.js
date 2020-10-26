@@ -1,9 +1,10 @@
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useContext} from "react"
 import moment from "moment"
 import "moment/locale/sv"
 import {Row, Col} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faArrowAltCircleRight, faArrowAltCircleLeft} from "@fortawesome/free-solid-svg-icons"
+import { faArrowAltCircleRight, faArrowAltCircleLeft } from "@fortawesome/free-solid-svg-icons"
+import {Context} from "../App"
 
 export default function WeekView() {
   const theme = "black" //change to context variable
@@ -13,6 +14,7 @@ export default function WeekView() {
   const [value, setValue] = useState(moment())
   const [year, setYear] = useState([])
   const [week, setWeek] = useState([])
+  let [context, updateContext] = useContext(Context)
 
   useEffect(() => {
     getYear()
@@ -32,9 +34,20 @@ export default function WeekView() {
 
   const days = moment.weekdaysShort(true)
 
-  async function getYear(){
+  async function getYear() {
     let year = getCurrentYear()
     let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + year)).json()
+    let nextYear = +year + 1
+    let lastResultDayOfWeek = parseInt(result.dagar[result.dagar.length - 1]["dag i vecka"])
+  
+    for (let index = 1; lastResultDayOfWeek < 7; index++) {
+      let extraResult = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + nextYear + "/" + 1 + "/" + index)).json()
+      extraResult.dagar.map(dag => {
+        result.dagar.push(dag)
+      })
+      lastResultDayOfWeek = lastResultDayOfWeek + 1
+    }
+
     setYear(result)
     getWeek(result)
   }
@@ -46,6 +59,12 @@ export default function WeekView() {
         return day
       }
     })
+    while (result.length < 7) {
+      result.push({ namnsdag: [] })
+    }
+    if (result.length > 7) {
+      result = result.splice(6)
+    }
     setWeek(result)
   }
 
@@ -84,6 +103,10 @@ export default function WeekView() {
     return value.clone().add(1, "week")
   }
 
+  let setSelectedDay = update => {
+        updateContext({selectedDay: update.format("YYYY-MM-DD")})
+    }
+
   return (
     <div>
       <h2>Calendar</h2>
@@ -106,7 +129,7 @@ export default function WeekView() {
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                    <Col key={day} className="text-center" onClick={() => setValue(day)}>
+                    <Col key={day} className="text-center" onClick={(e) => { setValue(day); setSelectedDay(day);}}>
                       <div className={dayStyles(day)}>
                         {day.format("D")}
                       </div>
@@ -121,13 +144,14 @@ export default function WeekView() {
         {
           week.map(dag => 
             <Col key={dag.datum} className="text-center">
-              {dag.namnsdag.map(namn => 
+              { dag.namnsdag.map(namn => 
                 <span key={namn} className="mx-1">
                   {namn}
-                </span>)}
+                </span>
+              )}
             </Col>
           )
-        }
+          } 
         </Row>
 
       </div>

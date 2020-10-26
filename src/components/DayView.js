@@ -1,5 +1,5 @@
 import React, {useContext} from 'react'
-import {Col} from "reactstrap"
+import {Col, Row} from "reactstrap"
 import {Context} from "../App"
 
 export default function DayView() {
@@ -8,7 +8,7 @@ export default function DayView() {
 	console.log("selectedDay, dayview: ", context);
   return (context.selectedDay === undefined ? (<Col></Col>) :
 		(<Col className="d-flex">
-			<p className="font-weight-bold">Datum: {context.selectedDay} Vecka: {context.selectedWeek}</p>
+			<p className="font-weight-bold">Datum: {context.selectedDay} {context.selectedWeek === undefined ? "" : `Vecka: ${context.selectedWeek}`}</p>
 		</Col>)
-        )
+  )
 }

@@ -76,10 +76,10 @@ export default function Calendar() {
     }
 
     function dayStyles(day) {
+        if (isSelected(day)) return "bg-danger text-white"
         if (isRedDay(day)) return "text-danger"
         if (beforeToday(day)) return "text-secondary"
         if (!sameMonth(day)) return "text-secondary"
-        if (isSelected(day)) return "bg-danger text-white"
         if (isToday(day)) return "bg-secondary text-white"
         return ""
     }

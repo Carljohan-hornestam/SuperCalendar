@@ -16,20 +16,37 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
- if (!req.session.user) {
+  if (!req.session.user) {
     res.status(403)
     res.json({ success: false })
     return
   }
-
+  
+  let invitations = req.body.participants
   req.body.creatorId = req.session.user.id
   req.body.ownerId = req.session.user.id
-  
+  delete req.body.participants
   let result = db.run(/*sql*/ `
   INSERT INTO Events (${Object.keys(req.body)}) 
   VALUES (${Object.keys(req.body).map(x => "$" + x)})
   `, req.body)
-  res.json(result)
+  let eventId = result.lastInsertRowid
+
+  let results = []
+  results.push(result)
+  invitations.map( p => {
+    let result = db.run(
+    /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+    VALUES (${eventId}, ${p.userId})`, {...p}
+    )
+    if (result.error) {
+      results.push({"error": "User could not be / is already invited!"})
+    } else {
+      results.push(result)
+    }
+  })
+
+  res.json(results)
 })
 
 router.get("/:id", (req, res) => {
@@ -52,10 +69,10 @@ router.get("/:id", (req, res) => {
   let mainEvent = event.find(x => +x.eventId === +req.params.id)
   mainEvent.participants = event.map(x => {
     if (+x.parentId === +req.params.id) {
-      return ({ "userName": x.userName, "email": x.email})
+      return ({ "userId": x.userId, "userName": x.userName, "email": x.email})
     }
   })
-
+  delete mainEvent.userId
   let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = ${req.params.id}`, req.params)
   mainEvent.invited = invited
   
@@ -68,6 +85,11 @@ router.put("/:id", (req, res) => {
     res.json({ success: false})
     return
   }
+
+  //let invitations = db.select(/*sql*/`SELECT * FROM PendingInvitations WHERE eventId = $id AND invitedUserId NOT IN $participants`, req.body)
+  //let participants = db.select(/*sql*/`SELECT * FROM Events WHERE parentId = $id`, req.body)
+
+
   let result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
   WHERE id = $id AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
   if (result.changes === 0) {
