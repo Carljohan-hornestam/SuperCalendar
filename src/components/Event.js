@@ -33,6 +33,8 @@ export default function Event() {
 
   const toggle = () => setModal(!modal);
 
+  const [availableParticipants, setAllUsers] = useState([])
+
   const [formData, setFormData] = useState({
     startDateTime: "",
     endDateTime: "",
@@ -51,10 +53,14 @@ export default function Event() {
   //   { name: "Calle", id: 2 },
   // ]);
 
-  const [availableParticipants] = useState([
-    { label: "Alexus", value: 3 },
-    { label: "Jocke", value: 4 },
-  ]);
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  async function fetchUsers(){
+    setAllUsers(await (await fetch('/api/users')).json())
+  }
 
   let [selectedParticipants, setSelectedParticipants] = useState([]);
   // console.log("participants: ", participants);
@@ -193,8 +199,8 @@ export default function Event() {
             >
               {filterAvailableParticipants().map((e, key) => {
                 return (
-                  <option key={key} value={e.value}>
-                    {e.label}
+                  <option key={key} value={e.id}>
+                    {e.email}
                   </option>
                 );
               })}
