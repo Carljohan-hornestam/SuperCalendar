@@ -35,6 +35,10 @@ export default function Event() {
 
   const [availableParticipants, setAllUsers] = useState([])
 
+  const [startTime, setStartTime] = useState("")
+
+  const [endTime, setEndTime] = useState("")
+
   const [formData, setFormData] = useState({
     startDateTime: "",
     endDateTime: "",
@@ -80,7 +84,6 @@ export default function Event() {
         location: "",
         recurringEvent: 0,
         recurringInterval: 0,
-    parentId: null,
         participants: [],
       });
       return;
@@ -177,11 +180,12 @@ export default function Event() {
       // stop that- we are not barbarians, we are SPA developer
       e.preventDefault()
       //  Send the data to the REST api
-      let result = await (await fetch("/api/events/" + (id === "new" ? "" : id), {
-        method: (id === "new" ? "POST" : "PUT"),
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(formData)
-      })).json()
+      // let result = await (await fetch("/api/events/" + (id === "new" ? "" : id), {
+      //   method: (id === "new" ? "POST" : "PUT"),
+      //   headers: {"Content-Type": "application/json"},
+      //   body: JSON.stringify(formData)
+      // })).json()
+      console.log("formdata: ", formData);
       setFormData({done: true})
 
   }
@@ -268,12 +272,13 @@ export default function Event() {
               value={startDateTime}
               name="startDateTime"
               header="Startdatum och -tid"
+              parentCallBack={setStartTime}
             />
             <DateTimePicker
               value={endDateTime}
               name="endDateTime"
               header="Slutdatum och -tid"
-              onChange={handleInputChange}
+              parentCallBack={setEndTime}
             />
           </Col>
         </Row>

@@ -1,20 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, FormGroup, Input, Label } from "reactstrap";
 
 export default function DateTimePicker(props) {
-
-
-  const [formData, setFormData] = useState({
-    date: new Date().toLocaleDateString(),
-    time: "08:00",
+  const [dTPFormData, setdTPFormData] = useState({
+    datum: "2020-10-27",
+    tid: "08:00",
   });
-  
-  const handleInputChange = (e) =>
-    setFormData({
-      ...formData,
+
+  let { datum, tid } = dTPFormData;
+
+  const handleInputChange = (e) => {
+    setdTPFormData({
+      ...dTPFormData,
       [e.currentTarget.name]: e.currentTarget.value,
     });
+    const dateTime = new Date(datum + ", " + tid);
+    props.parentCallBack({...dTPFormData})
+    console.log("dateTime: ", dateTime.toLocaleString());
+    // setdTPFormData({...dTPFormData, doUpdate: true})
+  };
 
+  // if (dTPFormData.doUpdate) {
+  //   const dateTime = new Date(dTPFormData.datum + ", " + dTPFormData.tid);
+  //   console.log("dateTime: ", dateTime.toLocaleString());
+  //   props.parentCallBack({datum : dateTime.toLocaleString()})
+  //   delete dTPFormData.doUpdate 
+  // }
 
   return (
     <>
@@ -57,10 +68,10 @@ export default function DateTimePicker(props) {
         <Col xs="6" className="pl-1">
           <FormGroup>
             <Input
+              className="form-control"
               type="date"
-              name="date"
-              id="exampleDate"
-              value={formData.date}
+              name="datum"
+              value={dTPFormData.datum}
               onChange={handleInputChange}
             />
           </FormGroup>
@@ -68,11 +79,11 @@ export default function DateTimePicker(props) {
         <Col xs="6">
           <FormGroup>
             <Input
+              className="form-control"
               type="time"
-              name="time"
-              id="exampleTime"
+              name="tid"
               list="times"
-              value={formData.time}
+              value={dTPFormData.tid}
               onChange={handleInputChange}
             />
           </FormGroup>
