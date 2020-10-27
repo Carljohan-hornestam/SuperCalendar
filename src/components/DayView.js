@@ -1,5 +1,5 @@
 import React, {useContext} from 'react'
-import {Col, Row} from "reactstrap"
+import {Col} from "reactstrap"
 import {Context} from "../App"
 
 export default function DayView() {

@@ -85,19 +85,63 @@ router.put("/:id", (req, res) => {
     res.json({ success: false})
     return
   }
+  let results = []
+  let result = {}
+  
+  // Get current invitations and participants from the database.
+  let invitations = db.select(/*sql*/`SELECT * FROM PendingInvitations WHERE eventId = $id`, req.params)
+  let participants = db.select(/*sql*/`SELECT * FROM Events WHERE parentId = $id`, req.params)
+  
+  // Compare if there's an invitation in the db that matches the userId in the participants list sent from frontend
+  // If found in both lists, remove from both lists
+  invitations.map(i => req.body.participants.map(u => {
+    if (i.invitedUserId == u.userId) {
+      req.body.participants.pop(u)
+      invitations.pop(i)
+    }
+  }))
+  
+  // Compare if there's a participant in the db that matches the userId in the participants list sent from frontend
+  // If found in both lists, remove from both lists
+  participants.map(p => req.body.participants.map(i => {
+    if (p.ownerId == u.userId) {
+      req.body.participants.pop(i)
+      participants.pop(p)
+    }
+  }))
+  
+  // Deletes any remaining invitations from the database because they are no longer invited
+  invitations.map(inv => {
+    result = db.run(/*sql*/`DELETE FROM PendingInvitations WHERE eventId = $id AND invitedUserId = ${inv.invitedUserId}`, req.params)
+    results.push(result)
+  })
 
-  //let invitations = db.select(/*sql*/`SELECT * FROM PendingInvitations WHERE eventId = $id AND invitedUserId NOT IN $participants`, req.body)
-  //let participants = db.select(/*sql*/`SELECT * FROM Events WHERE parentId = $id`, req.body)
+  // Deletes any remaining participants from the database because they are no longer welcome!
+  participants.map(part => {
+    result = db.run(/*sql*/`DELETE FROM Events WHERE parentId = $id AND ownerId = ${part.ownerId}`, req.params)
+    results.push(result)
+  })
 
+  // If there are any users left in the participants list from the frontend, send them invitations
+  req.body.participants.map(invite => {
+    result = db.run(/* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+      VALUES ($id, ${invite.userId})`, req.params
+    )
+    results.push(result)
+  })
 
-  let result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
-  WHERE id = $id AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
+  // Removes participants list from req.body so as to not confuse the database when doing an update.
+  delete req.body.participants
+
+  result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  WHERE (id = $id OR parentId = $id) AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
   if (result.changes === 0) {
     res.status(403)
     res.json({ success: false})
     return
   }
-  res.json(result)
+  results.push(result)
+  res.json(results)
 })
 
 router.delete("/:id", (req, res) => {
