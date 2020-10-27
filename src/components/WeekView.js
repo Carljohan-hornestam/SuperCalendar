@@ -5,6 +5,7 @@ import {Row, Col} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft } from "@fortawesome/free-solid-svg-icons"
 import {Context} from "../App"
+import { useMediaQuery } from 'react-responsive'
 
 export default function WeekView() {
   const theme = "black" //change to context variable
@@ -33,6 +34,9 @@ export default function WeekView() {
   }, [value])
 
   const days = moment.weekdaysShort(true)
+  const isDesktop = useMediaQuery({
+    query: "(min-device-width: 600px)"
+})
 
   async function getYear() {
     let year = getCurrentYear()
@@ -81,9 +85,10 @@ export default function WeekView() {
   }
 
   function dayStyles(day) {
-    if (beforeToday(day)) return "text-secondary"
     if (isSelected(day)) return "bg-danger text-white"
     if (isToday(day)) return "bg-secondary text-white"
+    //if (containsEvents(day)) return "bg-primary"
+    if (beforeToday(day)) return "text-secondary"
     return ""
   }
 
@@ -107,6 +112,21 @@ export default function WeekView() {
         updateContext({selectedDay: update.format("YYYY-MM-DD")})
     }
 
+  async function getSchedule(day){
+    return await(await fetch("/api/events/date/" + day.format("YYYY-MM-DD"))).json()
+  }
+
+  async function displaySchedule(day) {
+    updateContext({selectedDay: day.format("YYYY-MM-DD"), dailySchedule: await getSchedule(day)})
+  }
+
+  /*async function containsEvents(day) {
+    console.log("containsEvent day ", day);
+    let events = await getSchedule(day)
+    console.log("containsEvent events", events);
+    return events.length > 0
+  }*/
+
   return (
     <div>
       <h2>Calendar</h2>
@@ -118,7 +138,7 @@ export default function WeekView() {
       <Row className="d-flex">
         {
           days.map( day => {
-            return <Col style={{backgroundColor: `${theme}`}} className="text-white text-center" key={day}>{day}</Col>   
+            return <Col style={{backgroundColor: `${theme}`}} className="text-white text-center" key={day}>{isDesktop ? day : day.slice(0, 1)}</Col>   
           })
         }
       </Row>
@@ -129,7 +149,7 @@ export default function WeekView() {
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                    <Col key={day} className="text-center" onClick={(e) => { setValue(day); setSelectedDay(day);}}>
+                    <Col key={day} className="text-center" onClick={(e) => { setValue(day); displaySchedule(day);}}>
                       <div className={dayStyles(day)}>
                         {day.format("D")}
                       </div>
