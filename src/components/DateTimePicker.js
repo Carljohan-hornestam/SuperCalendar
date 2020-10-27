@@ -3,22 +3,34 @@ import { Row, Col, FormGroup, Input, Label } from "reactstrap";
 
 export default function DateTimePicker(props) {
   const [dTPFormData, setdTPFormData] = useState({
-    datum: "2020-10-27",
-    tid: "08:00",
+    datum: '',
+    tid: '',
   });
 
-  let { datum, tid } = dTPFormData;
+  useEffect(() => {
+    setdTPFormData({...props.datetime});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleInputChange = (e) => {
-    setdTPFormData({
-      ...dTPFormData,
-      [e.currentTarget.name]: e.currentTarget.value,
-    });
-    const dateTime = new Date(datum + ", " + tid);
-    props.parentCallBack({...dTPFormData})
-    console.log("dateTime: ", dateTime.toLocaleString());
-    // setdTPFormData({...dTPFormData, doUpdate: true})
-  };
+  const handleInputChange = (e) => { 
+    setdTPFormData({ ...dTPFormData, [e.currentTarget.name]: e.currentTarget.value })
+    // console.log('Hej i handleInputChange..... name:', e.currentTarget.name, ', value:', e.currentTarget.value, ', dTPFormData', dTPFormData);
+    if (e.currentTarget.name === 'datum') {
+      props.parentCallBack({ datum: e.currentTarget.value, tid: dTPFormData.tid })
+    } else {
+      props.parentCallBack({ datum: dTPFormData.datum, tid: e.currentTarget.value })
+    }
+  }
+  
+  // const handleInputChange = (e) => {
+  //   setdTPFormData({
+  //     ...dTPFormData,
+  //     [e.currentTarget.name]: e.currentTarget.value,
+  //   });
+
+  //   props.parentCallBack({...dTPFormData})
+  //   // setdTPFormData({...dTPFormData, doUpdate: true})
+  // };
 
   // if (dTPFormData.doUpdate) {
   //   const dateTime = new Date(dTPFormData.datum + ", " + dTPFormData.tid);

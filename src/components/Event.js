@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link, Redirect, useParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 import {
   Row,
   Col,
@@ -7,14 +7,13 @@ import {
   FormGroup,
   Input,
   Label,
-  Button,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
 } from "reactstrap";
 
-import { Context } from "../App";
+// import { Context } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTrash,
@@ -35,13 +34,12 @@ export default function Event() {
 
   const [availableParticipants, setAllUsers] = useState([])
 
-  const [startTime, setStartTime] = useState("")
+  const [startTime, setStartTime] = useState({datum: "2020-11-27", tid: "09:00"});
+  const [endTime, setEndTime] = useState({datum: "2020-11-29", tid: "10:00"});
 
-  const [endTime, setEndTime] = useState("")
+  const [usersSelected, setUsersSelected] = useState(false)
 
   const [formData, setFormData] = useState({
-    startDateTime: "",
-    endDateTime: "",
     title: "",
     description: "",
     location: "",
@@ -57,14 +55,7 @@ export default function Event() {
     setAllUsers(await (await fetch('/api/users')).json())
   }
 
-  let [selectedParticipants, setSelectedParticipants] = useState([]);
-  // console.log("participants: ", participants);
-
-  let [context] = useContext(Context);
-
   let {
-    startDateTime,
-    endDateTime,
     title,
     description,
     location,
@@ -77,8 +68,6 @@ export default function Event() {
     if (id === "new") {
       setFormData({
         ...formData,
-        startDateTime: "",
-        endDateTime: "",
         title: "",
         description: "",
         location: "",
@@ -92,6 +81,7 @@ export default function Event() {
     // in order to use await with our fetch
     (async () =>
       setFormData(await (await fetch("/api/events/" + id)).json()))();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleInputChange = (e) => {
@@ -101,62 +91,17 @@ export default function Event() {
     });
   }
 
-  if (title === undefined) {
-    return null;
-  }
-
   // När Event.js blir en modal, ersätt nedanstående if med att stänga modalen
-
   if (formData.done) {
     return <Redirect to="/myCalendar" />;
   }
-
-  async function save(e) {
-    // the default behaviour of a form submit is to reload the page
-    // stop that- we are not barbarians, we are SPA developer
-    e.preventDefault();
-
-    //  Send the data to the REST api
-    if (id === "new") {
-      formData.creatorId = context.user.id;
-      formData.ownerId = context.user.id;
-    }
-
-    let result = await (
-      await fetch("/api/events" + (id === "new" ? "" : id), {
-        method: id === "new" ? "POST" : "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
-    ).json();
-
-    console.log("result i save = ", result);
-    setFormData({ done: true });
+  
+  if (title === undefined) {
+    return null;
   }
-
+  
   function cancel() {
     setFormData({ done: true });
-  }
-
-  function addToParticipants() {}
-
-
-  function handleSelectEvent(e) {
-    // let opts = [], opt;
-    // for (let i = 0, len = event.target.options.length; i < len; i++) {
-    //     opt = event.target.options[i];
-    //     console.log("opt.label: ", opt.label, "opt.value: ", opt.value);
-    //     if (opt.selected) {
-    //         opts.push({label: opt.label, value: opt.value});
-    //     }
-
-    // }
-    // setSelectedParticipants(
-    //   Array.isArray(event) ? event.map((x) => x.value) : []
-    // );
-    let opts = Array.from(e.target.selectedOptions, (opt) => ({label: opt.label, value: opt.value}));
-
-    setSelectedParticipants({ selectedParticipants: opts });
   }
 
   function modalSuccess() {
@@ -173,25 +118,38 @@ export default function Event() {
     toggle();
   }
 
-  async function tempSave(e) {
-    formData.participants = participants.map(x => ({ userId: x.value }))
+  async function save(e) {
+    formData.endDateTime = endTime;
+    formData.startDateTime = startTime;
+    formData.participants = participants.map(user => ({ userId: user.value }))
 
-      // the default behaviour of a form submit is to reload the page
-      // stop that- we are not barbarians, we are SPA developer
-      e.preventDefault()
-      //  Send the data to the REST api
-      // let result = await (await fetch("/api/events/" + (id === "new" ? "" : id), {
-      //   method: (id === "new" ? "POST" : "PUT"),
-      //   headers: {"Content-Type": "application/json"},
-      //   body: JSON.stringify(formData)
-      // })).json()
-      console.log("formdata: ", formData);
-      setFormData({done: true})
-
+    e.preventDefault()
+    // Send the data to the REST api
+    await fetch("/api/events/" + (id === "new" ? "" : id), {
+      method: (id === "new" ? "POST" : "PUT"),
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(formData)
+    })
+ 
+    setFormData({done: true})
   }
 
   function filterAvailableParticipants() {
-    return availableParticipants.filter(f => !participants.find(i => f.value == i.value))
+    return availableParticipants.filter(f => !participants.find(i => f.id == i.value))
+  }
+
+  function removeParticipantHandler() {
+    let selectAvailable = document.querySelector('[name="selectParticipants"]');
+    let opts = []
+    for (var opt of selectAvailable.options) {
+      if (opt.selected) {
+        opts.push({label: opt.label, value: opt.value});
+      }
+    }
+
+    participants.pop(opts)
+    // participants = participants.filter(u1 => !opts.find(u2 => u1.id == u2.value))
+    console.log(opts);
   }
 
   return (
@@ -269,15 +227,15 @@ export default function Event() {
         <Row form>
           <Col xs="12" md="6">
             <DateTimePicker
-              value={startDateTime}
               name="startDateTime"
               header="Startdatum och -tid"
+              datetime={startTime}
               parentCallBack={setStartTime}
             />
             <DateTimePicker
-              value={endDateTime}
               name="endDateTime"
               header="Slutdatum och -tid"
+              datetime={endTime}
               parentCallBack={setEndTime}
             />
           </Col>
@@ -328,11 +286,12 @@ export default function Event() {
                 size="lg"
                 icon={faMinusCircle}
                 className="float-right text-danger mr-2"
+                onClick={removeParticipantHandler}
               />
               {/* lägg in deltagare i value */}
               <Input
                 type="select"
-                name="selectMulti"
+                name="selectParticipants"
                 id="exampleSelectMulti"
                 multiple
               >
@@ -355,12 +314,14 @@ export default function Event() {
                   size="2x"
                   icon={faLongArrowAltLeft}
                   className="float-left text-danger"
+                  onClick={cancel}
                 />
               ) : (
                 <FontAwesomeIcon
                   size="2x"
                   icon={faTimes}
                   className="float-left text-danger"
+                  onClick={cancel}
                 />
               )}
             </h5>
@@ -368,7 +329,7 @@ export default function Event() {
               size="2x"
               icon={faCheck}
               className="float-right text-success"
-              onClick={tempSave}
+              onClick={save}
             />
           </Col>
         </Row>
