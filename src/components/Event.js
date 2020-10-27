@@ -119,8 +119,8 @@ export default function Event() {
   }
 
   async function save(e) {
-    formData.endDateTime = endTime;
-    formData.startDateTime = startTime;
+    formData.endDateTime = new Date(`${endTime.datum}, ${endTime.tid}`).toLocaleString();
+    formData.startDateTime = new Date(`${startTime.datum}, ${startTime.tid}`).toLocaleString();
     formData.participants = participants.map(user => ({ userId: user.value }))
 
     e.preventDefault()
