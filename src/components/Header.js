@@ -22,7 +22,6 @@ import { Context } from "../App";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
-  const [loggedIn, setLoggedIn] = useState(true);
   let [context, updateContext] = useContext(Context);
 
   const logout = async () => {
@@ -61,6 +60,7 @@ export default function Header() {
                   onClick={logout}
                   to="/login"
                 >
+                  <span className="d-block d-md-none">Logga ut</span>
                   <FontAwesomeIcon
                     className="d-none d-md-block"
                     size="2x"

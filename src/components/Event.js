@@ -33,28 +33,25 @@ export default function Event() {
 
   const toggle = () => setModal(!modal);
 
+  const [availableParticipants, setAllUsers] = useState([])
+
   const [formData, setFormData] = useState({
     startDateTime: "",
     endDateTime: "",
     title: "",
     description: "",
     location: "",
-    recurringEvent: false,
-    addedParticipants: [
-      { label: "Jaonis", value: 1 },
-      { label: "Calleponken", value: 2 },
-    ],
+    recurringEvent: 0,
+    participants: []
   });
 
-  // const [participants] = useState([
-  //   { name: "Jaonis", id: 1 },
-  //   { name: "Calle", id: 2 },
-  // ]);
+  useEffect(() => {
+    fetchUsers()
+  }, [])
 
-  const [availableParticipants] = useState([
-    { label: "Alexus", value: 3 },
-    { label: "Jocke", value: 4 },
-  ]);
+  async function fetchUsers(){
+    setAllUsers(await (await fetch('/api/users')).json())
+  }
 
   let [selectedParticipants, setSelectedParticipants] = useState([]);
   // console.log("participants: ", participants);
@@ -68,7 +65,7 @@ export default function Event() {
     description,
     location,
     recurringEvent,
-    addedParticipants,
+    participants,
   } = formData;
 
   useEffect(() => {
@@ -81,8 +78,10 @@ export default function Event() {
         title: "",
         description: "",
         location: "",
-        recurringEvent: false,
-        addedParticipants: [],
+        recurringEvent: 0,
+        recurringInterval: 0,
+    parentId: null,
+        participants: [],
       });
       return;
     }
@@ -92,11 +91,12 @@ export default function Event() {
       setFormData(await (await fetch("/api/events/" + id)).json()))();
   }, [id]);
 
-  const handleInputChange = (e) =>
+  const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.currentTarget.name]: e.currentTarget.value,
     });
+  }
 
   if (title === undefined) {
     return null;
@@ -137,7 +137,6 @@ export default function Event() {
 
   function addToParticipants() {}
 
-  let usersToPost = [];
 
   function handleSelectEvent(e) {
     // let opts = [], opt;
@@ -166,17 +165,29 @@ export default function Event() {
       }
     }
 
-    addedParticipants.push(...opts)
+    participants.push(...opts)
 
     toggle();
   }
 
-  function tempSave() {
+  async function tempSave(e) {
+    formData.participants = participants.map(x => ({ userId: x.value }))
+
+      // the default behaviour of a form submit is to reload the page
+      // stop that- we are not barbarians, we are SPA developer
+      e.preventDefault()
+      //  Send the data to the REST api
+      let result = await (await fetch("/api/events/" + (id === "new" ? "" : id), {
+        method: (id === "new" ? "POST" : "PUT"),
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(formData)
+      })).json()
+      setFormData({done: true})
 
   }
 
   function filterAvailableParticipants() {
-    return availableParticipants.filter(f => !addedParticipants.find(i => f.value == i.value))
+    return availableParticipants.filter(f => !participants.find(i => f.value == i.value))
   }
 
   return (
@@ -193,8 +204,8 @@ export default function Event() {
             >
               {filterAvailableParticipants().map((e, key) => {
                 return (
-                  <option key={key} value={e.value}>
-                    {e.label}
+                  <option key={key} value={e.id}>
+                    {e.email}
                   </option>
                 );
               })}
@@ -216,6 +227,8 @@ export default function Event() {
           </ModalFooter>
         </Modal>
       </div>
+      
+      <Form className="mb-5">
       <Row form>
         <Col>
           <h5 className="d-inline-block p-2">
@@ -233,7 +246,6 @@ export default function Event() {
           )}
         </Col>
       </Row>
-      <Form className="mb-5">
         <Row form>
           <Col xs="12" md="6">
             <FormGroup>
@@ -242,7 +254,7 @@ export default function Event() {
                 className=""
                 type="text"
                 value={title}
-                name="text"
+                name="title"
                 id="exampleText"
                 placeholder="Titel"
                 onChange={handleInputChange}
@@ -254,10 +266,12 @@ export default function Event() {
           <Col xs="12" md="6">
             <DateTimePicker
               value={startDateTime}
+              name="startDateTime"
               header="Startdatum och -tid"
             />
             <DateTimePicker
               value={endDateTime}
+              name="endDateTime"
               header="Slutdatum och -tid"
               onChange={handleInputChange}
             />
@@ -271,7 +285,7 @@ export default function Event() {
                 value={description}
                 className=""
                 type="textarea"
-                name="text"
+                name="description"
                 id="exampleText"
                 placeholder="Beskrivning"
                 onChange={handleInputChange}
@@ -287,7 +301,7 @@ export default function Event() {
                 className=""
                 type="text"
                 value={location}
-                name="text"
+                name="location"
                 id="exampleText"
                 placeholder="Plats"
                 onChange={handleInputChange}
@@ -317,7 +331,7 @@ export default function Event() {
                 id="exampleSelectMulti"
                 multiple
               >
-                {addedParticipants.map((e, key) => {
+                {participants.map((e, key) => {
                   return (
                     <option key={key} value={e.value}>
                       {e.label}

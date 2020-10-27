@@ -1,6 +1,6 @@
 import React, {useState, useEffect, createContext} from 'react';
 import ListPersons from "./components/ListPersons"
-import {BrowserRouter as Router, Route} from "react-router-dom" 
+import {BrowserRouter as Router, Route, Redirect} from "react-router-dom" 
 import EditPerson from './components/EditPerson';
 import Register from './components/Register'
 import Login from './components/Login'
@@ -27,6 +27,7 @@ export default function App() {
       if (result.error) { return; }
       // add the user data to the context variable
       updateContext({ user: result });
+      return <Redirect to="/myCalendar" />
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   
