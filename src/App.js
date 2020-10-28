@@ -1,6 +1,6 @@
 import React, {useState, useEffect, createContext} from 'react';
 import ListPersons from "./components/ListPersons"
-import {BrowserRouter as Router, Route} from "react-router-dom" 
+import {BrowserRouter as Router, Route, Redirect} from "react-router-dom" 
 import EditPerson from './components/EditPerson';
 import Register from './components/Register'
 import Login from './components/Login'
@@ -8,6 +8,7 @@ import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/Calendar'
 import Event from './components/Event'
+import Test from './components/Test'
 
 export const Context = createContext()
 
@@ -27,6 +28,7 @@ export default function App() {
       if (result.error) { return; }
       // add the user data to the context variable
       updateContext({ user: result });
+      return <Redirect to="/myCalendar" />
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   
@@ -52,6 +54,9 @@ export default function App() {
           </Route>
           <Route exact path="/event/:id">
             <Event />
+          </Route>
+          <Route exact path="/test">
+            <Test />
           </Route>
         </div>
         <Footer/>

@@ -16,20 +16,38 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
- if (!req.session.user) {
+  if (!req.session.user) {
     res.status(403)
     res.json({ success: false })
     return
   }
-
+  req.body.startDateTime = req.body.startDateTime.slice(0, 17)
+  req.body.endDateTime = req.body.endDateTime.slice(0,17)
+  let invitations = req.body.participants
   req.body.creatorId = req.session.user.id
   req.body.ownerId = req.session.user.id
-  
+  delete req.body.participants
   let result = db.run(/*sql*/ `
   INSERT INTO Events (${Object.keys(req.body)}) 
   VALUES (${Object.keys(req.body).map(x => "$" + x)})
   `, req.body)
-  res.json(result)
+  let eventId = result.lastInsertRowid
+
+  let results = []
+  results.push(result)
+  invitations.forEach( p => {
+    let result = db.run(
+    /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+    VALUES (${eventId}, ${p.userId})`, {...p}
+    )
+    if (result.error) {
+      results.push({"error": "User could not be / is already invited!"})
+    } else {
+      results.push(result)
+    }
+  })
+
+  res.json(results)
 })
 
 router.get("/:id", (req, res) => {
@@ -50,12 +68,15 @@ router.get("/:id", (req, res) => {
   }
   
   let mainEvent = event.find(x => +x.eventId === +req.params.id)
-  mainEvent.participants = event.map(x => {
+  mainEvent.participants = []
+  event.forEach(x => {
     if (+x.parentId === +req.params.id) {
-      return ({ "userName": x.userName, "email": x.email})
+      mainEvent.participants.push({ "userId": x.userId, "userName": x.userName, "email": x.email })
     }
   })
-
+  
+  delete mainEvent.userId
+  
   let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = ${req.params.id}`, req.params)
   mainEvent.invited = invited
   
@@ -68,14 +89,65 @@ router.put("/:id", (req, res) => {
     res.json({ success: false})
     return
   }
-  let result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
-  WHERE id = $id AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
+  let results = []
+  let result = {}
+  
+  // Get current invitations and participants from the database.
+  let invitations = db.select(/*sql*/`SELECT * FROM PendingInvitations WHERE eventId = $id`, req.params)
+  let participants = db.select(/*sql*/`SELECT * FROM Events WHERE parentId = $id`, req.params)
+  
+  // Compare if there's an invitation in the db that matches the userId in the participants list sent from frontend
+  // If found in both lists, remove from both lists
+  invitations.forEach(i => req.body.participants.forEach(u => {
+    if (i.invitedUserId === u.userId) {
+      req.body.participants.pop(u)
+      invitations.pop(i)
+    }
+  }))
+  
+  // Compare if there's a participant in the db that matches the userId in the participants list sent from frontend
+  // If found in both lists, remove from both lists
+  participants.forEach(p => req.body.participants.forEach(i => {
+    if (p.ownerId === i.userId) {
+      req.body.participants.pop(i)
+      participants.pop(p)
+    }
+  }))
+  
+  // Deletes any remaining invitations from the database because they are no longer invited
+  invitations.forEach(inv => {
+    result = db.run(/*sql*/`DELETE FROM PendingInvitations WHERE eventId = $id AND invitedUserId = ${inv.invitedUserId}`, req.params)
+    results.push(result)
+  })
+
+  // Deletes any remaining participants from the database because they are no longer welcome!
+  participants.forEach(part => {
+    result = db.run(/*sql*/`DELETE FROM Events WHERE parentId = $id AND ownerId = ${part.ownerId}`, req.params)
+    results.push(result)
+  })
+
+  // If there are any users left in the participants list from the frontend, send them invitations
+  req.body.participants.forEach(invite => {
+    result = db.run(/* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+      VALUES ($id, ${invite.userId})`, req.params
+    )
+    results.push(result)
+  })
+
+  // Removes participants list from req.body so as to not confuse the database when doing an update.
+  delete req.body.participants
+  req.body.startDateTime = req.body.startDateTime.slice(0, 17)
+  req.body.endDateTime = req.body.endDateTime.slice(0,17)
+
+  result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  WHERE (id = $id OR parentId = $id) AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
   if (result.changes === 0) {
     res.status(403)
     res.json({ success: false})
     return
   }
-  res.json(result)
+  results.push(result)
+  res.json(results)
 })
 
 router.delete("/:id", (req, res) => {
@@ -102,7 +174,8 @@ router.get("/date/:startDateTime", (req, res) => {
   let date = req.params.startDateTime + "%"
   console.log(req.params.startDateTime);
   let result = db.select(/* sql */ `SELECT * FROM Events 
-  WHERE startDateTime LIKE '${date}' AND  ownerId = ${req.session.user.id}`, req.params)
+  WHERE startDateTime LIKE '${date}' AND  ownerId = ${req.session.user.id}
+  ORDER BY startDateTime`, req.params)
   res.json(result)
 })
 
@@ -134,7 +207,7 @@ router.post("/invitations", (req, res) => {
     return
   }
   let results = []
-  req.body.invitations.map( p => {
+  req.body.invitations.forEach(p => {
     let result = db.run(
     /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
     VALUES (${req.body.eventId}, ${p.id})`, {...req.body, ...p}

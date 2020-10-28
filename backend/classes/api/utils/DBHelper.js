@@ -29,7 +29,7 @@ class DBHelper {
     try {
       result = parameters ? statement.all(parameters) : statement.all();
     } catch (error) {
-      result = {error: error.name}
+      result = {error: error.message}
     }
     return result;
   }
@@ -40,7 +40,7 @@ class DBHelper {
     try {
       result = parameters ? statement.run(parameters) : statement.run();
     } catch (error) {
-      result = {error: error.name}
+      result = {error: error.message}
     }
     return result;
   }

@@ -4,6 +4,7 @@ import Timestamps from './Timestamps'
 import {Row, Col} from "reactstrap"
 import { useMediaQuery } from 'react-responsive'
 
+
 export default function ContainerView() {
 
     const isDesktop = useMediaQuery({
@@ -11,11 +12,11 @@ export default function ContainerView() {
     })
 
     return ( 
-        <Row className="d-flex mt-3" style={{height: isDesktop ? "60vh" : "45vh" , overflowY: "scroll"}}>
+        <Row className="d-flex mt-3" style={{height: isDesktop ? "65vh" : "60vh" , overflowY: "scroll"}}>
             <Timestamps />
-            <Col>
-                <DayView />
-            </Col>
+            
+            <DayView />
+            
         </Row>
         
     )
