@@ -28,7 +28,7 @@ export default function DayView() {
 				</Row>
 				<Row>
 					<Col md="3" style={{ columnCount: "auto" }}>
-						{context.onThisDay === undefined ? "" : <Link to={context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].wikipedia}>
+						{context.onThisDay === undefined ? "" : <a href={context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].wikipedia}>
 							<Card className="m-1" inverse color="success">
 								<CardBody>
 									<CardTitle className="font-weight-bold">{context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].title}, {context.onThisDay.events[+context.randomOnThisDay].year}</CardTitle>
@@ -36,7 +36,7 @@ export default function DayView() {
 									<CardText>{context.onThisDay.events[+context.randomOnThisDay].description}</CardText>
 								</CardBody>
 							</Card>
-						</Link>}
+						</a>}
 					{
 						context.dailySchedule !== undefined ? context.dailySchedule.map(event =>
 							<Link key={event.id} to={"/event/" + event.id}>
