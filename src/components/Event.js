@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Button,
 } from "reactstrap";
 
 // import { Context } from "../App";
@@ -22,6 +23,8 @@ import {
   faLongArrowAltLeft,
   faPlusCircle,
   faMinusCircle,
+  faEnvelope,
+  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "./DateTimePicker";
 import { Context } from "../App";
@@ -30,8 +33,10 @@ export default function Event() {
   const { id } = useParams();
 
   const [modal, setModal] = useState(false);
-
   const toggle = () => setModal(!modal);
+
+  const [deleteModal, setDeleteModal] = useState(false);
+  const toggleDeleteModal = () => setDeleteModal(!deleteModal);
 
   const [context, updateContext] = useContext(Context);
 
@@ -56,7 +61,7 @@ export default function Event() {
   }, []);
 
   async function fetchUsers() {
-    setAvailableParticipants(await (await fetch("/api/users")).json())
+    setAvailableParticipants(await (await fetch("/api/users")).json());
   }
 
   let { title, description, location, recurringEvent, participants } = formData;
@@ -78,30 +83,29 @@ export default function Event() {
     // Since you should not make useEffect functions async, we need to create another function that is async
     // in order to use await with our fetch
     (async () => {
-      let result = await (await fetch("/api/events/" + id)).json()
-      // result.invited = result.invited.map(user => ({value : user.userId, label: user.email}))
-      let p = [...result.invited, ...result.participants].filter(user => user)
-      .map(user => ({value : user.userId, label: user.email}))
-      // console.log("invited i useEffect", result.invited);
-      // console.log("p i useEffect", p);
-      result.id = result.eventId
-      delete result.eventId
-      delete result.userName
-      delete result.email
-      delete result.invited
-      console.log("result i useEffect", result);
-      
+      let result = await (await fetch("/api/events/" + id)).json();
+      let p1 = result.participants.map((user) => ({
+        ...user,
+        accepted: true,
+      }));
+      let p = [...result.invited, ...p1]
+        .filter((user) => user)
+        .map((user) => ({
+          value: user.userId.toString(),
+          label: user.email,
+          accepted: user.accepted,
+        }));
+      result.id = result.eventId;
+      delete result.eventId;
+      delete result.userName;
+      delete result.email;
+      delete result.invited;
+
       setFormData({
         ...result,
-        participants: p
-      })
-      
-      // console.log("result.eventId efter setFormData", eventId);
-      console.log("formData i useEffect", formData);
-      // console.log("result i useEffect", result);
-    }
-    )
-    ();
+        participants: p,
+      });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -140,8 +144,6 @@ export default function Event() {
   }
 
   async function save(e) {
-    console.log("save, formData: ", formData);
-    console.log("save, participants", formData.participants);
     formData.endDateTime = new Date(
       `${endTime.datum}, ${endTime.tid}`
     ).toLocaleString();
@@ -165,7 +167,10 @@ export default function Event() {
 
   function filterAvailableParticipants() {
     return availableParticipants.filter(
-      (f) => (context.user && context.user.id != f.id) && !participants.find((i) => i && (f.id == i.value))
+      (f) =>
+        context.user &&
+        context.user.id != f.id &&
+        !participants.find((i) => i && f.id == i.value)
     );
   }
 
@@ -178,11 +183,22 @@ export default function Event() {
       }
     }
 
-    let p = participants.filter(u1 => !opts.find(u2 => u1.value == u2.value))
+    let p = participants.filter(
+      (u1) => !opts.find((u2) => u1.value == u2.value)
+    );
     setFormData({
       ...formData,
-      participants: p
-    })
+      participants: p,
+    });
+  }
+
+  async function handleDeleteEvent() {
+    await fetch("/api/events/" + id, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+    toggleDeleteModal();
+    setFormData({ done: true });
   }
 
   return (
@@ -223,18 +239,33 @@ export default function Event() {
         </Modal>
       </div>
 
+      <div>
+        <Modal isOpen={deleteModal} toggle={toggleDeleteModal}>
+          <ModalHeader toggle={toggleDeleteModal}>Ta bort event</ModalHeader>
+          <ModalBody>Vill du verkligen radera eventet?</ModalBody>
+          <ModalFooter>
+            <Button onClick={toggleDeleteModal}> Avbryt </Button>
+            <Button onClick={handleDeleteEvent} className="text-danger">
+              {" "}
+              Ok{" "}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
+
       <Form className="mb-5">
         <Row form>
           <Col>
             <h5 className="d-inline-block p-2">
-              {id === "new" ? "Ny händelse" : "pilledutt"}
+              {id === "new" ? "Ny händelse" : title}
             </h5>
 
             {id !== "new" ? (
               <FontAwesomeIcon
                 className=" float-right my-2"
-                size="2x"
-                icon={faTrash}
+                size="lg"
+                icon={faTrashAlt}
+                onClick={toggleDeleteModal}
               />
             ) : (
               ""
@@ -309,6 +340,7 @@ export default function Event() {
           <Col xs="12" md="6">
             <FormGroup>
               <Label for="exampleText">Deltagare</Label>
+              
               <FontAwesomeIcon
                 size="lg"
                 icon={faPlusCircle}
@@ -329,6 +361,7 @@ export default function Event() {
                   className="float-right mr-2"
                 />
               )}
+               
               {/* lägg in deltagare i value */}
               <Input
                 type="select"
@@ -338,10 +371,11 @@ export default function Event() {
               >
                 {participants.map((e, key) => {
                   return (
-                    e &&
-                    <option key={key} value={e.value}>
-                      {e.label}
-                    </option>
+                    e && (
+                      <option key={key} value={e.value}>
+                        {e.accepted ? "+" : "-"} {e.label}
+                      </option>
+                    )
                   );
                 })}
               </Input>
