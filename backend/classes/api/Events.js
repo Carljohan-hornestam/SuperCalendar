@@ -21,7 +21,8 @@ router.post("/", (req, res) => {
     res.json({ success: false })
     return
   }
-  
+  req.body.startDateTime = req.body.startDateTime.slice(0, 17)
+  req.body.endDateTime = req.body.endDateTime.slice(0,17)
   let invitations = req.body.participants
   req.body.creatorId = req.session.user.id
   req.body.ownerId = req.session.user.id
@@ -132,6 +133,8 @@ router.put("/:id", (req, res) => {
 
   // Removes participants list from req.body so as to not confuse the database when doing an update.
   delete req.body.participants
+  req.body.startDateTime = req.body.startDateTime.slice(0, 17)
+  req.body.endDateTime = req.body.endDateTime.slice(0,17)
 
   result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
   WHERE (id = $id OR parentId = $id) AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})

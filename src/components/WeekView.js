@@ -128,8 +128,7 @@ export default function WeekView() {
   }*/
 
   return (
-    <div>
-      <h2>Calendar</h2>
+    <div className="mt-3">
       <Row className="row bg-light">
         <Col xs="auto"><FontAwesomeIcon size="2x" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
