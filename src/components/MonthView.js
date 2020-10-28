@@ -3,7 +3,7 @@ import moment from "moment"
 import "moment/locale/sv"
 import {Row, Col} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowAltCircleRight, faArrowAltCircleLeft, faArrowAltCircleUp, faArrowAltCircleDown } from "@fortawesome/free-solid-svg-icons"
+import { faArrowAltCircleRight, faArrowAltCircleLeft, faAngleDoubleRight, faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons"
 import {Context} from "../App"
 
 export default function Calendar() {
@@ -116,13 +116,17 @@ export default function Calendar() {
         <div>
             <h2>Calendar</h2>
             <Row className="bg-light">
-                <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} /></Col>
+                <Col xs="auto">
+                <FontAwesomeIcon className="mr-2 pointer" icon={faAngleDoubleLeft} onClick={() => setValue(getPreviousYear())} /> 
+                    <FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} />
+                </Col>
                 <Col className="text-center">
                     {getCurrentMonth()} {getCurrentYear()} 
-                    <FontAwesomeIcon className="ml-2 pointer" icon={faArrowAltCircleUp} onClick={() => setValue(getNextYear())} /> 
-                    <FontAwesomeIcon className="ml-1 pointer" icon={faArrowAltCircleDown} onClick={() => setValue(getPreviousYear())} /> 
                 </Col>
-                <Col xs="auto" className="text-right pointer"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextMonth())} /></Col>
+                <Col xs="auto" className="text-right pointer">
+                    <FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextMonth())} />
+                    <FontAwesomeIcon className="ml-2 pointer" icon={faAngleDoubleRight} onClick={() => setValue(getNextYear())} /> 
+                </Col>
             </Row>
             <Row className="d-flex">
                 {
