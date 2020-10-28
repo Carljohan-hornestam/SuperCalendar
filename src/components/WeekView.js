@@ -8,7 +8,7 @@ import {Context} from "../App"
 import { useMediaQuery } from 'react-responsive'
 
 export default function WeekView() {
-  const theme = "black" //change to context variable
+  const theme = "grey" //change to context variable
   moment.locale("sv")
 
   const [calendar, setCalendar] = useState([])
@@ -128,12 +128,11 @@ export default function WeekView() {
   }*/
 
   return (
-    <div>
-      <h2>Calendar</h2>
+    <div className="mt-3">
       <Row className="row bg-light">
-        <Col xs="auto"><FontAwesomeIcon size="2x" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
+        <Col xs="auto"><FontAwesomeIcon icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
-        <Col xs="auto" className="text-right"><FontAwesomeIcon size="2x" icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
+        <Col xs="auto" className="text-right"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
       </Row>
       <Row className="d-flex">
         {
