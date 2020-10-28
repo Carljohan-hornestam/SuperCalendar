@@ -16,16 +16,20 @@ export default function WeekView() {
   moment.locale("sv")
 
   const [calendar, setCalendar] = useState([])
-  const [value, setValue] = useState(moment())
+  const [dayValue, setDayValue] = useState(moment())
   const [year, setYear] = useState([])
   const [week, setWeek] = useState([])
+  const [weeklySchedule, setWeeklySchedule] = useState([])
   let [context, updateContext] = useContext(Context)
   let randomEvent = 0
+  let weekDays = []
+  let weekSchedule = []
 
   useEffect(() => {
-    getYear()
-    const startDay = value.clone().startOf("week")
-    const endDay = value.clone().endOf("week")
+    getYear();
+    getAllEventsForCurrentWeek();
+    const startDay = dayValue.clone().startOf("week")
+    const endDay = dayValue.clone().endOf("week")
     const day = startDay.clone().subtract(1, "day")
     const weekDays = []
     while (day.isBefore(endDay, "day")) {
@@ -36,7 +40,8 @@ export default function WeekView() {
       )
     }
     setCalendar(weekDays)
-  }, [value])
+    console.log("useEffect - weeklySchedule", weeklySchedule);
+  }, [dayValue])
 
   const days = moment.weekdaysShort(true)
   const isDesktop = useMediaQuery({
@@ -74,8 +79,18 @@ export default function WeekView() {
     setWeek(result)
   }
 
+  async function getAllEventsForCurrentWeek() {
+    //let day = week[0].datum
+    console.log("getAllEventsForCurrentWeek week ", week);
+    console.log("getAllEventsForCurrentWeek day ", week[0]);
+      //let result = getSchedule(moment(week[0].datum).format("YYYY-MM"))
+      //console.log("getAllEventsForCurrentWeek result ", result);
+      //setWeeklySchedule(...weeklySchedule, result)
+      console.log("getAllEventsForCurrentWeek weekly ", weeklySchedule);
+  }
+
   function isSelected(day) {
-    return value.isSame(day, "day")
+    return dayValue.isSame(day, "day")
   }
 
   function beforeToday(day) {
@@ -95,19 +110,19 @@ export default function WeekView() {
   }
 
   function getCurrentYear(){
-    return value.format("YYYY")
+    return dayValue.format("YYYY")
   }
 
   function getCurrentWeek() {
-    return value.format("ww")
+    return dayValue.format("ww")
   }
 
   function getPreviousWeek() {
-    return value.clone().subtract(1, "week")
+    return dayValue.clone().subtract(1, "week")
   }
 
   function getNextWeek() {
-    return value.clone().add(1, "week")
+    return dayValue.clone().add(1, "week")
   }
 
   async function getSchedule(day){
@@ -139,7 +154,7 @@ export default function WeekView() {
   }
   
   function getWeekSchedule() {
-    dates.map(dag => {
+    weekDays.map(dag => {
       console.log("dag: ", dag);
       let result =  getSchedule(moment(dag))
       weekSchedule.push(result)
@@ -150,9 +165,9 @@ export default function WeekView() {
   return (
     <div className="mt-3">
       <Row className="row bg-light">
-        <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
+        <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
-        <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
+        <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextWeek())} /></Col>
       </Row>
       <Row className="d-flex">
         {
@@ -168,7 +183,7 @@ export default function WeekView() {
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                    <Col key={day} className="text-center" onClick={(e) => { setValue(day); displaySchedule(day);}}>
+                    <Col key={day} className="text-center" onClick={(e) => { setDayValue(day); displaySchedule(day);}}>
                       <div className={dayStyles(day)}>
                         {day.format("D")}
                       </div>
