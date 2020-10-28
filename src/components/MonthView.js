@@ -33,7 +33,6 @@ export default function Calendar() {
             )
         }
         setCalendar(a)
-        console.log(a);
     }, [value])
 
     
@@ -52,7 +51,6 @@ export default function Calendar() {
             return day
           }
         })
-        console.log("månad: ", result);
         setRedDays(result)
     }
 

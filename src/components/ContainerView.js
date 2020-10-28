@@ -13,11 +13,11 @@ export default function ContainerView() {
 
     return ( 
         <Row className="d-flex mt-3" style={{height: isDesktop ? "65vh" : "60vh" , overflowY: "scroll"}}>
-            <Timestamps />
-            
-            <DayView />
-            
+        
+        <DayView />
+        
         </Row>
         
-    )
-}
+        )
+    }
+    //<Timestamps />

@@ -15,23 +15,23 @@ export default function Calendar() {
 
     return (
         <Container>
-            <Nav tabs>
-                <NavItem>
-            <NavLink
-                className={classnames({ active: activeTab === '1' })}
-                onClick={() => { toggle('1'); }}
-            >
-            Week
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            className={classnames({ active: activeTab === '2' })}
-            onClick={() => { toggle('2'); }}
-          >
-            Month
-          </NavLink>
-        </NavItem>
+            <Nav tabs className="mt-3">
+                <NavItem style={{flex:1}} className="text-center">
+                    <NavLink
+                        className={classnames({ active: activeTab === '1' })}
+                        onClick={() => { toggle('1'); }}
+                        >
+                        Vecka
+                    </NavLink>
+                </NavItem>
+                <NavItem style={{flex:1}} className="text-center">
+                    <NavLink
+                        className={classnames({ active: activeTab === '2' })}
+                        onClick={() => { toggle('2'); }}
+                        >
+                        Månad
+                    </NavLink>
+                </NavItem>
             </Nav>
             <TabContent activeTab={activeTab}>
                 <TabPane tabId="1"><WeekView /></TabPane>

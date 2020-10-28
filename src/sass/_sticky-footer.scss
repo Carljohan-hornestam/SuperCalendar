@@ -1,9 +1,10 @@
 body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  margin-bottom: 60px;
 }
 
 main {
-    flex: 1;
+  flex: 1;
 }

@@ -1,11 +1,15 @@
 import React, {useState, useEffect, useContext} from "react"
 import moment from "moment"
 import "moment/locale/sv"
-import {Row, Col} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft } from "@fortawesome/free-solid-svg-icons"
 import {Context} from "../App"
 import { useMediaQuery } from 'react-responsive'
+import {
+  Card, CardTitle, CardText,
+  CardSubtitle, CardBody, Row, Col
+} from 'reactstrap';
+import { Link } from "react-router-dom"
 
 export default function WeekView() {
   const theme = "grey" //change to context variable
@@ -16,27 +20,28 @@ export default function WeekView() {
   const [year, setYear] = useState([])
   const [week, setWeek] = useState([])
   let [context, updateContext] = useContext(Context)
+  let randomEvent = 0
 
   useEffect(() => {
     getYear()
     const startDay = value.clone().startOf("week")
     const endDay = value.clone().endOf("week")
     const day = startDay.clone().subtract(1, "day")
-    const a = []
-    while(day.isBefore(endDay, "day")) {
-      a.push(
+    const weekDays = []
+    while (day.isBefore(endDay, "day")) {
+      weekDays.push(
         Array(7)
           .fill(0)
           .map(() => day.add(1, "day").clone())
       )
     }
-    setCalendar(a)
+    setCalendar(weekDays)
   }, [value])
 
   const days = moment.weekdaysShort(true)
   const isDesktop = useMediaQuery({
     query: "(min-device-width: 600px)"
-})
+  })
 
   async function getYear() {
     let year = getCurrentYear()
@@ -58,11 +63,8 @@ export default function WeekView() {
 
   function getWeek(year){
     let data = year.dagar
-    let result = data.filter( (day) => {
-      if(parseInt(day.vecka) === parseInt(getCurrentWeek())){
-        return day
-      }
-    })
+    let result = data.filter( (day) => 
+      parseInt(day.vecka) === parseInt(getCurrentWeek()))
     while (result.length < 7) {
       result.push({ namnsdag: [] })
     }
@@ -108,16 +110,17 @@ export default function WeekView() {
     return value.clone().add(1, "week")
   }
 
-  let setSelectedDay = update => {
-        updateContext({selectedDay: update.format("YYYY-MM-DD")})
-    }
-
   async function getSchedule(day){
     return await(await fetch("/api/events/date/" + day.format("YYYY-MM-DD"))).json()
   }
 
   async function displaySchedule(day) {
-    updateContext({selectedDay: day.format("YYYY-MM-DD"), dailySchedule: await getSchedule(day)})
+    updateContext({
+      selectedDay: day.format("YYYY-MM-DD"),
+      dailySchedule: await getSchedule(day),
+      onThisDay: await getOnThisDay(day), 
+      randomOnThisDay: Math.floor(Math.random() * Math.floor(randomEvent))
+    })
   }
 
   /*async function containsEvents(day) {
@@ -127,12 +130,29 @@ export default function WeekView() {
     return events.length > 0
   }*/
 
+  async function getOnThisDay(day) {
+    let manad = day.format("M")
+    let dag = day.format("D")
+    let result = await (await fetch("https://byabbe.se/on-this-day/" + manad + "/" + dag + "/events.json")).json()
+    randomEvent = result.events.length
+    return result
+  }
+  
+  function getWeekSchedule() {
+    dates.map(dag => {
+      console.log("dag: ", dag);
+      let result =  getSchedule(moment(dag))
+      weekSchedule.push(result)
+    })
+    console.log("schema ", weekSchedule);
+  }
+
   return (
     <div className="mt-3">
       <Row className="row bg-light">
-        <Col xs="auto"><FontAwesomeIcon icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
+        <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
-        <Col xs="auto" className="text-right"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
+        <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleRight} onClick={() => setValue(getNextWeek())} /></Col>
       </Row>
       <Row className="d-flex">
         {
@@ -172,6 +192,29 @@ export default function WeekView() {
           )
           } 
         </Row>
+
+        <Row>
+          {
+            /* week.map( async (dag) => {
+              
+              events.map(event => {
+              
+              console.log("event: ", event);
+              return (<Link key={event.id} to={"/event/" + event.id}>
+                <Card className="m-1" inverse color="info">
+                  <CardBody>
+                    <CardTitle className="font-weight-bold">{event.title}</CardTitle>
+                    <CardSubtitle>{event.startDateTime.slice(-5)}-{event.endDateTime.slice(-5)}</CardSubtitle>
+                    <CardText>{event.description}</CardText>
+                  </CardBody>
+                </Card>
+              </Link>)
+              })
+            }) */
+          }
+          
+        </Row>
+
 
       </div>
     </div>
