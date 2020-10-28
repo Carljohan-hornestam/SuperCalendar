@@ -113,8 +113,7 @@ export default function Calendar() {
     }
 
     return (
-        <div>
-            <h2>Calendar</h2>
+        <div className="mt-3">
             <Row className="bg-light">
                 <Col xs="auto">
                 <FontAwesomeIcon className="mr-2 pointer" icon={faAngleDoubleLeft} onClick={() => setValue(getPreviousYear())} /> 
