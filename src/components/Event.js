@@ -56,6 +56,8 @@ export default function Event() {
     participants: [],
   });
 
+  const [hasSelection, setHasSelection] = useState(false);
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -107,16 +109,15 @@ export default function Event() {
       });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id]); // useEffect
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.currentTarget.name]: e.currentTarget.value,
     });
-  };
+  } // handleInputChange
 
-  // När Event.js blir en modal, ersätt nedanstående if med att stänga modalen
   if (formData.done) {
     return <Redirect to="/myCalendar" />;
   }
@@ -141,7 +142,7 @@ export default function Event() {
     participants.push(...opts);
 
     toggle();
-  }
+  } // modalSuccess
 
   async function save(e) {
     formData.endDateTime = new Date(
@@ -163,16 +164,16 @@ export default function Event() {
     });
 
     setFormData({ done: true });
-  }
+  } // save
 
   function filterAvailableParticipants() {
     return availableParticipants.filter(
       (f) =>
         context.user &&
-        context.user.id != f.id &&
-        !participants.find((i) => i && f.id == i.value)
+        +context.user.id !== +f.id &&
+        !participants.find((i) => i && +f.id === +i.value)
     );
-  }
+  } // filterAvailableParticipants
 
   function removeParticipantHandler() {
     let selectAvailable = document.querySelector('[name="selectParticipants"]');
@@ -184,13 +185,18 @@ export default function Event() {
     }
 
     let p = participants.filter(
-      (u1) => !opts.find((u2) => u1.value == u2.value)
+      (u1) => !opts.find((u2) => +u1.value === +u2.value)
     );
     setFormData({
       ...formData,
       participants: p,
     });
-  }
+  } // removeParticipantHandler
+
+  function userListHasSelectedUsers() {
+    let selectAvailable = document.querySelector('[name="selectParticipants"]');
+    setHasSelection(selectAvailable && selectAvailable.value)
+  } // userListHasSelectedUsers
 
   async function handleDeleteEvent() {
     await fetch("/api/events/" + id, {
@@ -199,8 +205,11 @@ export default function Event() {
     });
     toggleDeleteModal();
     setFormData({ done: true });
-  }
+  } // handleDeleteEvent
 
+  const disabled = !((context.user && +context.user.id === +formData.creatorId) || id === 'new')
+
+ 
   return (
     <>
       <div>
@@ -244,11 +253,8 @@ export default function Event() {
           <ModalHeader toggle={toggleDeleteModal}>Ta bort event</ModalHeader>
           <ModalBody>Vill du verkligen radera eventet?</ModalBody>
           <ModalFooter>
-            <Button onClick={toggleDeleteModal}> Avbryt </Button>
-            <Button onClick={handleDeleteEvent} className="text-danger">
-              {" "}
-              Ok{" "}
-            </Button>
+            <Button onClick={toggleDeleteModal}>Avbryt</Button>
+            <Button onClick={handleDeleteEvent} className="text-danger">Ok</Button>
           </ModalFooter>
         </Modal>
       </div>
@@ -260,16 +266,14 @@ export default function Event() {
               {id === "new" ? "Ny händelse" : title}
             </h5>
 
-            {id !== "new" ? (
+            {id !== "new" && !disabled ? (
               <FontAwesomeIcon
                 className=" float-right my-2"
                 size="lg"
                 icon={faTrashAlt}
                 onClick={toggleDeleteModal}
               />
-            ) : (
-              ""
-            )}
+            ) : (<></>)}
           </Col>
         </Row>
         <Row form>
@@ -283,6 +287,7 @@ export default function Event() {
                 name="title"
                 id="exampleText"
                 placeholder="Titel"
+                disabled={disabled}
                 onChange={handleInputChange}
               />
             </FormGroup>
@@ -295,27 +300,30 @@ export default function Event() {
               header="Startdatum och -tid"
               datetime={startTime}
               parentCallBack={setStartTime}
+              disabled={disabled}
             />
             <DateTimePicker
               name="endDateTime"
               header="Slutdatum och -tid"
               datetime={endTime}
               parentCallBack={setEndTime}
+              disabled={disabled}
             />
           </Col>
         </Row>
         <Row form>
           <Col xs="12" md="6">
             <FormGroup>
-              <Label for="exampleText">Beskrivning</Label>
+              <Label for="descriptionText">Beskrivning</Label>
               <Input
                 value={description}
                 className=""
                 type="textarea"
                 name="description"
-                id="exampleText"
+                id="descriptionText"
                 placeholder="Beskrivning"
                 onChange={handleInputChange}
+                disabled={disabled}
               />
             </FormGroup>
           </Col>
@@ -323,15 +331,16 @@ export default function Event() {
         <Row form>
           <Col xs="12" md="6">
             <FormGroup>
-              <Label for="exampleText">Plats</Label>
+              <Label for="locationText">Plats</Label>
               <Input
                 className=""
                 type="text"
                 value={location}
                 name="location"
-                id="exampleText"
+                id="locationText"
                 placeholder="Plats"
                 onChange={handleInputChange}
+                disabled={disabled}
               />
             </FormGroup>
           </Col>
@@ -339,35 +348,36 @@ export default function Event() {
         <Row form>
           <Col xs="12" md="6">
             <FormGroup>
-              <Label for="exampleText">Deltagare</Label>
-              
-              <FontAwesomeIcon
-                size="lg"
-                icon={faPlusCircle}
-                className="float-right text-success"
-                onClick={toggle}
-              />
-              {participants.length > 0 ? (
+              <Label for="selectParticipants">Deltagare</Label>
+              { (context.user && +context.user.id === +formData.creatorId) || id === 'new' ? 
+              ( <>
                 <FontAwesomeIcon
                   size="lg"
-                  icon={faMinusCircle}
-                  className="float-right text-danger mr-2"
-                  onClick={removeParticipantHandler}
+                  icon={faPlusCircle}
+                  className="float-right"
+                  onClick={disabled ? null : toggle}
+                  swapOpacity={disabled}
+                  color={disabled ? 'gray' : 'green'}
                 />
-              ) : (
                 <FontAwesomeIcon
                   size="lg"
                   icon={faMinusCircle}
                   className="float-right mr-2"
+                  onClick={disabled || !hasSelection ? null : removeParticipantHandler}
+                  swapOpacity={disabled}
+                  color={disabled || !hasSelection ? 'gray' : 'red'}
                 />
-              )}
+              </>) : 
+              (<div>Hoppsan Kerstin!</div>) }
                
               {/* lägg in deltagare i value */}
               <Input
                 type="select"
                 name="selectParticipants"
-                id="exampleSelectMulti"
+                id="selectParticipants"
                 multiple
+                disabled={disabled}
+                onChange={userListHasSelectedUsers}
               >
                 {participants.map((e, key) => {
                   return (
@@ -405,6 +415,7 @@ export default function Event() {
               size="2x"
               icon={faCheck}
               className="float-right text-success"
+              disabled={disabled}
               onClick={save}
             />
           </Col>

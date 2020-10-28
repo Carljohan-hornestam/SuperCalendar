@@ -85,6 +85,7 @@ export default function DateTimePicker(props) {
               name="datum"
               value={dTPFormData.datum}
               onChange={handleInputChange}
+              disabled={props.disabled}
             />
           </FormGroup>
         </Col>
@@ -97,6 +98,7 @@ export default function DateTimePicker(props) {
               list="times"
               value={dTPFormData.tid}
               onChange={handleInputChange}
+              disabled={props.disabled}
             />
           </FormGroup>
         </Col>
