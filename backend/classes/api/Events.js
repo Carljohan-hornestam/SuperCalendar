@@ -68,12 +68,15 @@ router.get("/:id", (req, res) => {
   }
   
   let mainEvent = event.find(x => +x.eventId === +req.params.id)
-  mainEvent.participants = event.map(x => {
+  mainEvent.participants = []
+  event.forEach(x => {
     if (+x.parentId === +req.params.id) {
-      return ({ "userId": x.userId, "userName": x.userName, "email": x.email})
+      mainEvent.participants.push({ "userId": x.userId, "userName": x.userName, "email": x.email })
     }
   })
+  
   delete mainEvent.userId
+  
   let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = ${req.params.id}`, req.params)
   mainEvent.invited = invited
   

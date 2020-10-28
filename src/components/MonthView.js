@@ -4,7 +4,8 @@ import "moment/locale/sv"
 import {Row, Col} from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft, faAngleDoubleRight, faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons"
-import {Context} from "../App"
+import { Context } from "../App"
+import { useMediaQuery } from 'react-responsive'
 
 export default function Calendar() {
     
@@ -112,6 +113,10 @@ export default function Calendar() {
         updateContext({selectedDay: update.format("YYYY-MM-DD"), selectedWeek: update.format("w")})
     }
 
+    const isDesktop = useMediaQuery({
+        query: "(min-device-width: 600px)"
+    })
+
     return (
         <div className="mt-3">
             <Row className="bg-light">
@@ -119,7 +124,7 @@ export default function Calendar() {
                 <FontAwesomeIcon className="mr-2 pointer" icon={faAngleDoubleLeft} onClick={() => setValue(getPreviousYear())} /> 
                     <FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} />
                 </Col>
-                <Col className="text-center">
+                <Col className="text-center font-weight-bold">
                     {getCurrentMonth()} {getCurrentYear()} 
                 </Col>
                 <Col xs="auto" className="text-right pointer">
@@ -130,7 +135,7 @@ export default function Calendar() {
             <Row className="d-flex">
                 {
                     days.map( day => {
-                        return <Col className="bg-dark text-white text-center" key={day}>{day}</Col>   
+                        return <Col className="bg-dark text-white text-center" key={day}>{isDesktop ? day : day.slice(0, 1)}</Col>   
                       })
                 }
             </Row>
