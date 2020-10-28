@@ -22,12 +22,9 @@ export default function WeekView() {
   const [weeklySchedule, setWeeklySchedule] = useState([])
   let [context, updateContext] = useContext(Context)
   let randomEvent = 0
-  let weekDays = []
-  let weekSchedule = []
 
   useEffect(() => {
     getYear();
-    getAllEventsForCurrentWeek();
     const startDay = dayValue.clone().startOf("week")
     const endDay = dayValue.clone().endOf("week")
     const day = startDay.clone().subtract(1, "day")
@@ -77,15 +74,29 @@ export default function WeekView() {
       result = result.splice(6)
     }
     setWeek(result)
+    getAllEventsForCurrentWeek(result)
   }
 
-  async function getAllEventsForCurrentWeek() {
-    //let day = week[0].datum
-    console.log("getAllEventsForCurrentWeek week ", week);
-    console.log("getAllEventsForCurrentWeek day ", week[0]);
-      //let result = getSchedule(moment(week[0].datum).format("YYYY-MM"))
-      //console.log("getAllEventsForCurrentWeek result ", result);
-      //setWeeklySchedule(...weeklySchedule, result)
+  async function getAllEventsForCurrentWeek(currentWeek) {
+      let allEventsCurrentMonth = await getSchedule(moment(currentWeek[0].datum), "YYYY-MM")
+      let result = []
+      let allEventsCurrentWeek = []
+      currentWeek.map( day => {
+        result.push(moment(day.datum))
+      })
+      /*result.map(day => {
+        allEventsCurrentWeek = allEventsCurrentMonth.filter( event => {
+          console.log("allEventsCurrentWeek event ", event.startDateTime.slice(0, 10));
+          console.log("allEventsCurrentWeek day ", day.format("YYYY-MM-DD"));
+          if(event.startDateTime.slice(0, 10) == day.format("YYYY-MM-DD")) {
+            return event
+          }
+        })
+        console.log("allEventsCurrentWeek ", allEventsCurrentWeek);
+      })*/
+      console.log("getAllEventsForCurrentWeek result ", result);
+      console.log("getAllEventsForCurrentWeek aecw ", allEventsCurrentWeek);
+      setWeeklySchedule(allEventsCurrentMonth)
       console.log("getAllEventsForCurrentWeek weekly ", weeklySchedule);
   }
 
@@ -125,14 +136,14 @@ export default function WeekView() {
     return dayValue.clone().add(1, "week")
   }
 
-  async function getSchedule(day){
-    return await(await fetch("/api/events/date/" + day.format("YYYY-MM-DD"))).json()
+  async function getSchedule(day, format){
+    return await(await fetch("/api/events/date/" + day.format(format))).json()
   }
 
   async function displaySchedule(day) {
     updateContext({
       selectedDay: day.format("YYYY-MM-DD"),
-      dailySchedule: await getSchedule(day),
+      dailySchedule: await getSchedule(day, "YYYY-MM-DD"),
       onThisDay: await getOnThisDay(day), 
       randomOnThisDay: Math.floor(Math.random() * Math.floor(randomEvent))
     })
@@ -151,15 +162,6 @@ export default function WeekView() {
     let result = await (await fetch("https://byabbe.se/on-this-day/" + manad + "/" + dag + "/events.json")).json()
     randomEvent = result.events.length
     return result
-  }
-  
-  function getWeekSchedule() {
-    weekDays.map(dag => {
-      console.log("dag: ", dag);
-      let result =  getSchedule(moment(dag))
-      weekSchedule.push(result)
-    })
-    console.log("schema ", weekSchedule);
   }
 
   return (
@@ -210,11 +212,8 @@ export default function WeekView() {
 
         <Row>
           {
-            /* week.map( async (dag) => {
-              
-              events.map(event => {
-              
-              console.log("event: ", event);
+            weeklySchedule.map(event => {
+              //console.log("event: ", event);
               return (<Link key={event.id} to={"/event/" + event.id}>
                 <Card className="m-1" inverse color="info">
                   <CardBody>
@@ -225,9 +224,7 @@ export default function WeekView() {
                 </Card>
               </Link>)
               })
-            }) */
           }
-          
         </Row>
 
 
