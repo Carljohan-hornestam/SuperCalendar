@@ -17,13 +17,11 @@ import {
 // import { Context } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTrash,
   faTimes,
   faCheck,
   faLongArrowAltLeft,
   faPlusCircle,
   faMinusCircle,
-  faEnvelope,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "./DateTimePicker";
@@ -356,7 +354,6 @@ export default function Event() {
                   icon={faPlusCircle}
                   className="float-right"
                   onClick={disabled ? null : toggle}
-                  swapOpacity={disabled}
                   color={disabled ? 'gray' : 'green'}
                 />
                 <FontAwesomeIcon
@@ -364,7 +361,6 @@ export default function Event() {
                   icon={faMinusCircle}
                   className="float-right mr-2"
                   onClick={disabled || !hasSelection ? null : removeParticipantHandler}
-                  swapOpacity={disabled}
                   color={disabled || !hasSelection ? 'gray' : 'red'}
                 />
               </>) : 
