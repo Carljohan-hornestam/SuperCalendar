@@ -1,7 +1,5 @@
 import React, {useState, useEffect, createContext} from 'react';
-import ListPersons from "./components/ListPersons"
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom" 
-import EditPerson from './components/EditPerson';
 import Register from './components/Register'
 import Login from './components/Login'
 import Header from "./components/Header"
@@ -36,12 +34,6 @@ export default function App() {
       <Router>
         <Header />
         <div className="container">
-          <Route path="/person/:id">
-            <EditPerson />      
-          </Route>
-          <Route exact path="/">
-            <ListPersons />
-          </Route>
           <Route exact path="/mycalendar">
             <Calendar />
           </Route>

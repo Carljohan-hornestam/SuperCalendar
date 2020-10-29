@@ -14,7 +14,7 @@ export default function Register() {
 
   const [showAlert, setShowAlert] = useState(false);
 
-  let [redirect, setRedirect] = useState(false);
+  //let [redirect, setRedirect] = useState(false);
 
   async function register(e) {
     e.preventDefault();

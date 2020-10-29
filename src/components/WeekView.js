@@ -10,6 +10,7 @@ import {
   CardSubtitle, CardBody, Row, Col
 } from 'reactstrap';
 import { Link } from "react-router-dom"
+import DayView from "./DayView"
 
 export default function WeekView() {
   const theme = "grey" //change to context variable
@@ -37,7 +38,7 @@ export default function WeekView() {
       )
     }
     setCalendar(weekDays)
-    console.log("useEffect - weeklySchedule", weeklySchedule);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue])
 
   const days = moment.weekdaysShort(true)
@@ -53,7 +54,7 @@ export default function WeekView() {
   
     for (let index = 1; lastResultDayOfWeek < 7; index++) {
       let extraResult = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + nextYear + "/" + 1 + "/" + index)).json()
-      extraResult.dagar.map(dag => {
+      extraResult.dagar.forEach(dag => {
         result.dagar.push(dag)
       })
       lastResultDayOfWeek = lastResultDayOfWeek + 1
@@ -78,26 +79,21 @@ export default function WeekView() {
   }
 
   async function getAllEventsForCurrentWeek(currentWeek) {
-      let allEventsCurrentMonth = await getSchedule(moment(currentWeek[0].datum), "YYYY-MM")
-      let result = []
-      let allEventsCurrentWeek = []
-      currentWeek.map( day => {
-        result.push(moment(day.datum))
-      })
-      /*result.map(day => {
-        allEventsCurrentWeek = allEventsCurrentMonth.filter( event => {
-          console.log("allEventsCurrentWeek event ", event.startDateTime.slice(0, 10));
-          console.log("allEventsCurrentWeek day ", day.format("YYYY-MM-DD"));
-          if(event.startDateTime.slice(0, 10) == day.format("YYYY-MM-DD")) {
-            return event
+    let allEventsCurrentMonth = await getSchedule(moment(currentWeek[0].datum), "YYYY-MM")
+    let result = []
+    let allEventsCurrentWeek = []
+    currentWeek.forEach( day => {
+      result.push(moment(day.datum))
+    })
+    
+    allEventsCurrentMonth.forEach(event => {
+      result.forEach(day => {
+          if(event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")) {
+            allEventsCurrentWeek.push(event)
           }
         })
-        console.log("allEventsCurrentWeek ", allEventsCurrentWeek);
-      })*/
-      console.log("getAllEventsForCurrentWeek result ", result);
-      console.log("getAllEventsForCurrentWeek aecw ", allEventsCurrentWeek);
-      setWeeklySchedule(allEventsCurrentMonth)
-      console.log("getAllEventsForCurrentWeek weekly ", weeklySchedule);
+      })
+      setWeeklySchedule(allEventsCurrentWeek)
   }
 
   function isSelected(day) {
@@ -185,7 +181,7 @@ export default function WeekView() {
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                    <Col key={day} className="text-center" onClick={(e) => { setDayValue(day); displaySchedule(day);}}>
+                  <Col key={day} className="text-center" onClick={(e) => { !isDesktop &&  setDayValue(day); !isDesktop && displaySchedule(day); }}>
                       <div className={dayStyles(day)}>
                         {day.format("D")}
                       </div>
@@ -210,20 +206,27 @@ export default function WeekView() {
           } 
         </Row>
 
-        <Row>
-          {
-            weeklySchedule.map(event => {
-              //console.log("event: ", event);
-              return (<Link key={event.id} to={"/event/" + event.id}>
-                <Card className="m-1" inverse color="info">
-                  <CardBody>
-                    <CardTitle className="font-weight-bold">{event.title}</CardTitle>
-                    <CardSubtitle>{event.startDateTime.slice(-5)}-{event.endDateTime.slice(-5)}</CardSubtitle>
-                    <CardText>{event.description}</CardText>
-                  </CardBody>
-                </Card>
-              </Link>)
-              })
+        <Row style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
+          { isDesktop ? (
+            week.map(day => {
+              return (<Col key={day.datum}>
+                {weeklySchedule.map(event => {
+                  
+                  return event.startDateTime.slice(0, 10) === day.datum ? (
+                      <Link key={event.id} to={"/event/" + event.id}>
+                        <Card className="m-1" inverse color="info">
+                          <CardBody>
+                            <CardTitle className="font-weight-bold">{event.title}</CardTitle>
+                            <CardSubtitle>{event.startDateTime.slice(-5)}-{event.endDateTime.slice(-5)}</CardSubtitle>
+                            <CardText>{event.description}</CardText>
+                          </CardBody>
+                        </Card>
+                      </Link>
+                    ) : ""
+                  }
+                )}
+              </Col>)
+            })) :  <DayView/>
           }
         </Row>
 

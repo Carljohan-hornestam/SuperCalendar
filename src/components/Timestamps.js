@@ -1,6 +1,5 @@
 import React from 'react';
 import {Row, Col} from 'reactstrap'
-import DayView from './DayView';
 
 export default function Timestamps() {
   const style = {
