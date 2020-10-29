@@ -179,7 +179,7 @@ router.get("/date/:startDateTime", (req, res) => {
   res.json(result)
 })
 
-router.get("/invitations", (req, res) => {
+router.get("/invitations/get", (req, res) => {
   if (!req.session.user) {
     res.json({ success: false });
   } else {

@@ -8,6 +8,10 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
 import Logo from "../images/supercalender.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,18 +28,41 @@ export default function Header() {
   const toggle = () => setIsOpen(!isOpen);
   let [context, updateContext] = useContext(Context);
 
+  const [modal, setModal] = useState(false);
+  const toggleModal = () => setModal(!modal);
+
+  console.log("context i Header", context);
+  console.log("context.user i Header", context.user);
   const logout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
-    updateContext({ user: false });
+    updateContext({ user: false, invitations: null });
   };
 
   return (
+  <>
+    <div>
+        <Modal isOpen={modal} toggle={toggleModal}>
+          <ModalHeader toggle={toggleModal}>Dina inbjudningar</ModalHeader>
+          <ModalBody>
+           
+              
+           
+          </ModalBody>
+          <ModalFooter>
+            
+          </ModalFooter>
+        </Modal>
+      </div>
+
     <div className="header">
       <Navbar color="dark" dark expand="md">
         <NavbarBrand>
           <img alt="" src={Logo} width="252px" height="35px" />
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
+        {context.invitations && context.invitations.length ? 
+        <span className="text-danger">*</span>
+        : ""}
         <Collapse isOpen={isOpen} navbar>
           {context.user ? (
             <Nav className="ml-auto" navbar>
@@ -67,6 +94,16 @@ export default function Header() {
                     icon={faSignOutAlt}
                   />
                 </NavLink>
+              </NavItem>
+              <NavItem>
+            <NavLink
+              className="nav-link text-center"
+              onClick={toggleModal}
+              disabled={!context.invitations || (context.invitations && !context.invitations.length)}
+              href="#"
+            >
+                <span>Inbjudningar</span>
+              </NavLink>
               </NavItem>
             </Nav>
           ) : (
@@ -104,5 +141,6 @@ export default function Header() {
         </Collapse>
       </Navbar>
     </div>
-  );
+  </>
+    );
 }
