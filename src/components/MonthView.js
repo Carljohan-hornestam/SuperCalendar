@@ -7,24 +7,22 @@ import { faArrowAltCircleRight, faArrowAltCircleLeft, faAngleDoubleRight, faAngl
 import { Context } from "../App"
 import { useMediaQuery } from 'react-responsive'
 import DayView from "./DayView"
+import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
 
 export default function Calendar() {
     
   moment.locale("sv")
 
   const [calendar, setCalendar] = useState([])
-  const [value, setValue] = useState(moment())
+  const [dayValue, setDayValue] = useState(moment())
   const [year, setYear] = useState([])
   const [redDays, setRedDays] = useState([])
   let [context, updateContext] = useContext(Context)
-  let randomEvent = 0
-
-
 
   useEffect(() => {
     getDaysInformation()
-    const startDay = value.clone().startOf("month").startOf("week")
-    const endDay = value.clone().endOf("month").endOf("week")
+    const startDay = dayValue.clone().startOf("month").startOf("week")
+    const endDay = dayValue.clone().endOf("month").endOf("week")
     const day = startDay.clone().subtract(1, "day")
     const a = []
     while(day.isBefore(endDay, "day")) {
@@ -36,74 +34,38 @@ export default function Calendar() {
     }
     setCalendar(a)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [dayValue])
 
-  
   const days = moment.weekdaysShort(true)
 
   async function getDaysInformation(){
-    let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + value.format("YYYY"))).json()
+    let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + dayValue.format("YYYY"))).json()
     setYear(result)
-    getAllRedDays(result)
-  }
-
-  function getAllRedDays(year){
-    let data = year.dagar
-    let result = data.filter( (day) => day["röd dag"] === "Ja")
-    setRedDays(result)
-  }
-
-  function isRedDay(day) {
-    return day.day() === 0 || redDays.find( (redDay) => redDay.datum === day.format("YYYY-MM-DD"))
-  }
-
-  function isSelected(day) {
-    return value.isSame(day, "day")
-  }
-
-  function beforeToday(day) {
-    return day.isBefore(new Date(), "day")
-  }
-
-  function sameMonth(day) {
-    return day.isSame(value, "month")
-  }
-
-  function isToday(day) {
-    return day.isSame(new Date(), "day")
-  }
-
-  function dayStyles(day) {
-    if (isSelected(day)) return "bg-danger text-white"
-    if (isRedDay(day)) return "text-danger"
-    if (beforeToday(day)) return "text-secondary"
-    if (!sameMonth(day)) return "text-secondary"
-    if (isToday(day)) return "bg-secondary text-white"
-    return ""
+    setRedDays(getAllRedDays(result))
   }
 
   function getCurrentMonth() {
-    return value.format("MMMM")
+    return dayValue.format("MMMM")
   }
 
   function getPreviousMonth() {
-    return value.clone().subtract(1, "month")
+    return dayValue.clone().subtract(1, "month")
   }
 
   function getNextMonth() {
-    return value.clone().add(1, "month")
+    return dayValue.clone().add(1, "month")
   }
 
   function getCurrentYear() {
-    return value.format("YYYY")
+    return dayValue.format("YYYY")
   }
 
   function getPreviousYear() {
-    return value.clone().subtract(1, "year")
+    return dayValue.clone().subtract(1, "year")
   }
 
   function getNextYear() {
-    return value.clone().add(1, "year")
+    return dayValue.clone().add(1, "year")
   }
 
   /* let setSelectedDay = update => {
@@ -119,35 +81,23 @@ export default function Calendar() {
       selectedDay: day.format("YYYY-MM-DD"),
       dailySchedule: await getSchedule(day, "YYYY-MM-DD"),
       onThisDay: await getOnThisDay(day), 
-      randomOnThisDay: Math.floor(Math.random() * Math.floor(randomEvent))
+      randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent()))
     })
-  }
-
-  async function getSchedule(day, format){
-    return await(await fetch("/api/events/date/" + day.format(format))).json()
-  }
-
-  async function getOnThisDay(day) {
-    let manad = day.format("M")
-    let dag = day.format("D")
-    let result = await (await fetch("https://byabbe.se/on-this-day/" + manad + "/" + dag + "/events.json")).json()
-    randomEvent = result.events.length
-    return result
   }
 
   return (
     <div className="mt-3">
       <Row className="bg-light">
         <Col xs="auto">
-          <FontAwesomeIcon className="mr-2 pointer" icon={faAngleDoubleLeft} onClick={() => setValue(getPreviousYear())} /> 
-          <FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} />
+          <FontAwesomeIcon className="mr-2 pointer" icon={faAngleDoubleLeft} onClick={() => setDayValue(getPreviousYear())} /> 
+          <FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousMonth())} />
         </Col>
         <Col className="text-center font-weight-bold">
             {getCurrentMonth()} {getCurrentYear()} 
         </Col>
         <Col xs="auto" className="text-right pointer">
-          <FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextMonth())} />
-          <FontAwesomeIcon className="ml-2 pointer" icon={faAngleDoubleRight} onClick={() => setValue(getNextYear())} /> 
+          <FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextMonth())} />
+          <FontAwesomeIcon className="ml-2 pointer" icon={faAngleDoubleRight} onClick={() => setDayValue(getNextYear())} /> 
         </Col>
       </Row>
       <Row className="d-flex">
@@ -163,8 +113,8 @@ export default function Calendar() {
             <Row className="d-flex" key={week}>
               {
                 week.map(day =>
-                  <Col className="text-center pointer" onClick={(e) => { setValue(day); displaySchedule(day);}} key={day}>
-                    <div className={dayStyles(day)}>
+                  <Col className="text-center pointer" onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
+                    <div className={dayStyles(day, dayValue, redDays)}>
                       {day.format("D")}
                     </div>
                   </Col>

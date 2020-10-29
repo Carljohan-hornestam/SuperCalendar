@@ -11,6 +11,7 @@ import {
 } from 'reactstrap';
 import { Link } from "react-router-dom"
 import DayView from "./DayView"
+import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
 
 export default function WeekView() {
   const theme = "grey" //change to context variable
@@ -21,8 +22,8 @@ export default function WeekView() {
   const [year, setYear] = useState([])
   const [week, setWeek] = useState([])
   const [weeklySchedule, setWeeklySchedule] = useState([])
+  const [redDays, setRedDays] = useState([])
   let [context, updateContext] = useContext(Context)
-  let randomEvent = 0
 
   useEffect(() => {
     getYear();
@@ -62,6 +63,7 @@ export default function WeekView() {
 
     setYear(result)
     getWeek(result)
+    setRedDays(getAllRedDays(result))
   }
 
   function getWeek(year){
@@ -96,26 +98,6 @@ export default function WeekView() {
       setWeeklySchedule(allEventsCurrentWeek)
   }
 
-  function isSelected(day) {
-    return dayValue.isSame(day, "day")
-  }
-
-  function beforeToday(day) {
-    return day.isBefore(new Date(), "day")
-  }
-
-  function isToday(day) {
-    return day.isSame(new Date(), "day")
-  }
-
-  function dayStyles(day) {
-    if (isSelected(day)) return "bg-danger text-white"
-    if (isToday(day)) return "bg-secondary text-white"
-    //if (containsEvents(day)) return "bg-primary"
-    if (beforeToday(day)) return "text-secondary"
-    return ""
-  }
-
   function getCurrentYear(){
     return dayValue.format("YYYY")
   }
@@ -132,16 +114,12 @@ export default function WeekView() {
     return dayValue.clone().add(1, "week")
   }
 
-  async function getSchedule(day, format){
-    return await(await fetch("/api/events/date/" + day.format(format))).json()
-  }
-
   async function displaySchedule(day) {
     updateContext({
       selectedDay: day.format("YYYY-MM-DD"),
       dailySchedule: await getSchedule(day, "YYYY-MM-DD"),
       onThisDay: await getOnThisDay(day), 
-      randomOnThisDay: Math.floor(Math.random() * Math.floor(randomEvent))
+      randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent))
     })
   }
 
@@ -151,14 +129,6 @@ export default function WeekView() {
     console.log("containsEvent events", events);
     return events.length > 0
   }*/
-
-  async function getOnThisDay(day) {
-    let manad = day.format("M")
-    let dag = day.format("D")
-    let result = await (await fetch("https://byabbe.se/on-this-day/" + manad + "/" + dag + "/events.json")).json()
-    randomEvent = result.events.length
-    return result
-  }
 
   return (
     <div className="mt-3">
@@ -182,7 +152,7 @@ export default function WeekView() {
               {
                 week.map(day =>
                   <Col key={day} className="text-center" onClick={(e) => { !isDesktop &&  setDayValue(day); !isDesktop && displaySchedule(day); }}>
-                      <div className={dayStyles(day)}>
+                      <div className={dayStyles(day, dayValue, redDays)}>
                         {day.format("D")}
                       </div>
                     </Col>
