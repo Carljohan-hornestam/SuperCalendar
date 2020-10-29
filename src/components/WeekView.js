@@ -119,7 +119,7 @@ export default function WeekView() {
       selectedDay: day.format("YYYY-MM-DD"),
       dailySchedule: await getSchedule(day, "YYYY-MM-DD"),
       onThisDay: await getOnThisDay(day), 
-      randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent))
+      randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent()))
     })
   }
 
