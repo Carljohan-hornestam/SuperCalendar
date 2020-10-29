@@ -34,7 +34,9 @@ export default function Login() {
       setShowAlert(true);
       return;
     }
-    updateContext({ user: result });
+    let invitations = await (await fetch('/api/events/invitations/get')).json();
+      if (invitations.error) { return; }
+    updateContext({ user: result, invitations: invitations });
     setRedirect({ redirect: true });
   }
 

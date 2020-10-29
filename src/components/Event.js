@@ -14,7 +14,6 @@ import {
   Button,
 } from "reactstrap";
 
-// import { Context } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -23,7 +22,7 @@ import {
   faPlusCircle,
   faMinusCircle,
   faTrashAlt,
-  faRedo
+  faRedo,
 } from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "./DateTimePicker";
 import { Context } from "../App";
@@ -37,15 +36,23 @@ export default function Event() {
   const [deleteModal, setDeleteModal] = useState(false);
   const toggleDeleteModal = () => setDeleteModal(!deleteModal);
 
-  const [context, updateContext] = useContext(Context);
+  const [context] = useContext(Context);
 
   const [availableParticipants, setAvailableParticipants] = useState([]);
 
   const [startTime, setStartTime] = useState({
-    datum: "2020-11-27",
+    datum: context.selectedDay
+      ? context.selectedDay
+      : new Date().toLocaleDateString(),
     tid: "09:00",
   });
-  const [endTime, setEndTime] = useState({ datum: "2020-11-29", tid: "10:00" });
+  console.log("context i event", context);
+  const [endTime, setEndTime] = useState({
+    datum: context.selectedDay
+      ? context.selectedDay
+      : new Date().toLocaleDateString(),
+    tid: "10:00",
+  });
 
   const [formData, setFormData] = useState({
     title: "",
@@ -75,7 +82,7 @@ export default function Event() {
         title: "",
         description: "",
         location: "",
-        recurringEvent: false,
+        recurringEvent: 0,
         recurringInterval: 0,
         participants: [],
       });
@@ -85,17 +92,21 @@ export default function Event() {
     // in order to use await with our fetch
     (async () => {
       let result = await (await fetch("/api/events/" + id)).json();
-      let p1 = result.participants.map((user) => ({
-        ...user,
-        accepted: true,
-      }));
-      let p = [...result.invited, ...p1]
-        .filter((user) => user)
-        .map((user) => ({
-          value: user.userId.toString(),
-          label: user.email,
-          accepted: user.accepted,
+      let p1 =
+        result.participants &&
+        result.participants.map((user) => ({
+          ...user,
+          accepted: true,
         }));
+      let p =
+        result.invited &&
+        [...result.invited, ...p1]
+          .filter((user) => user)
+          .map((user) => ({
+            value: user.userId.toString(),
+            label: user.email,
+            accepted: user.accepted,
+          }));
       result.id = result.eventId;
       delete result.eventId;
       delete result.userName;
@@ -115,7 +126,7 @@ export default function Event() {
       ...formData,
       [e.currentTarget.name]: e.currentTarget.value,
     });
-  } // handleInputChange
+  }; // handleInputChange
 
   if (formData.done) {
     return <Redirect to="/myCalendar" />;
@@ -191,13 +202,13 @@ export default function Event() {
       participants: p,
     });
     if (p.length === 0) {
-      setHasSelection(false)
+      setHasSelection(false);
     }
   } // removeParticipantHandler
 
   function userListHasSelectedUsers() {
     let selectAvailable = document.querySelector('[name="selectParticipants"]');
-    setHasSelection(selectAvailable && selectAvailable.value)
+    setHasSelection(selectAvailable && selectAvailable.value);
   } // userListHasSelectedUsers
 
   async function handleDeleteEvent() {
@@ -209,9 +220,11 @@ export default function Event() {
     setFormData({ done: true });
   } // handleDeleteEvent
 
-  const disabled = !((context.user && +context.user.id === +formData.creatorId) || id === 'new')
+  const disabled = !(
+    (context.user && +context.user.id === +formData.ownerId) ||
+    id === "new"
+  );
 
- 
   return (
     <>
       <div>
@@ -256,7 +269,9 @@ export default function Event() {
           <ModalBody>Vill du verkligen radera eventet?</ModalBody>
           <ModalFooter>
             <Button onClick={toggleDeleteModal}>Avbryt</Button>
-            <Button onClick={handleDeleteEvent} className="text-danger">Ok</Button>
+            <Button onClick={handleDeleteEvent} className="text-danger">
+              Ok
+            </Button>
           </ModalFooter>
         </Modal>
       </div>
@@ -275,20 +290,24 @@ export default function Event() {
                 icon={faTrashAlt}
                 onClick={toggleDeleteModal}
               />
-            ) : (<></>)}
+            ) : (
+              <></>
+            )}
           </Col>
         </Row>
         <Row form>
           <Col xs="12">
             <FormGroup>
               <Label for="exampleText">Titel</Label>
-              {recurringEvent ? 
-              <FontAwesomeIcon
-                className=" float-right my-2"
-                size="lg"
-                icon={faRedo}
-              />
-              : "" }     
+              {recurringEvent ? (
+                <FontAwesomeIcon
+                  className=" float-right my-2"
+                  size="lg"
+                  icon={faRedo}
+                />
+              ) : (
+                ""
+              )}
               <Input
                 className=""
                 type="text"
@@ -311,7 +330,7 @@ export default function Event() {
               parentCallBack={setStartTime}
               disabled={disabled}
             />
-            </Col>
+          </Col>
           <Col xs="12" md="6">
             <DateTimePicker
               name="endDateTime"
@@ -360,25 +379,32 @@ export default function Event() {
           <Col xs="12">
             <FormGroup>
               <Label for="selectParticipants">Deltagare</Label>
-              { (context.user && +context.user.id === +formData.creatorId) || id === 'new' ? 
-              ( <>
-                <FontAwesomeIcon
-                  size="lg"
-                  icon={faPlusCircle}
-                  className="float-right"
-                  onClick={disabled ? null : toggle}
-                  color={disabled ? 'gray' : 'green'}
-                />
-                <FontAwesomeIcon
-                  size="lg"
-                  icon={faMinusCircle}
-                  className="float-right mr-2"
-                  onClick={disabled || !hasSelection ? null : removeParticipantHandler}
-                  color={disabled || !hasSelection ? 'gray' : 'red'}
-                />
-              </>) : 
-              (<div>Hoppsan Kerstin!</div>) }
-               
+              {(context.user && +context.user.id === +formData.creatorId) ||
+              id === "new" ? (
+                <>
+                  <FontAwesomeIcon
+                    size="lg"
+                    icon={faPlusCircle}
+                    className="float-right"
+                    onClick={disabled ? null : toggle}
+                    color={disabled ? "gray" : "green"}
+                  />
+                  <FontAwesomeIcon
+                    size="lg"
+                    icon={faMinusCircle}
+                    className="float-right mr-2"
+                    onClick={
+                      disabled || !hasSelection
+                        ? null
+                        : removeParticipantHandler
+                    }
+                    color={disabled || !hasSelection ? "gray" : "red"}
+                  />
+                </>
+              ) : (
+                <div>Hoppsan Kerstin!</div>
+              )}
+
               {/* lägg in deltagare i value */}
               <Input
                 type="select"
@@ -420,15 +446,17 @@ export default function Event() {
                 />
               )}
             </h5>
-            {!disabled ? 
-            <FontAwesomeIcon
-              size="2x"
-              icon={faCheck}
-              className="float-right text-success"
-              disabled={disabled}
-              onClick={save}
-            />
-           : "" } 
+            {!disabled ? (
+              <FontAwesomeIcon
+                size="2x"
+                icon={faCheck}
+                className="float-right text-success"
+                disabled={disabled}
+                onClick={save}
+              />
+            ) : (
+              ""
+            )}
           </Col>
         </Row>
       </Form>
