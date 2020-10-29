@@ -206,7 +206,7 @@ export default function WeekView() {
           } 
         </Row>
 
-        <Row style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
+        <Row className="mt-3" style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
           { isDesktop ? (
             week.map(day => {
               return (<Col key={day.datum}>

@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {
   Card, CardTitle, CardText,
   CardSubtitle, CardBody, Row, Col
@@ -9,9 +9,17 @@ import {Link} from "react-router-dom"
 export default function DayView() {
 	let [context, updateContext] = useContext(Context)
 
-  return (context.selectedDay === undefined ? (<Col></Col>) :
+	useEffect(() => {
+		context.selectedDay && getSchedule(context.selectedDay, "YYYY-MM-DD")
+	}, [])
+
+	async function getSchedule(day, format){
+		return await(await fetch("/api/events/date/" + day.format(format))).json()
+	  }
+
+  return (context.selectedDay === undefined ? (<Col className="mt-3"></Col>) :
 		(
-			<Col>
+			<Col className="mt-3">
 				<Row>
 					<Col className="d-flex justify-content-center mt-2">
 						<p className="font-weight-bold">Datum: {context.selectedDay} {context.selectedWeek === undefined ? "" : `Vecka: ${context.selectedWeek}`}</p>

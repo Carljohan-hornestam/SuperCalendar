@@ -2,15 +2,33 @@ import React, {useState} from 'react';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
 import ContainerView from './ContainerView';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Container } from "reactstrap"
+import Event from './Event';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Container, Modal, ModalBody } from "reactstrap"
 import classnames from 'classnames';
+import {faCalendarPlus} from "@fortawesome/free-regular-svg-icons"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {Redirect} from "react-router-dom" 
+import { useMediaQuery } from 'react-responsive'
 
 export default function Calendar() {
 
   const [activeTab, setActiveTab] = useState('1');
+  const [modal, setModal] = useState(false);
 
   const toggle = tab => {
     if(activeTab !== tab) setActiveTab(tab);
+  }
+
+  const isDesktop = useMediaQuery({
+    query: "(min-device-width: 600px)"
+  })
+
+  function openCreateEvent() {
+    if(isDesktop) {
+      setModal(!modal)
+    } else {
+      window.location.href = "/event/new"
+    }
   }
 
   return (
@@ -46,6 +64,16 @@ export default function Calendar() {
         <TabPane tabId="1"><WeekView /></TabPane>
         <TabPane tabId="2"><MonthView /></TabPane>
       </TabContent>
+      <div className="float-right d-flex justify-content-center bg-danger fab" onClick={() => openCreateEvent()}>
+        <FontAwesomeIcon color="white" size="2x" className="my-auto" icon={faCalendarPlus} />
+      </div>
+      <div>
+      <Modal toggle={() => setModal(!modal)} isOpen={modal}>
+        <ModalBody>
+          <Event />
+        </ModalBody>
+      </Modal>
+    </div>
     </Container>
   )
 }
