@@ -1,8 +1,16 @@
 import React, { useState, useContext } from "react";
 import { NavLink as RouterNavLink, Link } from "react-router-dom";
 import {
-  Row,
-  Col,
+  // Row,
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+  CardText,
+  CardSubtitle,
+  // CardLink,
+  // Col,
   Collapse,
   Navbar,
   NavbarToggler,
@@ -22,6 +30,10 @@ import {
   faSignInAlt,
   faUserPlus,
   faUserEdit,
+  faEnvelope,
+  faEnvelopeOpenText,
+  faTimes,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { Context } from "../App";
 import { useMediaQuery } from 'react-responsive'
@@ -43,6 +55,28 @@ export default function Header() {
     query: "(min-device-width: 600px)"
   })
 
+  async function handleInvitation(accept, invitationId, eventId) {
+    console.log('handleInvitation, accept:', accept, ' id:', invitationId);
+
+    const body = {
+        "userId": context.user.id,
+        "pendingInvitationId": invitationId,
+        "accept": accept
+      }
+
+    let result = await (await fetch("/api/events/invitations/reply/" , {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })).json();
+
+    console.log('Result from reply:', result);
+
+    let invitations = await (await fetch('/api/events/invitations/get')).json();
+    if (invitations.error) { return; }
+    updateContext({ invitations: invitations});      
+  }
+
   return (
     <>
       <div>
@@ -52,34 +86,59 @@ export default function Header() {
             {context.invitations && context.invitations.map((element) => {
               return (
               <>
-            <Link to={"/event/" + element.eventId}>
+                <Card outline color="primary" className="mb-1">
+                  <CardHeader><strong>{element.title}</strong> (<small>id: {element.id}</small>)</CardHeader>
+                  <CardBody>
+                    <CardTitle>Inbjuden av: {element.userName} (<small>{element.email}</small>)</CardTitle>
+                    <CardSubtitle>{element.description}</CardSubtitle>
+                    <CardText>{element.startDateTime} - {element.endDateTime}</CardText>
+                  </CardBody>
+                  <CardFooter>
+                    <FontAwesomeIcon
+                      className="float-left text-danger"
+                      size="2x"
+                      icon={faTimes}
+                      onClick={() => handleInvitation(false, element.id, element.eventId)}
+                      />
+                    <FontAwesomeIcon
+                      className="float-right text-success"
+                      size="2x"
+                      icon={faCheck}
+                      onClick={() => handleInvitation(true, element.id, element.eventId)}
+                      />
+                  </CardFooter>
+                </Card>
+
+            {/* <Link to={"/event/" + element.eventId}>
               <Row>
-              <Col xs="6" md="6">
-                Namn på event
+                <Col xs="6" md="6">
+                  Namn på event
                 </Col>
                 <Col xs="6" md="6">
-                  Skapad av
+                    Skapad av
                 </Col>
                 <Col xs="6" md="6">
-                {element.title}
+                  {element.title}
                 </Col>
                 <Col xs="6" md="6">
-                {element.userName}
+                  {element.userName}
                 </Col>
                 <Col xs="6" md="6">
-                {element.startDateTime}
+                  {element.startDateTime}
                 </Col>
                 <Col xs="6" md="6">
-                {element.endDateTime}
+                  {element.endDateTime}
                 </Col>
               </Row>
               </Link>
-               <hr/>
+               <hr/> */}
               </>
             )})}
             
           </ModalBody>
-          <ModalFooter></ModalFooter>
+          <ModalFooter className="justify-content-center">
+            <div>Klicka på&nbsp;<span className="text-danger"><strong>X</strong></span> för att radera och <span className="text-success"><strong>&#x2713;</strong></span>&nbsp;för att acceptera.</div>
+          </ModalFooter>
         </Modal>
       </div>
 
@@ -113,6 +172,27 @@ export default function Header() {
                 </NavItem>
                 <NavItem>
                   <NavLink
+                    className="nav-link text-center"
+                    onClick={toggleModal}
+                    disabled={
+                      !context.invitations ||
+                      (context.invitations && !context.invitations.length)
+                    }
+                    href="#"
+                  >
+                    <span className="d-block d-md-none">Inbjudningar</span>
+                    <FontAwesomeIcon
+                      className="d-none d-md-block"
+                      size="2x"
+                      icon={!context.invitations ||
+                        (context.invitations && !context.invitations.length) ? faEnvelope : faEnvelopeOpenText}
+                      color={!context.invitations ||
+                        (context.invitations && !context.invitations.length) ? 'gray' : 'red'}
+                    />
+                  </NavLink>
+                </NavItem>                
+                <NavItem>
+                  <NavLink
                     tag={RouterNavLink}
                     className="nav-link text-center"
                     onClick={logout}
@@ -124,19 +204,6 @@ export default function Header() {
                       size="2x"
                       icon={faSignOutAlt}
                     />
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className="nav-link text-center"
-                    onClick={toggleModal}
-                    disabled={
-                      !context.invitations ||
-                      (context.invitations && !context.invitations.length)
-                    }
-                    href="#"
-                  >
-                    <span>Inbjudningar</span>
                   </NavLink>
                 </NavItem>
               </Nav>
