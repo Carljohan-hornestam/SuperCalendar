@@ -23,6 +23,7 @@ import {
   faPlusCircle,
   faMinusCircle,
   faTrashAlt,
+  faRedo
 } from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "./DateTimePicker";
 import { Context } from "../App";
@@ -74,7 +75,7 @@ export default function Event() {
         title: "",
         description: "",
         location: "",
-        recurringEvent: 0,
+        recurringEvent: false,
         recurringInterval: 0,
         participants: [],
       });
@@ -189,6 +190,9 @@ export default function Event() {
       ...formData,
       participants: p,
     });
+    if (p.length === 0) {
+      setHasSelection(false)
+    }
   } // removeParticipantHandler
 
   function userListHasSelectedUsers() {
@@ -275,9 +279,16 @@ export default function Event() {
           </Col>
         </Row>
         <Row form>
-          <Col xs="12" md="6">
+          <Col xs="12">
             <FormGroup>
               <Label for="exampleText">Titel</Label>
+              {recurringEvent ? 
+              <FontAwesomeIcon
+                className=" float-right my-2"
+                size="lg"
+                icon={faRedo}
+              />
+              : "" }     
               <Input
                 className=""
                 type="text"
@@ -300,6 +311,8 @@ export default function Event() {
               parentCallBack={setStartTime}
               disabled={disabled}
             />
+            </Col>
+          <Col xs="12" md="6">
             <DateTimePicker
               name="endDateTime"
               header="Slutdatum och -tid"
@@ -310,7 +323,7 @@ export default function Event() {
           </Col>
         </Row>
         <Row form>
-          <Col xs="12" md="6">
+          <Col xs="12">
             <FormGroup>
               <Label for="descriptionText">Beskrivning</Label>
               <Input
@@ -327,7 +340,7 @@ export default function Event() {
           </Col>
         </Row>
         <Row form>
-          <Col xs="12" md="6">
+          <Col xs="12">
             <FormGroup>
               <Label for="locationText">Plats</Label>
               <Input
@@ -344,7 +357,7 @@ export default function Event() {
           </Col>
         </Row>
         <Row form>
-          <Col xs="12" md="6">
+          <Col xs="12">
             <FormGroup>
               <Label for="selectParticipants">Deltagare</Label>
               { (context.user && +context.user.id === +formData.creatorId) || id === 'new' ? 
@@ -391,7 +404,7 @@ export default function Event() {
         <Row form>
           <Col className="mb-3">
             <h5 className="d-inline-block">
-              {id === "new" ? (
+              {id === "new" || disabled ? (
                 <FontAwesomeIcon
                   size="2x"
                   icon={faLongArrowAltLeft}
@@ -407,6 +420,7 @@ export default function Event() {
                 />
               )}
             </h5>
+            {!disabled ? 
             <FontAwesomeIcon
               size="2x"
               icon={faCheck}
@@ -414,6 +428,7 @@ export default function Event() {
               disabled={disabled}
               onClick={save}
             />
+           : "" } 
           </Col>
         </Row>
       </Form>

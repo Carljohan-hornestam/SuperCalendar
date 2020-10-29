@@ -17,7 +17,7 @@ export default function DateTimePicker(props) {
     // console.log('Hej i handleInputChange..... name:', e.currentTarget.name, ', value:', e.currentTarget.value, ', dTPFormData', dTPFormData);
     if (e.currentTarget.name === 'datum') {
       props.parentCallBack({ datum: e.currentTarget.value, tid: dTPFormData.tid })
-    } else {
+    } else {    
       props.parentCallBack({ datum: dTPFormData.datum, tid: e.currentTarget.value })
     }
   }
