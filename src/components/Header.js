@@ -24,6 +24,7 @@ import {
   faUserEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import { Context } from "../App";
+import { useMediaQuery } from 'react-responsive'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +39,10 @@ export default function Header() {
     updateContext({ user: false, invitations: null });
   };
 
+  const isDesktop = useMediaQuery({
+    query: "(min-device-width: 600px)"
+  })
+
   return (
     <>
       <div>
@@ -49,27 +54,27 @@ export default function Header() {
               <>
             <Link to={"/event/" + element.eventId}>
               <Row>
-              <Col xs="6" md="1">
+              <Col xs="6" md="6">
                 Namn på event
                 </Col>
-                <Col xs="6" md="1">
+                <Col xs="6" md="6">
                   Skapad av
                 </Col>
-                <Col xs="6" md="1">
+                <Col xs="6" md="6">
                 {element.title}
                 </Col>
-                <Col xs="6" md="1">
+                <Col xs="6" md="6">
                 {element.userName}
                 </Col>
-                <Col xs="6" md="1">
+                <Col xs="6" md="6">
                 {element.startDateTime}
                 </Col>
-                <Col xs="6" md="1">
+                <Col xs="6" md="6">
                 {element.endDateTime}
                 </Col>
               </Row>
               </Link>
-               
+               <hr/>
               </>
             )})}
             
@@ -84,7 +89,7 @@ export default function Header() {
             <img alt="" src={Logo} width="252px" height="35px" />
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
-          {context.invitations && context.invitations.length ? (
+          { !isDesktop && context.invitations && context.invitations.length ? (
             <div className="float-right d-flex justify-content-center bg-danger notification"></div>
           ) : (
             ""
