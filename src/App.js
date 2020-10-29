@@ -6,7 +6,6 @@ import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/Calendar'
 import Event from './components/Event'
-import Test from './components/Test'
 
 export const Context = createContext()
 
@@ -22,10 +21,12 @@ export default function App() {
     updateContext({ waitingForUserState: true });
     (async () => {
       let result = await (await fetch('/api/auth/whoami')).json();
-      updateContext({ waitingForUserState: false });
       if (result.error) { return; }
       // add the user data to the context variable
-      updateContext({ user: result });
+      // updateContext({ user: result });
+      let invitations = await (await fetch('/api/events/invitations/get')).json();
+      if (invitations.error) { return; }
+      updateContext({ waitingForUserState: false, user: result, invitations: invitations});
       return <Redirect to="/myCalendar" />
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -44,11 +45,8 @@ export default function App() {
           <Route exact path="/login">
             <Login />
           </Route>
-          <Route exact path="/event/:id">
+          <Route path="/event/:id">
             <Event />
-          </Route>
-          <Route exact path="/test">
-            <Test />
           </Route>
         </div>
         <Footer/>

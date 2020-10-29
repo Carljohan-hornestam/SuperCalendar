@@ -7,7 +7,7 @@ import { Context } from "../App"
 import {Link} from "react-router-dom"
 
 export default function DayView() {
-	let [context, updateContext] = useContext(Context)
+  let [context, updateContext] = useContext(Context);
 
 	useEffect(() => {
 		context.selectedDay && getSchedule(context.selectedDay, "YYYY-MM-DD")
