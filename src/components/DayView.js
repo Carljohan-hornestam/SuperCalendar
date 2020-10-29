@@ -9,13 +9,13 @@ import {Link} from "react-router-dom"
 export default function DayView() {
   let [context, updateContext] = useContext(Context);
 
-	useEffect(() => {
+	/*useEffect(() => {
 		context.selectedDay && getSchedule(context.selectedDay, "YYYY-MM-DD")
 	}, [])
 
 	async function getSchedule(day, format){
 		return await(await fetch("/api/events/date/" + day.format(format))).json()
-	  }
+	  }*/
 
   return (context.selectedDay === undefined ? (<Col className="mt-3"></Col>) :
 		(

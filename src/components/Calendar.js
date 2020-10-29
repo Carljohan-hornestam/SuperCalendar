@@ -7,7 +7,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, Container, Modal, ModalBody
 import classnames from 'classnames';
 import {faCalendarPlus} from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {Redirect} from "react-router-dom" 
+import {Link, Redirect} from "react-router-dom" 
 import { useMediaQuery } from 'react-responsive'
 
 export default function Calendar() {
@@ -64,9 +64,10 @@ export default function Calendar() {
         <TabPane tabId="1"><WeekView /></TabPane>
         <TabPane tabId="2"><MonthView /></TabPane>
       </TabContent>
-      <div className="float-right d-flex justify-content-center bg-danger fab" onClick={() => openCreateEvent()}>
+      <Link to="/event/new"><div className="float-right d-flex justify-content-center bg-danger fab">
         <FontAwesomeIcon color="white" size="2x" className="my-auto" icon={faCalendarPlus} />
       </div>
+      </Link>
       <div>
       <Modal toggle={() => setModal(!modal)} isOpen={modal}>
         <ModalBody>
