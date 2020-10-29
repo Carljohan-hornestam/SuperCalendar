@@ -185,7 +185,7 @@ router.get("/invitations/get", (req, res) => {
   } else {
     res.json(
       db.select(/* sql */`
-        SELECT * FROM PendingInvitations WHERE invitedUserId = ${req.session.user.id}`
+        SELECT * FROM vwInvitations WHERE invitedUserId = ${req.session.user.id}`
       )
     );
   }

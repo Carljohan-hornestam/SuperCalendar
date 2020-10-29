@@ -31,9 +31,6 @@ export default function DayView() {
           </p>
         </Col>
         <Col>
-		<Link to="/event/new">
-          <span className="btn-primary btn">Klicka här hihi</span>
-		  </Link>
         </Col>
       </Row>
       <Row>
