@@ -85,7 +85,7 @@ export default function Header() {
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           {context.invitations && context.invitations.length ? (
-            <span className="text-danger">*</span>
+            <div className="float-right d-flex justify-content-center bg-danger notification"></div>
           ) : (
             ""
           )}

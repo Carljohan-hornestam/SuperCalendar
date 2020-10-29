@@ -1,12 +1,13 @@
 // Variable overrides for Bootstrap
 // (look in bootstrap/variables to see
 // what variables exists)
-@import 'variable-overrides';
+@import "variable-overrides";
 
 // The whole Bootstrap library
-@import 'bootstrap/bootstrap';
+@import "bootstrap/bootstrap";
 
 // My own CSS (as little as possible)
-@import 'sticky-footer';
-@import 'pointer';
-@import 'fab';
+@import "sticky-footer";
+@import "pointer";
+@import "fab";
+@import "notification";
