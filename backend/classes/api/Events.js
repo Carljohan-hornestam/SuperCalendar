@@ -35,7 +35,7 @@ router.post("/", (req, res) => {
 
   let results = []
   results.push(result)
-  invitations.map( p => {
+  invitations.forEach( p => {
     let result = db.run(
     /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
     VALUES (${eventId}, ${p.userId})`, {...p}
@@ -98,8 +98,8 @@ router.put("/:id", (req, res) => {
   
   // Compare if there's an invitation in the db that matches the userId in the participants list sent from frontend
   // If found in both lists, remove from both lists
-  invitations.map(i => req.body.participants.map(u => {
-    if (i.invitedUserId == u.userId) {
+  invitations.forEach(i => req.body.participants.forEach(u => {
+    if (i.invitedUserId === u.userId) {
       req.body.participants.pop(u)
       invitations.pop(i)
     }
@@ -107,27 +107,27 @@ router.put("/:id", (req, res) => {
   
   // Compare if there's a participant in the db that matches the userId in the participants list sent from frontend
   // If found in both lists, remove from both lists
-  participants.map(p => req.body.participants.map(i => {
-    if (p.ownerId == u.userId) {
+  participants.forEach(p => req.body.participants.forEach(i => {
+    if (p.ownerId === i.userId) {
       req.body.participants.pop(i)
       participants.pop(p)
     }
   }))
   
   // Deletes any remaining invitations from the database because they are no longer invited
-  invitations.map(inv => {
+  invitations.forEach(inv => {
     result = db.run(/*sql*/`DELETE FROM PendingInvitations WHERE eventId = $id AND invitedUserId = ${inv.invitedUserId}`, req.params)
     results.push(result)
   })
 
   // Deletes any remaining participants from the database because they are no longer welcome!
-  participants.map(part => {
+  participants.forEach(part => {
     result = db.run(/*sql*/`DELETE FROM Events WHERE parentId = $id AND ownerId = ${part.ownerId}`, req.params)
     results.push(result)
   })
 
   // If there are any users left in the participants list from the frontend, send them invitations
-  req.body.participants.map(invite => {
+  req.body.participants.forEach(invite => {
     result = db.run(/* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
       VALUES ($id, ${invite.userId})`, req.params
     )
@@ -207,7 +207,7 @@ router.post("/invitations", (req, res) => {
     return
   }
   let results = []
-  req.body.invitations.map( p => {
+  req.body.invitations.forEach(p => {
     let result = db.run(
     /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
     VALUES (${req.body.eventId}, ${p.id})`, {...req.body, ...p}

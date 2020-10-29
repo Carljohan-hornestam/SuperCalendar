@@ -6,6 +6,7 @@ import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/Calendar'
 import Event from './components/Event'
+import Test from './components/Test'
 
 export const Context = createContext()
 
@@ -45,6 +46,9 @@ export default function App() {
           </Route>
           <Route exact path="/event/:id">
             <Event />
+          </Route>
+          <Route exact path="/test">
+            <Test />
           </Route>
         </div>
         <Footer/>

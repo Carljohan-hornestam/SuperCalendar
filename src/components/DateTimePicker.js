@@ -1,20 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, FormGroup, Input, Label } from "reactstrap";
 
 export default function DateTimePicker(props) {
-
-
-  const [formData, setFormData] = useState({
-    date: new Date().toLocaleDateString(),
-    time: "08:00",
+  const [dTPFormData, setdTPFormData] = useState({
+    datum: '',
+    tid: '',
   });
-  
-  const handleInputChange = (e) =>
-    setFormData({
-      ...formData,
-      [e.currentTarget.name]: e.currentTarget.value,
-    });
 
+  useEffect(() => {
+    setdTPFormData({...props.datetime});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleInputChange = (e) => { 
+    setdTPFormData({ ...dTPFormData, [e.currentTarget.name]: e.currentTarget.value })
+    // console.log('Hej i handleInputChange..... name:', e.currentTarget.name, ', value:', e.currentTarget.value, ', dTPFormData', dTPFormData);
+    if (e.currentTarget.name === 'datum') {
+      props.parentCallBack({ datum: e.currentTarget.value, tid: dTPFormData.tid })
+    } else {    
+      props.parentCallBack({ datum: dTPFormData.datum, tid: e.currentTarget.value })
+    }
+  }
+  
+  // const handleInputChange = (e) => {
+  //   setdTPFormData({
+  //     ...dTPFormData,
+  //     [e.currentTarget.name]: e.currentTarget.value,
+  //   });
+
+  //   props.parentCallBack({...dTPFormData})
+  //   // setdTPFormData({...dTPFormData, doUpdate: true})
+  // };
+
+  // if (dTPFormData.doUpdate) {
+  //   const dateTime = new Date(dTPFormData.datum + ", " + dTPFormData.tid);
+  //   console.log("dateTime: ", dateTime.toLocaleString());
+  //   props.parentCallBack({datum : dateTime.toLocaleString()})
+  //   delete dTPFormData.doUpdate 
+  // }
 
   return (
     <>
@@ -57,23 +80,25 @@ export default function DateTimePicker(props) {
         <Col xs="6" className="pl-1">
           <FormGroup>
             <Input
+              className="form-control"
               type="date"
-              name="date"
-              id="exampleDate"
-              value={formData.date}
+              name="datum"
+              value={dTPFormData.datum}
               onChange={handleInputChange}
+              disabled={props.disabled}
             />
           </FormGroup>
         </Col>
         <Col xs="6">
           <FormGroup>
             <Input
+              className="form-control"
               type="time"
-              name="time"
-              id="exampleTime"
+              name="tid"
               list="times"
-              value={formData.time}
+              value={dTPFormData.tid}
               onChange={handleInputChange}
+              disabled={props.disabled}
             />
           </FormGroup>
         </Col>
