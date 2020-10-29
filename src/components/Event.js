@@ -46,7 +46,6 @@ export default function Event() {
       : new Date().toLocaleDateString(),
     tid: "09:00",
   });
-  console.log("context i event", context);
   const [endTime, setEndTime] = useState({
     datum: context.selectedDay
       ? context.selectedDay
@@ -155,12 +154,14 @@ export default function Event() {
   } // modalSuccess
 
   async function save(e) {
+    const options = {year: 'numeric', month: 'numeric', day: 'numeric', hour: "numeric", minute: "numeric"}
     formData.endDateTime = new Date(
       `${endTime.datum}, ${endTime.tid}`
-    ).toLocaleString();
+    ).toLocaleString("sv-SE", options);
     formData.startDateTime = new Date(
       `${startTime.datum}, ${startTime.tid}`
-    ).toLocaleString();
+    ).toLocaleString("sv-SE", options);
+    console.log("formData in save: ", formData);
     formData.participants = participants.map((user) => ({
       userId: user.value,
     }));

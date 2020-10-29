@@ -33,14 +33,11 @@ export default function Header() {
   const [modal, setModal] = useState(false);
   const toggleModal = () => setModal(!modal);
 
-  console.log("context i Header", context);
-  console.log("context.user i Header", context.user);
   const logout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     updateContext({ user: false, invitations: null });
   };
 
-  console.log("context i HEADER", context);
   return (
     <>
       <div>

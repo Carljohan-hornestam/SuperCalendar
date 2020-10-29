@@ -21,8 +21,8 @@ router.post("/", (req, res) => {
     res.json({ success: false })
     return
   }
-  req.body.startDateTime = req.body.startDateTime.slice(0, 17)
-  req.body.endDateTime = req.body.endDateTime.slice(0,17)
+  //req.body.startDateTime = req.body.startDateTime.slice(0, 17)
+  //req.body.endDateTime = req.body.endDateTime.slice(0,17)
   let invitations = req.body.participants
   req.body.creatorId = req.session.user.id
   req.body.ownerId = req.session.user.id
