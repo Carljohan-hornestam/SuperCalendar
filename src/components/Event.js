@@ -154,19 +154,14 @@ export default function Event() {
   } // modalSuccess
 
   async function save(e) {
-    const options = {year: 'numeric', month: 'numeric', day: 'numeric', hour: "numeric", minute: "numeric"}
-    formData.endDateTime = new Date(
-      `${endTime.datum}, ${endTime.tid}`
-    ).toLocaleString("sv-SE", options);
-    formData.startDateTime = new Date(
-      `${startTime.datum}, ${startTime.tid}`
-    ).toLocaleString("sv-SE", options);
-    console.log("formData in save: ", formData);
+    formData.endDateTime = convertDate(endTime)
+    formData.startDateTime = convertDate(startTime)
+
     formData.participants = participants.map((user) => ({
       userId: user.value,
     }));
 
-    e.preventDefault();
+     e.preventDefault();
     //Send the data to the REST api
     await fetch("/api/events/" + (id === "new" ? "" : id), {
       method: id === "new" ? "POST" : "PUT",
@@ -176,6 +171,10 @@ export default function Event() {
 
     setFormData({ done: true });
   } // save
+
+  function convertDate(dateTime) {
+    return `${dateTime.datum}, ${dateTime.tid}`
+  }
 
   function filterAvailableParticipants() {
     return availableParticipants.filter(
@@ -270,7 +269,7 @@ export default function Event() {
           <ModalBody>Vill du verkligen radera eventet?</ModalBody>
           <ModalFooter>
             <Button onClick={toggleDeleteModal}>Avbryt</Button>
-            <Button onClick={handleDeleteEvent} className="text-danger">
+            <Button onClick={handleDeleteEvent} color="danger">
               Ok
             </Button>
           </ModalFooter>
@@ -286,7 +285,7 @@ export default function Event() {
 
             {id !== "new" && !disabled ? (
               <FontAwesomeIcon
-                className=" float-right my-2"
+                className=" float-right my-2 pointer"
                 size="lg"
                 icon={faTrashAlt}
                 onClick={toggleDeleteModal}
@@ -386,14 +385,14 @@ export default function Event() {
                   <FontAwesomeIcon
                     size="lg"
                     icon={faPlusCircle}
-                    className="float-right"
+                    className="float-right pointer"
                     onClick={disabled ? null : toggle}
                     color={disabled ? "gray" : "green"}
                   />
                   <FontAwesomeIcon
                     size="lg"
                     icon={faMinusCircle}
-                    className="float-right mr-2"
+                    className="float-right mr-2 pointer"
                     onClick={
                       disabled || !hasSelection
                         ? null
@@ -402,9 +401,7 @@ export default function Event() {
                     color={disabled || !hasSelection ? "gray" : "red"}
                   />
                 </>
-              ) : (
-                <div>Hoppsan Kerstin!</div>
-              )}
+              ) : ""}
 
               {/* lägg in deltagare i value */}
               <Input
@@ -435,14 +432,14 @@ export default function Event() {
                 <FontAwesomeIcon
                   size="2x"
                   icon={faLongArrowAltLeft}
-                  className="float-left text-danger"
+                  className="float-left text-danger pointer"
                   onClick={cancel}
                 />
               ) : (
                 <FontAwesomeIcon
                   size="2x"
                   icon={faTimes}
-                  className="float-left text-danger"
+                  className="float-left text-danger pointer"
                   onClick={cancel}
                 />
               )}
@@ -451,7 +448,7 @@ export default function Event() {
               <FontAwesomeIcon
                 size="2x"
                 icon={faCheck}
-                className="float-right text-success"
+                className="float-right text-success pointer"
                 disabled={disabled}
                 onClick={save}
               />

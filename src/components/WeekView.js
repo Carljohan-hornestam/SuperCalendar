@@ -151,7 +151,7 @@ export default function WeekView() {
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                  <Col key={day} className="text-center" onClick={(e) => { !isDesktop &&  setDayValue(day); !isDesktop && displaySchedule(day); }}>
+                  <Col key={day} className="text-center" onClick={(e) => { setDayValue(day); displaySchedule(day); }}>
                       <div className={dayStyles(day, dayValue, redDays)}>
                         {day.format("D")}
                       </div>
@@ -176,19 +176,18 @@ export default function WeekView() {
           } 
         </Row>
 
-        <Row className="mt-3" style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
+        <Row className="mt-3 d-flex" style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
           { isDesktop ? (
             week.map(day => {
-              return (<Col key={day.datum}>
+              return (<Col key={day.datum} style={{maxWidth: "14.285%"}}>
                 {weeklySchedule.map(event => {
-                  
                   return event.startDateTime.slice(0, 10) === day.datum ? (
                       <Link key={event.id} to={"/event/" + event.id}>
                         <Card className="m-1" inverse color="info">
-                          <CardBody>
+                          <CardBody className="p-2">
                             <CardTitle className="font-weight-bold">{event.title}</CardTitle>
                             <CardSubtitle>{event.startDateTime.slice(-5)}-{event.endDateTime.slice(-5)}</CardSubtitle>
-                            <CardText>{event.description}</CardText>
+                            <CardText >{event.description}</CardText>
                           </CardBody>
                         </Card>
                       </Link>

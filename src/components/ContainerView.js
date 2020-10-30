@@ -6,7 +6,8 @@ import { useMediaQuery } from 'react-responsive'
 import moment from "moment"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft } from "@fortawesome/free-solid-svg-icons"
-import {Context} from "../App"
+import { Context } from "../App"
+import {getSchedule} from "../functions/CommonCalendarFunctions"
 
 export default function ContainerView() {
   moment.locale("sv")
@@ -21,8 +22,10 @@ export default function ContainerView() {
   })
 
   useEffect(() => {
-    getNameday()
-    updateContext({selectedDay: dayValue.format("YYYY-MM-DD")})
+    getNameday();
+    updateContext({ selectedDay: dayValue.format("YYYY-MM-DD") });
+    //(async () => { await getSchedule(dayValue, "YYYY-MM-DD") })();
+    
     const startDay = dayValue
     const weekDays = []
     weekDays.push(

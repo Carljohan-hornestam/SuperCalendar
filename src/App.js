@@ -6,12 +6,15 @@ import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/Calendar'
 import Event from './components/Event'
+import moment from "moment" 
 
 export const Context = createContext()
 
 export default function App() {
 
-  const [contextVal, setContext] = useState({})
+  const [contextVal, setContext] = useState({
+    selectedDay: moment().format("YYYY-MM-DD")
+  })
   const updateContext = updates => setContext({
     ...contextVal,
     ...updates
@@ -36,6 +39,7 @@ export default function App() {
       <Router>
         <Header />
         <div className="container">
+          <Route path ="/">{!contextVal.user ? <Redirect push to="/login" /> : <Redirect push to="/myCalendar" />} </Route>
           <Route exact path="/mycalendar">
             <Calendar />
           </Route>
@@ -45,7 +49,7 @@ export default function App() {
           <Route exact path="/login">
             <Login />
           </Route>
-          <Route path="/event/:id">
+          <Route exact path="/event/:id">
             <Event />
           </Route>
         </div>

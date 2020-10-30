@@ -85,8 +85,8 @@ export default function Header() {
           <ModalBody>
             {context.invitations && context.invitations.map((element) => {
               return (
-              <>
-                <Card outline color="primary" className="mb-1">
+              
+                <Card key={element.id} outline color="primary" className="mb-1">
                   <CardHeader><strong>{element.title}</strong> (<small>id: {element.id}</small>)</CardHeader>
                   <CardBody>
                     <CardTitle>Inbjuden av: {element.userName} (<small>{element.email}</small>)</CardTitle>
@@ -95,44 +95,19 @@ export default function Header() {
                   </CardBody>
                   <CardFooter>
                     <FontAwesomeIcon
-                      className="float-left text-danger"
+                      className="float-left text-danger pointer"
                       size="2x"
                       icon={faTimes}
                       onClick={() => handleInvitation(false, element.id, element.eventId)}
                       />
                     <FontAwesomeIcon
-                      className="float-right text-success"
+                      className="float-right text-success pointer"
                       size="2x"
                       icon={faCheck}
                       onClick={() => handleInvitation(true, element.id, element.eventId)}
                       />
                   </CardFooter>
                 </Card>
-
-            {/* <Link to={"/event/" + element.eventId}>
-              <Row>
-                <Col xs="6" md="6">
-                  Namn på event
-                </Col>
-                <Col xs="6" md="6">
-                    Skapad av
-                </Col>
-                <Col xs="6" md="6">
-                  {element.title}
-                </Col>
-                <Col xs="6" md="6">
-                  {element.userName}
-                </Col>
-                <Col xs="6" md="6">
-                  {element.startDateTime}
-                </Col>
-                <Col xs="6" md="6">
-                  {element.endDateTime}
-                </Col>
-              </Row>
-              </Link>
-               <hr/> */}
-              </>
             )})}
             
           </ModalBody>
@@ -182,12 +157,14 @@ export default function Header() {
                   >
                     <span className="d-block d-md-none">Inbjudningar</span>
                     <FontAwesomeIcon
-                      className="d-none d-md-block"
+                      className={`d-none d-md-block hover ${!context.invitations ||
+                        (context.invitations && !context.invitations.length) ? 'text-secondary' : 'text-danger'}` } 
                       size="2x"
                       icon={!context.invitations ||
                         (context.invitations && !context.invitations.length) ? faEnvelope : faEnvelopeOpenText}
-                      color={!context.invitations ||
-                        (context.invitations && !context.invitations.length) ? 'gray' : 'red'}
+                      // color={!context.invitations ||
+                      //   (context.invitations && !context.invitations.length) ? 'gray' : 'red'}
+              
                     />
                   </NavLink>
                 </NavItem>                
