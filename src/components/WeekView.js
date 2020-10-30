@@ -20,7 +20,7 @@ export default function WeekView() {
   const [calendar, setCalendar] = useState([])
   const [dayValue, setDayValue] = useState(moment())
   const [year, setYear] = useState([])
-  const [week, setWeek] = useState([])
+  const [nameDays, setNameDays] = useState([])
   const [weeklySchedule, setWeeklySchedule] = useState([])
   const [redDays, setRedDays] = useState([])
   let [context, updateContext] = useContext(Context)
@@ -62,11 +62,11 @@ export default function WeekView() {
     }
 
     setYear(result)
-    getWeek(result)
+    getNamedaysForWeek(result)
     setRedDays(getAllRedDays(result))
   }
 
-  function getWeek(year){
+  function getNamedaysForWeek(year){
     let data = year.dagar
     let result = data.filter( (day) => 
       parseInt(day.vecka) === parseInt(getCurrentWeek()))
@@ -76,7 +76,7 @@ export default function WeekView() {
     if (result.length > 7) {
       result = result.splice(6)
     }
-    setWeek(result)
+    setNameDays(result)
     getAllEventsForCurrentWeek(result)
   }
 
@@ -144,41 +144,39 @@ export default function WeekView() {
           })
         }
       </Row>
-      <div>
 
+      <div>
         {
           calendar.map(week => 
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                  <Col key={day} className="text-center" onClick={(e) => { setDayValue(day); displaySchedule(day); }}>
-                      <div className={dayStyles(day, dayValue, redDays)}>
-                        {day.format("D")}
-                      </div>
-                    </Col>
+                  <Col key={day} className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-1 layout`}   onClick={(e) => { setDayValue(day); displaySchedule(day); }}>
+                    <Row className="justify-content-center">
+                      <span>{day.format("D")}</span>
+                    </Row>
+                    { isDesktop &&
+                      <Row className="justify-content-center">
+                        {
+                          nameDays.map(dag => {
+                            if (dag.datum === day.format("YYYY-MM-DD")) {
+                              return (
+                                dag.namnsdag.map(namn => <span key={namn} className="mx-1 text-black">{namn}</span>)
+                              )
+                            }
+                          })
+                        }
+                      </Row>
+                    }
+                  </Col>
                 )
               }
             </Row>
           )
         }
-        
-        <Row className="d-none d-lg-flex"> 
-        {
-          week.map(dag => 
-            <Col key={dag.datum} className="text-center">
-              { dag.namnsdag.map(namn => 
-                <span key={namn} className="mx-1">
-                  {namn}
-                </span>
-              )}
-            </Col>
-          )
-          } 
-        </Row>
-
         <Row className="mt-3 d-flex" style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
           { isDesktop ? (
-            week.map(day => {
+            nameDays.map(day => {
               return (<Col key={day.datum} style={{maxWidth: "14.285%"}}>
                 {weeklySchedule.map(event => {
                   return event.startDateTime.slice(0, 10) === day.datum ? (

@@ -113,10 +113,10 @@ export default function Calendar() {
             <Row className="d-flex" key={week}>
               {
                 week.map(day =>
-                  <Col className="text-center pointer" onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
-                    <div className={dayStyles(day, dayValue, redDays)}>
+                  <Col className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-lg-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
+                    
                       {day.format("D")}
-                    </div>
+                  
                   </Col>
                 )
               }
@@ -124,9 +124,6 @@ export default function Calendar() {
           )
         }
       </div>
-      <Row className="mt-2" style={{height: isDesktop ? "55vh" : "43vh" , overflowY: "scroll"}}>
-        <DayView/>
-      </Row>
     </div>
   )
 }

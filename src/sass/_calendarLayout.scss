@@ -1,0 +1,7 @@
+.layout {
+  border: 1px solid black;
+  @media (min-width: 768px) {
+    width: 100px;
+    height: 100px;
+  }
+}
