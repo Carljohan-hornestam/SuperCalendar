@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2020-10-20T11:13:26.623Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36" etag="2BJs-e0eB8p-vQVoJJm5" version="13.8.0" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-30T13:10:54.662Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36" etag="SJylqfxv6Q_8LJfJSCcb" version="13.8.1" type="github">
   <diagram id="mtcsN6Ltq_OjmTKMSVJv" name="ER-diagram">
-    <mxGraphModel dx="1385" dy="670" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1422" dy="804" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -32,6 +32,12 @@
         <mxCell id="mDrmKwzOYlJqISJByXZ0-6" value="Participants" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" parent="1" vertex="1">
           <mxGeometry x="650" y="320" width="160" height="80" as="geometry" />
         </mxCell>
+        <mxCell id="Gu1xxHxfjgNwfPbLGMCr-1" value="" style="endArrow=none;html=1;strokeWidth=6;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="mDrmKwzOYlJqISJByXZ0-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-10" y="110" as="sourcePoint" />
+            <mxPoint x="160" y="-25" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="mDrmKwzOYlJqISJByXZ0-7" value="+id&#xa;+eventId&#xa;+userId" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" parent="mDrmKwzOYlJqISJByXZ0-6" vertex="1">
           <mxGeometry y="30" width="160" height="50" as="geometry" />
         </mxCell>
@@ -43,7 +49,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="mDrmKwzOYlJqISJByXZ0-11" value="Category" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" parent="1" vertex="1">
+        <mxCell id="mDrmKwzOYlJqISJByXZ0-11" value="Category (VG)" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;" parent="1" vertex="1">
           <mxGeometry x="450" y="320" width="160" height="100" as="geometry" />
         </mxCell>
         <mxCell id="mDrmKwzOYlJqISJByXZ0-12" value="+id&#xa;+userId: int, not null&#xa;+name: String, not null&#xa;+color: Color, not null" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" parent="mDrmKwzOYlJqISJByXZ0-11" vertex="1">
@@ -107,6 +113,12 @@
         </mxCell>
         <mxCell id="mDrmKwzOYlJqISJByXZ0-3" value="+id&#xa;+userName&#xa;+email&#xa;+password&#xa;+themeId" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;fontSize=12;verticalAlign=top;resizable=0;rotatable=0;part=1;" parent="mDrmKwzOYlJqISJByXZ0-2" vertex="1">
           <mxGeometry y="30" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Gu1xxHxfjgNwfPbLGMCr-3" value="" style="endArrow=none;html=1;strokeWidth=6;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="640" y="300" as="sourcePoint" />
+            <mxPoint x="810" y="425" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
