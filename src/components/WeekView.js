@@ -169,12 +169,12 @@ export default function WeekView() {
                       </Row>
                     }
                     { isDesktop &&
-                      <Row className="m-1">
+                      <Row className="mx-1">
                       {
                         weeklySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).map(
                           (filteredEvent, index, arr) => {
                             if (index < 2) {
-                              return <Badge tag={Link} to={`event/${ filteredEvent.id}`} pill color="info">{filteredEvent.title}</Badge>
+                              return <Badge tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" style={{maxWidth:"75%", textOverflow: "ellipsis", overflow: "hidden"}}>{filteredEvent.title}</Badge>
                             }
                             if(arr.length > 2 && index == arr.length-1)  return <Badge pill color="dark">+{arr.length-2}</Badge>
                           }
