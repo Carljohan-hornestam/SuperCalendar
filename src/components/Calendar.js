@@ -50,7 +50,7 @@ export default function Calendar() {
             Vecka
           </NavLink>
         </NavItem>
-        <NavItem style={{flex:1}} className="text-center">
+        <NavItem style={{flex:1}} className="text-center d-none d-md-block">
           <NavLink
             className={classnames({ active: activeTab === '2' })}
             onClick={() => { toggle('2'); }}
@@ -78,4 +78,3 @@ export default function Calendar() {
     </Container>
   )
 }
-        //<ContainerView />

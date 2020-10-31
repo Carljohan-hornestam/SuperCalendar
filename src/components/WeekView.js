@@ -7,7 +7,7 @@ import {Context} from "../App"
 import { useMediaQuery } from 'react-responsive'
 import {
   Card, CardTitle, CardText,
-  CardSubtitle, CardBody, Row, Col
+  CardSubtitle, CardBody, Row, Col, Badge
 } from 'reactstrap';
 import { Link } from "react-router-dom"
 import DayView from "./DayView"
@@ -151,7 +151,7 @@ export default function WeekView() {
             <Row key={week} className="d-flex">
               {
                 week.map(day =>
-                  <Col key={day} className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-1 layout`}   onClick={(e) => { setDayValue(day); displaySchedule(day); }}>
+                  <Col key={day} className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day); }}>
                     <Row className="justify-content-center">
                       <span>{day.format("D")}</span>
                     </Row>
@@ -168,6 +168,20 @@ export default function WeekView() {
                         }
                       </Row>
                     }
+                    { isDesktop &&
+                      <Row className="m-1">
+                      {
+                        weeklySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).map(
+                          (filteredEvent, index, arr) => {
+                            if (index < 2) {
+                              return <Badge tag={Link} to={`event/${ filteredEvent.id}`} pill color="info">{filteredEvent.title}</Badge>
+                            }
+                            if(arr.length > 2 && index == arr.length-1)  return <Badge pill color="dark">+{arr.length-2}</Badge>
+                          }
+                        )
+                      }
+                      </Row>
+                    }
                   </Col>
                 )
               }
@@ -175,7 +189,7 @@ export default function WeekView() {
           )
         }
         <Row className="mt-3 d-flex" style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
-          { isDesktop ? (
+          { /*isDesktop ? (
             nameDays.map(day => {
               return (<Col key={day.datum} style={{maxWidth: "14.285%"}}>
                 {weeklySchedule.map(event => {
@@ -193,7 +207,7 @@ export default function WeekView() {
                   }
                 )}
               </Col>)
-            })) :  <DayView/>
+            })) :  <DayView/> */
           }
         </Row>
 

@@ -161,10 +161,7 @@ export default function Header() {
                         (context.invitations && !context.invitations.length) ? 'text-secondary' : 'text-danger'}` } 
                       size="2x"
                       icon={!context.invitations ||
-                        (context.invitations && !context.invitations.length) ? faEnvelope : faEnvelopeOpenText}
-                      // color={!context.invitations ||
-                      //   (context.invitations && !context.invitations.length) ? 'gray' : 'red'}
-              
+                        (context.invitations && !context.invitations.length) ? faEnvelope : faEnvelopeOpenText}              
                     />
                   </NavLink>
                 </NavItem>                
