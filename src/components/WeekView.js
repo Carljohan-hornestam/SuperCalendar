@@ -153,7 +153,10 @@ export default function WeekView() {
                 week.map(day =>
                   <Col key={day} className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day); }}>
                     <Row className="justify-content-center">
-                      <span>{day.format("D")}</span>
+                      <span>
+                        {day.format("D")}
+                        {!isDesktop && weeklySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).length > 0 && <div className="eventIndicator"></div>}
+                      </span>
                     </Row>
                     { isDesktop &&
                       <Row className="justify-content-center">

@@ -1,10 +1,22 @@
 .layout {
+  background-color: theme-color("third");
   border: 1px solid black;
   @media (min-width: 768px) {
     width: 100px;
     height: 100px;
   }
   &:hover {
-    box-shadow: 0 0 5px 5px $danger;
+    box-shadow: 0 0 3px 3px $third;
   }
+}
+
+.eventIndicator {
+  position: absolute;
+  top: 0.2rem;
+  right:0.2rem;
+  height: 0.2rem;
+  width: 0.2rem;
+  border-radius: 0.2rem;
+  background-color: $primary;
+  box-shadow: 0 0 0.1rem 0.1rem $cyan;
 }
