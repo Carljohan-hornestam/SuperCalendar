@@ -131,7 +131,7 @@ export default function WeekView() {
     console.log("containsEvent events", events);
     return events.length > 0
   }*/
-
+/* 
   const themes = [
   'light',
   'dark'
@@ -144,7 +144,7 @@ export default function WeekView() {
   
     document.documentElement.className = '';
     document.documentElement.classList.add(`theme-${user.theme}`);
-  }
+  } */
 
   return (
     <div className="mt-3">
@@ -206,12 +206,12 @@ export default function WeekView() {
               }
             </Row>
           )
-        }
-        <Input type="select" name="select" defaultValue={user.theme} onChange={event => { changeTheme(event.target.value) } }>
-          {themes.map((theme, index) => {
-           return (<option value={theme} key={index}>{theme}</option>)
-        })}
-        </Input>
+        }{/*
+          <Input type="select" name="select" defaultValue={user.theme} onChange={event => { changeTheme(event.target.value) }}>
+            {themes.map((theme, index) => {
+              return (<option value={theme} key={index}>{theme}</option>)
+            })}
+          </Input>*/}
         <Row className="mt-3 d-flex" style={{height: isDesktop ? "60vh" : "55vh" , overflowY: "scroll"}}>
           { /*isDesktop ? (
             nameDays.map(day => {

@@ -1,15 +1,19 @@
 $themes: (
   light: (
-    color-background: #fff4e3,
-    color-datebox: #ffcdab,
+    color-primary: #fff4e3,
+    color-secondary: #ffcdab,
     color-border: #ffa45c,
     color-selected: #5d5d5a,
+    color-success: $success,
+    color-disabled: $secondary,
   ),
   dark: (
-    color-background: #2f2519,
-    color-datebox: #212121,
+    color-primary: #2f2519,
+    color-secondary: #212121,
     color-border: #fa7d09,
     color-selected: #ff4301,
+    color-success: $danger,
+    color-disabled: $primary,
   ),
 );
 
@@ -21,38 +25,50 @@ $themes: (
   }
 }
 
-div .layout {
-  @include theme-aware("background", "color-datebox");
-  @include theme-aware("border-color", "color-border");
-  @include theme-aware("color", "color-selected");
+.redDay {
+  @include theme-aware("color", "color-redDay");
 }
 
-li.theme {
+/* .layout {
+  @include theme-aware("background", "color-secondary");
+  @include theme-aware("border-color", "color-border");
+  @include theme-aware("color", "color-selected");
+} */
+
+.theme {
   border: none;
   border-bottom: 1px solid;
-  @include theme-aware("background", "color-background");
+  @include theme-aware("background", "color-primary");
   @include theme-aware("color", "color-selected");
   @include theme-aware("border-color", "color-border");
 }
-li.theme a.active {
+.theme .active {
   border: 1px solid;
-  @include theme-aware("background", "color-datebox");
+  @include theme-aware("background", "color-secondary");
   @include theme-aware("color", "color-selected");
   @include theme-aware("border-color", "color-border");
 }
 
 div.dayBar {
   border: 1px solid;
-  @include theme-aware("background", "color-datebox");
+  @include theme-aware("background", "color-secondary");
   @include theme-aware("border-color", "color-border");
 }
 div.dateBar {
-  @include theme-aware("background", "color-background");
+  @include theme-aware("background", "color-primary");
 }
 
 body {
-  @include theme-aware("background", "color-background");
+  @include theme-aware("background", "color-primary");
   @include theme-aware("color", "color-selected");
+}
+
+svg.plusButtonEnable {
+  @include theme-aware("color", "color-success");
+}
+
+svg.plusButtonDisable {
+  @include theme-aware("color", "color-disable");
 }
 
 .layout {
@@ -70,7 +86,6 @@ body {
   max-width: 75%;
   text-overflow: ellipsis;
   overflow: hidden;
-  box-shadow: 0 0 3px 3px $third;
 }
 
 .eventIndicator {

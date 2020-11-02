@@ -383,11 +383,11 @@ export default function Event() {
               id === "new" ? (
                 <>
                   <FontAwesomeIcon
-                    size="lg"
-                    icon={faPlusCircle}
-                    className="float-right pointer"
+                      size="lg"
+                      icon={faPlusCircle}
+                      className={`${disabled ? "plusButtonDisable":"plusButtonEnable" } float-right pointer`}
                     onClick={disabled ? null : toggle}
-                    color={disabled ? "gray" : "green"}
+                    //color={disabled ? "gray" : "green"}
                   />
                   <FontAwesomeIcon
                     size="lg"
