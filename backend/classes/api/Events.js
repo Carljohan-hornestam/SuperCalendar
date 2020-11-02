@@ -24,16 +24,60 @@ router.post("/", (req, res) => {
   //req.body.startDateTime = req.body.startDateTime.slice(0, 17)
   //req.body.endDateTime = req.body.endDateTime.slice(0,17)
   let invitations = req.body.participants
+  let recurringEvent = req.body.recurringEvent || 0
+  let recurringInterval = req.body.recurringInterval
+  let recurringIntervalEnd = new Date('2020-11-09')
+  let timeBetween = 0
+  if (recurringEvent == 1 && recurringInterval !== 0) {
+    let startDate = new Date(req.body.startDateTime)
+    let milliseconds = recurringIntervalEnd.getTime() - startDate.getTime()
+
+    if (recurringInterval === 1) {
+      timeBetween = Math.round(milliseconds / (1000 * 3600 * 24))
+      console.log("timebetween in days", timeBetween);
+    }
+    else if (recurringInterval === 2) {
+      timeBetween = Math.round(milliseconds / (1000 * 3600 * 24 * 7))
+      console.log("timebetween in weeks", timeBetween);
+    }
+    else if (recurringInterval === 3) {
+      timeBetween = (recurringIntervalEnd.getFullYear() - startDate.getFullYear()) * 12
+      timeBetween -= startDate.getMonth();
+      timeBetween += recurringIntervalEnd.getMonth();
+      console.log("timebetween in months", timeBetween);
+    }
+    // else if (recurringInterval === 4) {
+    //   // förberett för årsuträkning
+    //   let testis = milliseconds / (1000 * 3600 * 24)
+    //   timeBetween = Math.abs(Math.round(testis / 365.25))
+    //   console.log("timebetween: ", timeBetween);
+    // }
+  }
   req.body.creatorId = req.session.user.id
   req.body.ownerId = req.session.user.id
   delete req.body.participants
+  // if (timeBetween === 0) {
+  //   timeBetween = 1
+  // }
+  let results = []
+  for (i = 0; i <= timeBetween; i++) {
   let result = db.run(/*sql*/ `
   INSERT INTO Events (${Object.keys(req.body)}) 
   VALUES (${Object.keys(req.body).map(x => "$" + x)})
   `, req.body)
+
+  let clonedStartDate = new Date(req.body.startDateTime)
+  let newStartDate = new Date()
+  newStartDate.setDate(clonedStartDate.getDate() + 1)
+  console.log("startdatetime innan uträkning", req.body.startDateTime);
+  req.body.startDateTime = newStartDate.getFullYear() + "-" + newStartDate.getMonth() + 1
+   + "-" + newStartDate.getDate() + ", " + newStartDate.getHours() + ":" + newStartDate.getMinutes()
+  console.log("newstartdate", newStartDate);
+  console.log("startdatetime efter uträkning", req.body.startDateTime);
+  // req.body.endDateTime.setDate(req.body.endDateTime.getDate() + 1) 
+  
   let eventId = result.lastInsertRowid
 
-  let results = []
   results.push(result)
   invitations.forEach( p => {
     let result = db.run(
@@ -47,6 +91,7 @@ router.post("/", (req, res) => {
     }
   })
 
+}
   res.json(results)
 })
 
