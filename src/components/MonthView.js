@@ -36,7 +36,7 @@ export default function Calendar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue])
 
-  const days = moment.weekdaysShort(true)
+  const days = moment.weekdays(true)
 
   async function getDaysInformation(){
     let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + dayValue.format("YYYY"))).json()
@@ -114,9 +114,7 @@ export default function Calendar() {
               {
                 week.map(day =>
                   <Col className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-lg-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
-                    
                       {day.format("D")}
-                  
                   </Col>
                 )
               }
