@@ -7,14 +7,15 @@ import {Context} from "../App"
 import { useMediaQuery } from 'react-responsive'
 import {
   Card, CardTitle, CardText,
-  CardSubtitle, CardBody, Row, Col, Badge
+  CardSubtitle, CardBody, Row, Col, Badge, Input
 } from 'reactstrap';
 import { Link } from "react-router-dom"
 import DayView from "./DayView"
 import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
+import { faThemeisle } from "@fortawesome/free-brands-svg-icons"
 
 export default function WeekView() {
-  const theme = "grey" //change to context variable
+  //const theme = "grey" //change to context variable
   moment.locale("sv")
 
   const [calendar, setCalendar] = useState([])
@@ -27,6 +28,7 @@ export default function WeekView() {
 
   useEffect(() => {
     getYear();
+    //changeTheme("dark")
     const startDay = dayValue.clone().startOf("week")
     const endDay = dayValue.clone().endOf("week")
     const day = startDay.clone().subtract(1, "day")
@@ -130,17 +132,31 @@ export default function WeekView() {
     return events.length > 0
   }*/
 
+  const themes = [
+  'light',
+  'dark'
+  ];
+  let user = {
+    theme: "dark"
+  }
+  function changeTheme(theme) {
+    user.theme = theme;
+  
+    document.documentElement.className = '';
+    document.documentElement.classList.add(`theme-${user.theme}`);
+  }
+
   return (
     <div className="mt-3">
-      <Row className="row bg-light">
+      <Row className="dateBar mb-2">
         <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
         <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextWeek())} /></Col>
       </Row>
-      <Row className="d-flex">
+      <Row className="d-flex dayBar">
         {
           days.map( day => {
-            return <Col style={{backgroundColor: `${theme}`}} className="text-white text-center" key={day}>{isDesktop ? day : day.slice(0, 1)}</Col>   
+            return <Col className="text-center" key={day}>{isDesktop ? day : day.slice(0, 1)}</Col>   
           })
         }
       </Row>
@@ -174,7 +190,7 @@ export default function WeekView() {
                         weeklySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).map(
                           (filteredEvent, index, arr) => {
                             if (index < 2) {
-                              return <Badge tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" style={{maxWidth:"75%", textOverflow: "ellipsis", overflow: "hidden"}}>{filteredEvent.title}</Badge>
+                              return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
                             }
                             if(arr.length > 2 && index == arr.length-1)  return <Badge pill color="dark">+{arr.length-2}</Badge>
                           }
@@ -188,7 +204,12 @@ export default function WeekView() {
             </Row>
           )
         }
-        <Row className="mt-3 d-flex" style={{height: isDesktop ? "65vh" : "55vh" , overflowY: "scroll"}}>
+        <Input type="select" name="select" defaultValue={user.theme} onChange={event => { changeTheme(event.target.value) } }>
+          {themes.map((theme, index) => {
+           return (<option value={theme} key={index}>{theme}</option>)
+        })}
+        </Input>
+        <Row className="mt-3 d-flex" style={{height: isDesktop ? "60vh" : "55vh" , overflowY: "scroll"}}>
           { /*isDesktop ? (
             nameDays.map(day => {
               return (<Col key={day.datum} style={{maxWidth: "14.285%"}}>
@@ -210,8 +231,6 @@ export default function WeekView() {
             })) :  <DayView/> */
           }
         </Row>
-
-
       </div>
     </div>
   )

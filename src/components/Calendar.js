@@ -34,7 +34,7 @@ export default function Calendar() {
   return (
     <Container>
       <Nav tabs className="mt-3">
-        <NavItem style={{flex:1}} className="text-center">
+        <NavItem style={{flex:1}} className="text-center theme">
           <NavLink
             className={classnames({ active: activeTab === '0' })}
             onClick={() => { toggle('0'); }}
@@ -42,7 +42,7 @@ export default function Calendar() {
             Dag
           </NavLink>
         </NavItem>
-        <NavItem style={{flex:1}} className="text-center">
+        <NavItem style={{flex:1}} className="text-center theme">
           <NavLink
             className={classnames({ active: activeTab === '1' })}
             onClick={() => { toggle('1'); }}
@@ -50,7 +50,7 @@ export default function Calendar() {
             Vecka
           </NavLink>
         </NavItem>
-        <NavItem style={{flex:1}} className="text-center d-none d-md-block">
+        <NavItem style={{flex:1}} className="text-center d-none d-md-block theme">
           <NavLink
             className={classnames({ active: activeTab === '2' })}
             onClick={() => { toggle('2'); }}

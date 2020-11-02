@@ -1,10 +1,73 @@
+$themes: (
+  light: (
+    color-background: #fff4e3,
+    color-datebox: #ffcdab,
+    color-border: #ffa45c,
+    color-selected: #5d5d5a,
+  ),
+  dark: (
+    color-background: #2f2519,
+    color-datebox: #212121,
+    color-border: #fa7d09,
+    color-selected: #ff4301,
+  ),
+);
+
+@mixin theme-aware($key, $color) {
+  @each $theme-name, $theme-color in $themes {
+    .theme-#{$theme-name} & {
+      #{$key}: map-get(map-get($themes, $theme-name), $color);
+    }
+  }
+}
+
+div .layout {
+  @include theme-aware("background", "color-datebox");
+  @include theme-aware("border-color", "color-border");
+  @include theme-aware("color", "color-selected");
+}
+
+li.theme {
+  border: none;
+  border-bottom: 1px solid;
+  @include theme-aware("background", "color-background");
+  @include theme-aware("color", "color-selected");
+  @include theme-aware("border-color", "color-border");
+}
+li.theme a.active {
+  border: 1px solid;
+  @include theme-aware("background", "color-datebox");
+  @include theme-aware("color", "color-selected");
+  @include theme-aware("border-color", "color-border");
+}
+
+div.dayBar {
+  border: 1px solid;
+  @include theme-aware("background", "color-datebox");
+  @include theme-aware("border-color", "color-border");
+}
+div.dateBar {
+  @include theme-aware("background", "color-background");
+}
+
+body {
+  @include theme-aware("background", "color-background");
+  @include theme-aware("color", "color-selected");
+}
+
 .layout {
-  border: 1px solid black;
+  border: 1px solid;
   @media (min-width: 768px) {
     width: 100px;
     height: 100px;
   }
   &:hover {
-    box-shadow: 0 0 5px 5px $danger;
+    box-shadow: 0 0 2px 2px;
+    transform: scale(1.1);
   }
+}
+.calbadge {
+  max-width: 75%;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
