@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { Row, Col, Button, Form, FormGroup, Input, Alert } from  "reactstrap";
+import { Row, Col, Button, Form, FormGroup, Input, Alert, Label } from  "reactstrap";
 import { Context } from "../App";
 
 export default function Login() {
@@ -86,12 +86,12 @@ export default function Login() {
           ></Input>
           </FormGroup>
           <Col xs="12" className="text-center">
-            <Button type="submit" color="primary" className="mt-3 w-50">
+            <Button type="submit" color="primary" className="my-3 w-50">
               Logga in
             </Button>
           </Col>
           <Col xs="12">
-          <Link to="/register" className="mt-3">
+          <Link to="/profile/new" className="mt-3">
             Har du inte ett konto?
             <br />
             Registrera

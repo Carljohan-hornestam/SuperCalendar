@@ -43,7 +43,7 @@ export default function Header() {
                 <NavLink
                   tag={RouterNavLink}
                   className="nav-link text-center"
-                  to="/profile"
+                  to={ "/profile/" + context.user.id }
                 >
                   <span className="d-block d-md-none">Profil</span>
                   <FontAwesomeIcon
@@ -75,9 +75,9 @@ export default function Header() {
                 <NavLink
                   tag={RouterNavLink}
                   className="nav-link text-center"
-                  to="/register"
+                  to="/profile/new"
                 >
-                  <span className="d-block d-md-none">Registrera</span>
+                  <span className="d-block d-md-none">Registrera dig nu!</span>
                   <FontAwesomeIcon
                     className="d-none d-md-block"
                     size="2x"
