@@ -22,10 +22,12 @@ export default function App() {
   const [contextVal, setContext] = useState({
     selectedDay: moment().format("YYYY-MM-DD")
   })
+
   const updateContext = updates => setContext({
     ...contextVal,
     ...updates
   })
+  
   const themeNames = { dark: `dark-theme`, light: `light-theme`, third: `third-theme`}; 
   const [themeName, setThemeName] = useState(themeNames.dark)
 

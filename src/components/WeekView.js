@@ -28,7 +28,6 @@ export default function WeekView() {
 
   useEffect(() => {
     getYear();
-    //changeTheme("dark")
     const startDay = dayValue.clone().startOf("week")
     const endDay = dayValue.clone().endOf("week")
     const day = startDay.clone().subtract(1, "day")
@@ -131,20 +130,6 @@ export default function WeekView() {
     console.log("containsEvent events", events);
     return events.length > 0
   }*/
-/* 
-  const themes = [
-  'light',
-  'dark'
-  ];
-  let user = {
-    theme: "dark"
-  }
-  function changeTheme(theme) {
-    user.theme = theme;
-  
-    document.documentElement.className = '';
-    document.documentElement.classList.add(`theme-${user.theme}`);
-  } */
 
   return (
     <div className="mt-3">
@@ -206,14 +191,9 @@ export default function WeekView() {
               }
             </Row>
           )
-        }{/*
-          <Input type="select" name="select" defaultValue={user.theme} onChange={event => { changeTheme(event.target.value) }}>
-            {themes.map((theme, index) => {
-              return (<option value={theme} key={index}>{theme}</option>)
-            })}
-          </Input>*/}
-        <Row className="mt-3 d-flex" style={{height: isDesktop ? "60vh" : "55vh" , overflowY: "scroll"}}>
-          { /*isDesktop ? (
+        }
+        <Row className="mt-3 d-flex" style={{height: isDesktop ? "55vh" : "55vh" , overflowY: "scroll"}}>
+          { isDesktop ? (
             nameDays.map(day => {
               return (<Col key={day.datum} style={{maxWidth: "14.285%"}}>
                 {weeklySchedule.map(event => {
@@ -231,7 +211,7 @@ export default function WeekView() {
                   }
                 )}
               </Col>)
-            })) :  <DayView/> */
+            })) :  <DayView/>
           }
         </Row>
       </div>
