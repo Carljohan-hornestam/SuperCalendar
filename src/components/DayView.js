@@ -54,7 +54,6 @@ export default function DayView() {
     // updateContext({ randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent())) })
     console.log("randomOnEvent: ", randomEvent);
     console.log("onThisDay: ", onThisDay);
-    console.log("randomwikievent", onThisDay && onThisDay.events[+randomEvent].wikipedia[0].wikipedia)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue]);
 
@@ -129,7 +128,8 @@ export default function DayView() {
           <Col className="mt-3">
             <Row className="justify-content-center">
               <Col md="3" style={{ columnCount: "auto" }}>
-                {onThisDay &&
+                {onThisDay && onThisDay.events[+randomEvent] && onThisDay.events[+randomEvent].wikipedia
+                 && onThisDay.events[+randomEvent].wikipedia[0].wikipedia &&
                   <a
                     href={
                       onThisDay.events[+randomEvent]
