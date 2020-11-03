@@ -1,3 +1,5 @@
+const moment = require("moment");
+const { NULL } = require("node-sass");
 const router = require("express").Router();
 const db = require("./utils/DBHelper").getInstance();
 
@@ -15,83 +17,125 @@ router.get("/", (req, res) => {
   }
 });
 
+function getLoopCounter(recurringEvent, startDateTimeIn, recurringInterval, recurringIntervalEndIn) {
+  let startDateTime = new Date(startDateTimeIn)
+  let recurringIntervalEnd = new Date(recurringIntervalEndIn)
+  if (recurringEvent == 1 && recurringInterval > 0) {  
+    let milliseconds = recurringIntervalEnd.getTime() - startDateTime.getTime()
+
+    switch(recurringInterval) {
+      case 1:
+        return Math.round(milliseconds / (1000 * 3600 * 24))
+        break
+
+      case 2:
+        return Math.round(milliseconds / (1000 * 3600 * 24 * 7))
+        break
+
+      case 3:
+        let timeBetween = (recurringIntervalEnd.getFullYear() - startDateTime.getFullYear()) * 12
+        timeBetween -= startDateTime.getMonth();
+        timeBetween += recurringIntervalEnd.getMonth();
+        return timeBetween
+        break
+      
+      case 4:
+        let yearMilli = milliseconds / (1000 * 3600 * 24)
+        return Math.abs(Math.floor(yearMilli / 365.25))
+        break
+
+      default:
+        console.log("OH NO!");
+        break;
+    }
+  }
+  return 0
+}
+
 router.post("/", (req, res) => {
   if (!req.session.user) {
     res.status(403)
     res.json({ success: false })
     return
   }
-  //req.body.startDateTime = req.body.startDateTime.slice(0, 17)
-  //req.body.endDateTime = req.body.endDateTime.slice(0,17)
   let invitations = req.body.participants
   let recurringEvent = req.body.recurringEvent || 0
   let recurringInterval = req.body.recurringInterval
-  let recurringIntervalEnd = new Date('2020-11-09')
-  let timeBetween = 0
-  if (recurringEvent == 1 && recurringInterval !== 0) {
-    let startDate = new Date(req.body.startDateTime)
-    let milliseconds = recurringIntervalEnd.getTime() - startDate.getTime()
-
-    if (recurringInterval === 1) {
-      timeBetween = Math.round(milliseconds / (1000 * 3600 * 24))
-      console.log("timebetween in days", timeBetween);
-    }
-    else if (recurringInterval === 2) {
-      timeBetween = Math.round(milliseconds / (1000 * 3600 * 24 * 7))
-      console.log("timebetween in weeks", timeBetween);
-    }
-    else if (recurringInterval === 3) {
-      timeBetween = (recurringIntervalEnd.getFullYear() - startDate.getFullYear()) * 12
-      timeBetween -= startDate.getMonth();
-      timeBetween += recurringIntervalEnd.getMonth();
-      console.log("timebetween in months", timeBetween);
-    }
-    // else if (recurringInterval === 4) {
-    //   // förberett för årsuträkning
-    //   let testis = milliseconds / (1000 * 3600 * 24)
-    //   timeBetween = Math.abs(Math.round(testis / 365.25))
-    //   console.log("timebetween: ", timeBetween);
-    // }
-  }
+  let recurringIntervalEnd = new Date(req.body.intervalEnd)
+  delete req.body.intervalEnd
+  let timeBetween = getLoopCounter(recurringEvent, req.body.startDateTime, recurringInterval, recurringIntervalEnd)
   req.body.creatorId = req.session.user.id
   req.body.ownerId = req.session.user.id
   delete req.body.participants
-  // if (timeBetween === 0) {
-  //   timeBetween = 1
-  // }
   let results = []
-  for (i = 0; i <= timeBetween; i++) {
-  let result = db.run(/*sql*/ `
-  INSERT INTO Events (${Object.keys(req.body)}) 
-  VALUES (${Object.keys(req.body).map(x => "$" + x)})
-  `, req.body)
+  let i = 0
+  let originalStartDate = req.body.startDateTime
+  let originalEndDate = req.body.endDateTime
+  let recurringParentId = 0
 
-  let clonedStartDate = new Date(req.body.startDateTime)
-  let newStartDate = new Date()
-  newStartDate.setDate(clonedStartDate.getDate() + 1)
-  console.log("startdatetime innan uträkning", req.body.startDateTime);
-  req.body.startDateTime = newStartDate.getFullYear() + "-" + newStartDate.getMonth() + 1
-   + "-" + newStartDate.getDate() + ", " + newStartDate.getHours() + ":" + newStartDate.getMinutes()
-  console.log("newstartdate", newStartDate);
-  console.log("startdatetime efter uträkning", req.body.startDateTime);
-  // req.body.endDateTime.setDate(req.body.endDateTime.getDate() + 1) 
-  
-  let eventId = result.lastInsertRowid
-
-  results.push(result)
-  invitations.forEach( p => {
-    let result = db.run(
-    /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
-    VALUES (${eventId}, ${p.userId})`, {...p}
-    )
-    if (result.error) {
-      results.push({"error": "User could not be / is already invited!"})
+  do {
+    if(recurringEvent && recurringParentId !== 0) {
+      req.body.recurringParentId = recurringParentId
     } else {
-      results.push(result)
+      req.body.recurringParentId = null
     }
-  })
+    let result = db.run(/*sql*/ `
+      INSERT INTO Events (${Object.keys(req.body)}) 
+      VALUES (${Object.keys(req.body).map(x => "$" + x)})
+      `, req.body)
 
-}
+    let newStartDate
+    let newEndDate
+    console.log("startdatetime innan uträkning", req.body.startDateTime);
+    console.log("recurringInterval: ", recurringInterval);
+
+    switch (recurringInterval) {
+      case 1:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "d")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "d")
+        break;
+
+      case 2:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "w")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "w")
+        break;
+
+      case 3:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "M")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "M")
+        break;
+
+      case 4:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "y")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "y")
+        break;
+
+      default:
+        console.log("OH NO!");
+        break;
+    }
+    req.body.startDateTime = newStartDate.format('YYYY-MM-DD, HH:mm')
+    req.body.endDateTime = newEndDate.format('YYYY-MM-DD, HH:mm')
+    
+    let eventId = result.lastInsertRowid
+    if(recurringEvent && recurringParentId === 0) {
+      recurringParentId = eventId
+    }
+
+    results.push(result)
+    invitations.forEach( p => {
+      let result = db.run(
+      /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+      VALUES (${eventId}, ${p.userId})`, {...p}
+      )
+      if (result.error) {
+        results.push({"error": "User could not be / is already invited!"})
+      } else {
+        results.push(result)
+      }
+    })
+    i++
+  } while (i <= timeBetween)
   res.json(results)
 })
 
@@ -129,6 +173,7 @@ router.get("/:id", (req, res) => {
 })
 
 router.put("/:id", (req, res) => {
+  let cascadeChange = req.body.cascadeChange || false
   if (!req.session.user) {
     res.status(403)
     res.json({ success: false})
