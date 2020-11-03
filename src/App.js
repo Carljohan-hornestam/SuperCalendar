@@ -12,6 +12,11 @@ import TestSida from "./components/TestSida"
 
 export const Context = createContext()
 
+export function setTheme(value) {
+    document.documentElement.className = ""
+    document.documentElement.classList.add(`${value}`)
+}
+
 export default function App() {
 
   const [contextVal, setContext] = useState({
@@ -21,11 +26,13 @@ export default function App() {
     ...contextVal,
     ...updates
   })
-  const themeNames = { dark: `dark-theme`, light: `light-theme` }; 
+  const themeNames = { dark: `dark-theme`, light: `light-theme`, third: `third-theme`}; 
+  const [themeName, setThemeName] = useState(themeNames.dark)
 
 
   useEffect(() => {
     updateContext({ waitingForUserState: true });
+    setTheme(themeName);
     (async () => {
       let result = await (await fetch('/api/auth/whoami')).json();
       if (result.error) { return; }
@@ -34,13 +41,14 @@ export default function App() {
       let invitations = await (await fetch('/api/events/invitations/get')).json();
       if (invitations.error) { return; }
       updateContext({ waitingForUserState: false, user: result, invitations: invitations, theme: result.theme });
+      setThemeName(result.theme)
       return <Redirect to="/myCalendar" />
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  
+
   return (
     <Context.Provider value={[contextVal, updateContext]}>
-      <ThemeWrapper themeName={contextVal.theme ? contextVal.theme : themeNames.dark}>
+      <ThemeWrapper themeName={contextVal.theme ? contextVal.theme : themeName}>
         <div className="themed-content">
           <Router>
             <Header />
@@ -59,7 +67,7 @@ export default function App() {
                 <Event />
               </Route>
               <Route exact path="/profile">
-                <TestSida/>
+                <TestSida />
               </Route>
             </div>
             <Footer/>

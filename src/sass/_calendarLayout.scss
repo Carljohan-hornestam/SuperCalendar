@@ -24,10 +24,10 @@ $themes: (
     }
   }
 }
-
+/* 
 .redDay {
   @include theme-aware("color", "color-redDay");
-}
+} */
 
 /* .layout {
   @include theme-aware("background", "color-secondary");
@@ -35,7 +35,7 @@ $themes: (
   @include theme-aware("color", "color-selected");
 } */
 
-.theme {
+/* .theme {
   border: none;
   border-bottom: 1px solid;
   @include theme-aware("background", "color-primary");
@@ -47,9 +47,9 @@ $themes: (
   @include theme-aware("background", "color-secondary");
   @include theme-aware("color", "color-selected");
   @include theme-aware("border-color", "color-border");
-}
+} */
 
-div.dayBar {
+/* div.dayBar {
   border: 1px solid;
   @include theme-aware("background", "color-secondary");
   @include theme-aware("border-color", "color-border");
@@ -69,7 +69,7 @@ svg.plusButtonEnable {
 
 svg.plusButtonDisable {
   @include theme-aware("color", "color-disable");
-}
+} */
 
 .layout {
   border: 1px solid;

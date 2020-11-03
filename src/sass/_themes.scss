@@ -10,6 +10,12 @@
   }
 }
 
+@mixin thirdTheme() {
+  .third-theme & {
+    @content;
+  }
+}
+
 //example component
 .themed-content {
   //common style amongst all themes
@@ -26,15 +32,14 @@
       background-color: $secondary;
       color: $quaternary;
     }
-    .theme {
+    .tabsTheme {
       border: none;
       border-bottom: 1px solid $tertiary;
       background-color: $primary;
       color: $quaternary;
     }
-    .theme .active {
-      border: none;
-      border-bottom: 1px solid $tertiary;
+    .tabsTheme .active {
+      border: 1px solid $tertiary;
       background-color: $secondary;
       color: $quaternary;
     }
@@ -62,13 +67,49 @@
       background-color: $secondary;
       color: $quaternary;
     }
-    .theme {
+    .tabsTheme {
       border: none;
       border-bottom: 1px solid $tertiary;
       background-color: $primary;
       color: $quaternary;
     }
-    .theme .active {
+    .tabsTheme .active {
+      border: none;
+      border-bottom: 1px solid $tertiary;
+      background-color: $secondary;
+      color: $quaternary;
+    }
+    .dayBar {
+      border: 1px solid $tertiary;
+      background-color: $secondary;
+    }
+    .dateBar {
+      background-color: $primary;
+    }
+    .redDay {
+      color: $danger;
+    }
+  }
+
+  //light theme specific styling
+  @include thirdTheme {
+    $primary: #155263;
+    $secondary: #ff6f3c;
+    $tertiary: #ff9a3c;
+    $quaternary: #ffc93c;
+    background-color: $primary;
+    color: $quaternary;
+    .layout {
+      background-color: $secondary;
+      color: $quaternary;
+    }
+    .tabsTheme {
+      border: none;
+      border-bottom: 1px solid $tertiary;
+      background-color: $primary;
+      color: $quaternary;
+    }
+    .tabsTheme .active {
       border: none;
       border-bottom: 1px solid $tertiary;
       background-color: $secondary;

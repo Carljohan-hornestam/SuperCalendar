@@ -35,7 +35,7 @@ import {
   faTimes,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { Context } from "../App";
+import { Context, setTheme } from "../App";
 import { useMediaQuery } from 'react-responsive'
 
 export default function Header() {
@@ -48,7 +48,8 @@ export default function Header() {
 
   const logout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
-    updateContext({ user: false, invitations: null });
+    updateContext({ user: false, invitations: null, theme: "dark-theme" });
+    setTheme("dark-theme")
   };
 
   const isDesktop = useMediaQuery({
@@ -120,7 +121,9 @@ export default function Header() {
       <div className="header">
         <Navbar color="dark" dark expand="md">
           <NavbarBrand>
-            <img alt="" src={Logo} width="252px" height="35px" />
+            <NavLink tag={RouterNavLink} to="/myCalendar">
+              <img alt="" src={Logo} width="252px" height="35px" />
+            </NavLink>
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           { !isDesktop && context.invitations && context.invitations.length ? (
