@@ -19,7 +19,7 @@ import {
 import { Context } from "../App";
 import { getSchedule, getOnThisDay, getRandomEvent } from "../functions/CommonCalendarFunctions";
 
-export default function ContainerView() {
+export default function DayView() {
   moment.locale("sv");
 
   const [calendar, setCalendar] = useState([]);
@@ -52,8 +52,9 @@ export default function ContainerView() {
     setCalendar(weekDays);
     // setRandomEvent(Math.floor(Math.random() * Math.floor(getRandomEvent())))
     // updateContext({ randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent())) })
-    console.log("randomOnThisDay: ", randomEvent);
-    console.log("randomEvent", onThisDay && onThisDay.events[+randomEvent].wikipedia[0].wikipedia)
+    console.log("randomOnEvent: ", randomEvent);
+    console.log("onThisDay: ", onThisDay);
+    console.log("randomwikievent", onThisDay && onThisDay.events[+randomEvent].wikipedia[0].wikipedia)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue]);
 
@@ -128,7 +129,7 @@ export default function ContainerView() {
           <Col className="mt-3">
             <Row className="justify-content-center">
               <Col md="3" style={{ columnCount: "auto" }}>
-                {onThisDay &&  
+                {onThisDay &&
                   <a
                     href={
                       onThisDay.events[+randomEvent]
