@@ -23,13 +23,13 @@ export default function Calendar() {
     query: "(min-device-width: 600px)"
   })
 
-  function openCreateEvent() {
+  /* function openCreateEvent() {
     if(isDesktop) {
       setModal(!modal)
     } else {
       window.location.href = "/event/new"
     }
-  }
+  } */
 
   return (
     <Container>

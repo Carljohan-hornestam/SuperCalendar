@@ -131,7 +131,7 @@ export default function Calendar() {
                             if (index < 2) {
                               return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
                             }
-                            if(arr.length > 2 && index == arr.length-1)  return <Badge pill color="dark">+{arr.length-2}</Badge>
+                            if(arr.length > 2 && index == arr.length-1)  return <Badge key={arr.length} pill color="dark">+{arr.length-2}</Badge>
                           }
                         )
                       }
