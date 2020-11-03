@@ -81,8 +81,8 @@ export default function Event() {
         title: "",
         description: "",
         location: "",
-        recurringEvent: 0,
-        recurringInterval: 0,
+        recurringEvent: 1,
+        recurringInterval: 1,
         participants: [],
       });
       return;
