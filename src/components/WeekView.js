@@ -134,9 +134,9 @@ export default function WeekView() {
   return (
     <div className="mt-3">
       <Row className="dateBar mb-2">
-        <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousWeek())} /></Col>
+        <Col xs="auto"><FontAwesomeIcon className="pointer" size="lg" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
-        <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextWeek())} /></Col>
+        <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" size="lg" icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextWeek())} /></Col>
       </Row>
       <Row className="d-flex dayBar">
         {

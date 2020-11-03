@@ -97,15 +97,15 @@ export default function Calendar() {
     <div className="mt-3">
       <Row className="bg-light">
         <Col xs="auto">
-          <FontAwesomeIcon className="mr-2 pointer" icon={faAngleDoubleLeft} onClick={() => setDayValue(getPreviousYear())} /> 
-          <FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousMonth())} />
+          <FontAwesomeIcon className="mr-2 pointer" size="lg" icon={faAngleDoubleLeft} onClick={() => setDayValue(getPreviousYear())} /> 
+          <FontAwesomeIcon className="pointer" size="lg" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousMonth())} />
         </Col>
         <Col className="text-center font-weight-bold">
             {getCurrentMonth()} {getCurrentYear()} 
         </Col>
         <Col xs="auto" className="text-right pointer">
-          <FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextMonth())} />
-          <FontAwesomeIcon className="ml-2 pointer" icon={faAngleDoubleRight} onClick={() => setDayValue(getNextYear())} /> 
+          <FontAwesomeIcon icon={faArrowAltCircleRight} size="lg" onClick={() => setDayValue(getNextMonth())} />
+          <FontAwesomeIcon className="ml-2 pointer" size="lg" icon={faAngleDoubleRight} onClick={() => setDayValue(getNextYear())} /> 
         </Col>
       </Row>
       <Row className="d-flex">

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
-import ContainerView from './ContainerView';
+import DayView from './DayView';
 import Event from './Event';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Container, Modal, ModalBody } from "reactstrap"
 import classnames from 'classnames';
@@ -60,7 +60,7 @@ export default function Calendar() {
         </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
-        <TabPane tabId="0"><ContainerView/></TabPane>
+        <TabPane tabId="0"><DayView/></TabPane>
         <TabPane tabId="1"><WeekView /></TabPane>
         <TabPane tabId="2"><MonthView /></TabPane>
       </TabContent>
