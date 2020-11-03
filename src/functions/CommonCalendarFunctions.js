@@ -20,15 +20,27 @@ function sameMonth(day, dayValue) {
   return day.isSame(dayValue, "month")
 }
 
+function getTextColor(day, dayValue, redDays){
+  if (isSelected(day, dayValue)) return "text-white"
+  if (isRedDay(day, redDays)) return "redDay"
+  if (beforeToday(day)) return "text-secondary"
+  if (!sameMonth(day, dayValue)) return "text-secondary"
+  if (isToday(day)) return "text-white"
+  return ""
+}
+function getBackgroundColor(day, dayValue, redDays) {
+  if (isSelected(day, dayValue)) return "bg-danger"
+  if (isRedDay(day, redDays)) return ""
+  if (beforeToday(day)) return ""
+  if (!sameMonth(day, dayValue)) return ""
+  if (isToday(day)) return "bg-secondary"
+  return ""
+}
+
 module.exports = { 
   dayStyles:
     function dayStyles(day, dayValue, redDays) {
-      if (isSelected(day, dayValue)) return "bg-danger text-white"
-      if (isRedDay(day, redDays)) return "text-danger"
-      if (beforeToday(day)) return "text-secondary"
-      if (!sameMonth(day, dayValue)) return "text-secondary"
-      if (isToday(day)) return "bg-secondary text-white"
-      return ""
+      return getTextColor(day, dayValue, redDays) + " " + getBackgroundColor(day, dayValue, redDays)
     },
 
   getAllRedDays:

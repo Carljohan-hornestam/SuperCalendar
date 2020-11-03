@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
   } else {
     let str = /* sql */ `SELECT * FROM Events 
     WHERE (creatorId = ${req.session.user.id} OR ownerId = ${req.session.user.id})` 
-    console.log('i get events, str: ', str);
+    //console.log('i get events, str: ', str);
     res.json(
       db.select(str)
       );
@@ -262,7 +262,7 @@ router.get("/date/:startDateTime", (req, res) => {
     return
   }
   let date = req.params.startDateTime + "%"
-  console.log(req.params.startDateTime);
+  
   let result = db.select(/* sql */ `SELECT * FROM Events 
   WHERE startDateTime LIKE '${date}' AND  ownerId = ${req.session.user.id}
   ORDER BY startDateTime`, req.params)
@@ -317,9 +317,9 @@ router.delete("/invitations/:eventId/:invitationId", (req, res) => {
     res.json({ success: false})
     return
   }
-  console.log(req.session.user.id);
+  //console.log(req.session.user.id);
   let creatorCheck = db.select(/*sql*/`SELECT * FROM Events WHERE id = $eventId AND creatorId = ${req.session.user.id} `, req.params)
-  console.log(creatorCheck);
+  //console.log(creatorCheck);
   if (creatorCheck.length === 0) {
     res.status(403)
     res.json({ success: false})

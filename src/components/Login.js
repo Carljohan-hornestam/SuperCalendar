@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { Row, Col, Button, Form, FormGroup, Input, Alert } from  "reactstrap";
-import { Context } from "../App";
+import { Context, setTheme } from "../App";
 
 export default function Login() {
   // eslint-disable-next-line
@@ -36,7 +36,8 @@ export default function Login() {
     }
     let invitations = await (await fetch('/api/events/invitations/get')).json();
       if (invitations.error) { return; }
-    updateContext({ user: result, invitations: invitations });
+    updateContext({ user: result, invitations: invitations, theme: result.theme });
+    setTheme(result.theme)
     setRedirect({ redirect: true });
   }
 

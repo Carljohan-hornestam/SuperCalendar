@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useContext} from "react"
 import moment from "moment"
 import "moment/locale/sv"
-import {Row, Col} from 'reactstrap'
+import { Row, Col, Badge } from 'reactstrap'
+import {Link} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft, faAngleDoubleRight, faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons"
 import { Context } from "../App"
@@ -18,25 +19,32 @@ export default function Calendar() {
   const [year, setYear] = useState([])
   const [redDays, setRedDays] = useState([])
   let [context, updateContext] = useContext(Context)
+  const [monthlySchedule, setMonthlySchedule] = useState([])
 
   useEffect(() => {
     getDaysInformation()
     const startDay = dayValue.clone().startOf("month").startOf("week")
     const endDay = dayValue.clone().endOf("month").endOf("week")
     const day = startDay.clone().subtract(1, "day")
-    const a = []
+    const monthDays = []
     while(day.isBefore(endDay, "day")) {
-      a.push(
+      monthDays.push(
         Array(7)
         .fill(0)
         .map(() => day.add(1, "day").clone())
       )
     }
-    setCalendar(a)
+    getMonthlySchedule();
+    setCalendar(monthDays)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue])
 
-  const days = moment.weekdaysShort(true)
+  const days = moment.weekdays(true)
+
+  async function getMonthlySchedule() {
+    let result = await (await getSchedule(dayValue, "YYYY-MM"))
+    setMonthlySchedule(result)
+  }
 
   async function getDaysInformation(){
     let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + dayValue.format("YYYY"))).json()
@@ -113,20 +121,30 @@ export default function Calendar() {
             <Row className="d-flex" key={week}>
               {
                 week.map(day =>
-                  <Col className="text-center pointer" onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
-                    <div className={dayStyles(day, dayValue, redDays)}>
-                      {day.format("D")}
-                    </div>
+                  <Col className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-lg-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
+                    {day.format("D")}
+                    { isDesktop &&
+                      <Row className="mx-1">
+                      {
+                        monthlySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).map(
+                          (filteredEvent, index, arr) => {
+                            if (index < 2) {
+                              return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
+                            }
+                            if(arr.length > 2 && index == arr.length-1)  return <Badge key={arr.length} pill color="dark">+{arr.length-2}</Badge>
+                          }
+                        )
+                      }
+                      </Row>
+                    }
                   </Col>
+
                 )
               }
             </Row>
           )
         }
       </div>
-      <Row className="mt-2" style={{height: isDesktop ? "55vh" : "43vh" , overflowY: "scroll"}}>
-        <DayView/>
-      </Row>
     </div>
   )
 }
