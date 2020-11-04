@@ -28,6 +28,20 @@
     $quaternary: #ff4301;
     background-color: $primary;
     color: $quaternary;
+    .btn-primary {
+      background-color: $tertiary;
+      color: $secondary;
+    }
+    .fab {
+      box-shadow: 1px 1px 2px 2px $secondary;
+    }
+    .calbadge {
+      background-color: $primary;
+      color: $quaternary;
+    }
+    a {
+      color: $tertiary;
+    }
     .layout {
       background-color: $secondary;
       color: $quaternary;
@@ -63,6 +77,20 @@
     $quaternary: #5d5d5a;
     background-color: $primary;
     color: $quaternary;
+    .btn-primary {
+      background-color: $tertiary;
+      color: $secondary;
+    }
+    .fab {
+      box-shadow: 1px 1px 2px 2px $secondary;
+    }
+    .calbadge {
+      background-color: $primary;
+      color: $quaternary;
+    }
+    a {
+      color: $tertiary;
+    }
     .layout {
       background-color: $secondary;
       color: $quaternary;
@@ -99,6 +127,20 @@
     $quaternary: #ffc93c;
     background-color: $primary;
     color: $quaternary;
+    .btn-primary {
+      background-color: $tertiary;
+      color: $secondary;
+    }
+    .fab {
+      box-shadow: 1px 1px 2px 2px $secondary;
+    }
+    .calbadge {
+      background-color: $primary;
+      color: $quaternary;
+    }
+    a {
+      color: $tertiary;
+    }
     .layout {
       background-color: $secondary;
       color: $quaternary;

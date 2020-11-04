@@ -1,76 +1,3 @@
-$themes: (
-  light: (
-    color-primary: #fff4e3,
-    color-secondary: #ffcdab,
-    color-border: #ffa45c,
-    color-selected: #5d5d5a,
-    color-success: $success,
-    color-disabled: $secondary,
-  ),
-  dark: (
-    color-primary: #2f2519,
-    color-secondary: #212121,
-    color-border: #fa7d09,
-    color-selected: #ff4301,
-    color-success: $danger,
-    color-disabled: $primary,
-  ),
-);
-
-@mixin theme-aware($key, $color) {
-  @each $theme-name, $theme-color in $themes {
-    .theme-#{$theme-name} & {
-      #{$key}: map-get(map-get($themes, $theme-name), $color);
-    }
-  }
-}
-/* 
-.redDay {
-  @include theme-aware("color", "color-redDay");
-} */
-
-/* .layout {
-  @include theme-aware("background", "color-secondary");
-  @include theme-aware("border-color", "color-border");
-  @include theme-aware("color", "color-selected");
-} */
-
-/* .theme {
-  border: none;
-  border-bottom: 1px solid;
-  @include theme-aware("background", "color-primary");
-  @include theme-aware("color", "color-selected");
-  @include theme-aware("border-color", "color-border");
-}
-.theme .active {
-  border: 1px solid;
-  @include theme-aware("background", "color-secondary");
-  @include theme-aware("color", "color-selected");
-  @include theme-aware("border-color", "color-border");
-} */
-
-/* div.dayBar {
-  border: 1px solid;
-  @include theme-aware("background", "color-secondary");
-  @include theme-aware("border-color", "color-border");
-}
-div.dateBar {
-  @include theme-aware("background", "color-primary");
-}
-
-body {
-  @include theme-aware("background", "color-primary");
-  @include theme-aware("color", "color-selected");
-}
-
-svg.plusButtonEnable {
-  @include theme-aware("color", "color-success");
-}
-
-svg.plusButtonDisable {
-  @include theme-aware("color", "color-disable");
-} */
-
 .layout {
   border: 1px solid;
   @media (min-width: 768px) {
@@ -86,6 +13,9 @@ svg.plusButtonDisable {
   max-width: 75%;
   text-overflow: ellipsis;
   overflow: hidden;
+  &:hover {
+    filter: brightness(150%);
+  }
 }
 
 .eventIndicator {

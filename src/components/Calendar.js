@@ -155,7 +155,7 @@ export default function Calendar() {
           </div>
         </Link>
         <div
-          className="float-left d-flex justify-content-center bg-secondary fab fab-left"
+          className="float-left d-flex justify-content-center bg-secondary fab fab-left pointer"
           onClick={() => setSearchModal(!searchModal)}
         >
           <FontAwesomeIcon
