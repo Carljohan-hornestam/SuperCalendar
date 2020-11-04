@@ -58,7 +58,8 @@ module.exports = {
   getOnThisDay:
     async function getOnThisDay(day) {
       let result = await (await fetch("https://byabbe.se/on-this-day/" + day.format("M") + "/" + day.format("D") + "/events.json")).json()
-      randomEvent = result.events.length
+      // kan behöva - 1 efter length på rad 62
+      randomEvent = result.events.length - 1
       return result
     },
 

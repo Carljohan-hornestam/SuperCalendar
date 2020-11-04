@@ -1,6 +1,6 @@
 import React, {useState, useEffect, createContext} from 'react';
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom" 
-import Register from './components/Register'
+import Profile from './components/Profile'
 import Login from './components/Login'
 import Header from "./components/Header"
 import Footer from './components/Footer';
@@ -8,7 +8,6 @@ import Calendar from './components/Calendar'
 import Event from './components/Event'
 import moment from "moment" 
 import { ThemeWrapper } from './components/ThemeWrapper';
-import TestSida from "./components/TestSida"
 
 export const Context = createContext()
 
@@ -30,7 +29,6 @@ export default function App() {
   
   const themeNames = { dark: `dark-theme`, light: `light-theme`, third: `third-theme`}; 
   const [themeName, setThemeName] = useState(themeNames.dark)
-
 
   useEffect(() => {
     updateContext({ waitingForUserState: true });
@@ -55,21 +53,19 @@ export default function App() {
           <Router>
             <Header />
             <div className="container">
-              <Route path ="/">{!contextVal.user ? <Redirect push to="/login" /> : <Redirect push to="/myCalendar" />} </Route>
+              <Route path="/">{!contextVal.user ? <Redirect push to="/login" /> : <Redirect push to="/myCalendar" />}
+              </Route>
               <Route exact path="/mycalendar">
                 <Calendar />
               </Route>
-              <Route exact path="/register">
-                <Register />
+              <Route exact path="/profile/:id">
+                <Profile />      
               </Route>
               <Route exact path="/login">
                 <Login />
               </Route>
               <Route exact path="/event/:id">
                 <Event />
-              </Route>
-              <Route exact path="/profile">
-                <TestSida />
               </Route>
             </div>
             <Footer/>

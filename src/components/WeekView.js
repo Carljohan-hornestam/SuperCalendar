@@ -7,12 +7,11 @@ import {Context} from "../App"
 import { useMediaQuery } from 'react-responsive'
 import {
   Card, CardTitle, CardText,
-  CardSubtitle, CardBody, Row, Col, Badge, Input
+  CardSubtitle, CardBody, Row, Col, Badge
 } from 'reactstrap';
 import { Link } from "react-router-dom"
 import DayView from "./DayView"
 import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
-import { faThemeisle } from "@fortawesome/free-brands-svg-icons"
 
 export default function WeekView() {
   //const theme = "grey" //change to context variable
@@ -134,9 +133,9 @@ export default function WeekView() {
   return (
     <div className="mt-3">
       <Row className="dateBar mb-2">
-        <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousWeek())} /></Col>
+        <Col xs="auto"><FontAwesomeIcon className="pointer" size="lg" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousWeek())} /></Col>
         <Col className="text-center font-weight-bold">Vecka {getCurrentWeek()}</Col>
-        <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextWeek())} /></Col>
+        <Col xs="auto" className="text-right"><FontAwesomeIcon className="pointer" size="lg" icon={faArrowAltCircleRight} onClick={() => setDayValue(getNextWeek())} /></Col>
       </Row>
       <Row className="d-flex dayBar">
         {
@@ -180,7 +179,7 @@ export default function WeekView() {
                             if (index < 2) {
                               return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
                             }
-                            if(arr.length > 2 && index == arr.length-1)  return <Badge pill color="dark">+{arr.length-2}</Badge>
+                            if(arr.length > 2 && index === arr.length-1)  return <Badge pill color="dark">+{arr.length-2}</Badge>
                           }
                         )
                       }
