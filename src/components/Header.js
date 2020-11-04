@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
 import { NavLink as RouterNavLink } from "react-router-dom";
 import {
-  // Row,
   Card,
   CardBody,
   CardHeader,
@@ -9,8 +8,6 @@ import {
   CardFooter,
   CardText,
   CardSubtitle,
-  // CardLink,
-  // Col,
   Collapse,
   Navbar,
   NavbarToggler,
@@ -120,9 +117,9 @@ export default function Header() {
       <div className="header">
         <Navbar color="dark" dark expand="md">
           <NavbarBrand>
-            <NavLink tag={RouterNavLink} to="/myCalendar">
+            <RouterNavLink to="/myCalendar">
               <img alt="" src={Logo} width="252px" height="35px" />
-            </NavLink>
+            </RouterNavLink>
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           { !isDesktop && context.invitations && context.invitations.length ? (
@@ -137,7 +134,7 @@ export default function Header() {
                   <NavLink
                     tag={RouterNavLink}
                     className="nav-link text-center"
-                    to={ "/profile/" + context.user.id }                  >
+                    to={ "/profile/" + context.user.id } >
                     <span className="d-block d-md-none">Profil</span>
                     <FontAwesomeIcon
                       className="d-none d-md-block"
