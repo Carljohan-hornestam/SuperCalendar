@@ -8,7 +8,7 @@ export default function Profile() {
   const {id} = useParams()
 
   const [formData, setFormData] = useState({
-    userName: "",
+    username: "",
     email: "",
     password: "",
     passwordCheck: "",
@@ -25,7 +25,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (id === "new") {
-      setFormData({ ...formData, userName: "", email: "", password: "", passwordCheck: "", theme:""})
+      setFormData({ ...formData, username: "", email: "", password: "", passwordCheck: "", theme:""})
       return
     }
 
@@ -85,7 +85,7 @@ export default function Profile() {
     return <Redirect to="/myCalendar" />;
   }
 
-  let { userName, email, password, passwordCheck, theme } = formData;
+  let { username, email, password, passwordCheck, theme } = formData;
 
   if (email === undefined) {
     return null;
@@ -122,8 +122,8 @@ export default function Profile() {
             <Input
               className="mt-3 p-1"
               type="text"
-              value={userName}
-              name="userName"
+              value={username}
+              name="username"
               placeholder="Användarnamn"
               onChange={handleInputChange}
               required
