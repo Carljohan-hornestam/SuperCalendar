@@ -89,7 +89,7 @@ export default function DateTimePicker(props) {
             />
           </FormGroup>
         </Col>
-        <Col xs="6">
+        <Col xs="6" className={props.noTime ? 'd-none' : 'd-block'}>
           <FormGroup>
             <Input
               className="form-control"
