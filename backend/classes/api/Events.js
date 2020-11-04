@@ -277,10 +277,10 @@ router.get("/date/:startDateTime", (req, res) => {
     res.json({ success: false})
     return
   }
-  let date = req.params.startDateTime + "%"
+  req.params.startDateTime = req.params.startDateTime + "%"
   
   let result = db.select(/* sql */ `SELECT * FROM Events 
-  WHERE startDateTime LIKE '${date}' AND  ownerId = ${req.session.user.id}
+  WHERE startDateTime LIKE $startDateTime AND  ownerId = ${req.session.user.id}
   ORDER BY startDateTime`, req.params)
   res.json(result)
 })
