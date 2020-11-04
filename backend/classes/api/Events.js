@@ -391,4 +391,16 @@ router.post("/invitations/reply", (req, res) => {
   }
 });
 
+router.get("/search/:search", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false });
+    return
+  }
+  let search =  "%" + req.params.search + "%"
+    let result = db.select(/* sql */ `SELECT * FROM Events 
+      WHERE (creatorId = ${req.session.user.id} OR ownerId = ${req.session.user.id}) AND title LIKE '${search}'`)
+    res.json(result)
+})
+
 module.exports = router;
