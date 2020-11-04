@@ -11,7 +11,12 @@ import {
   Container,
   InputGroup,
   InputGroupAddon,
-  InputGroupText,
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  CardText,
+  CardSubtitle,
 } from "reactstrap";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +31,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button
+  Button,
 } from "reactstrap";
 
 export default function Calendar() {
@@ -38,26 +43,30 @@ export default function Calendar() {
 
   const [searchModal, setSearchModal] = useState(false);
 
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState("");
 
-  const [searchResult, setSearchResult] = useState([])
+  const [searchResult, setSearchResult] = useState([]);
 
   async function doSearch() {
-    let result = await(await fetch(''))
-
-
+    let result = await (await fetch("/api/events/search/" + searchText)).json();
+    setSearchResult(result);
   }
 
   return (
     <>
       <div>
         <Modal isOpen={searchModal} toggle={() => setSearchModal(!searchModal)}>
-          <ModalHeader
-            toggle={() => setSearchModal(!searchModal)}
-          >Sök kalenderhändelse</ModalHeader>
+          <ModalHeader toggle={() => setSearchModal(!searchModal)}>
+            Sök kalenderhändelse
+          </ModalHeader>
           <ModalBody>
-            <InputGroup>
-              <Input type="text" placeholder="Ange sökord" name="searchText" onChange={(e) => setSearchText(e.currentTarget.value)}></Input>
+            <InputGroup className="mb-2">
+              <Input
+                type="text"
+                placeholder="Ange sökord"
+                name="searchText"
+                onChange={(e) => setSearchText(e.currentTarget.value)}
+              ></Input>
               <InputGroupAddon addonType="append">
                 <Button className="my-0" color="primary" onClick={doSearch}>
                   <FontAwesomeIcon
@@ -69,11 +78,23 @@ export default function Calendar() {
                 </Button>
               </InputGroupAddon>
             </InputGroup>
-            <ul className="my-2">
-              <li>{searchText}HEJ</li>
-            </ul>
+
+            {searchResult.map((res) => (
+              <Link to={"event/" + res.id} key={res.id}>
+                <Card outline color="primary" className="mb-1">
+                  <CardHeader>
+                    <strong>{res.title}</strong> (<small>id: {res.id}</small>)
+                  </CardHeader>
+                  <CardBody>
+                    <CardTitle>{res.description}</CardTitle>
+                    <CardText>
+                      {res.startDateTime} - {res.endDateTime}
+                    </CardText>
+                  </CardBody>
+                </Card>
+              </Link>
+            ))}
           </ModalBody>
-          <ModalFooter></ModalFooter>
         </Modal>
       </div>
       <Container>
