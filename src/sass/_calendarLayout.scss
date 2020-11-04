@@ -98,3 +98,14 @@ svg.plusButtonDisable {
   background-color: $primary;
   box-shadow: 0 0 0.1rem 0.1rem $cyan;
 }
+
+.nationalDay {
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.2rem;
+  height: 0.5rem;
+  width: 0.7rem;
+  background-image: url("../images/flag.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
