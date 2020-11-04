@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft, faAngleDoubleRight, faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons"
 import { Context } from "../App"
 import { useMediaQuery } from 'react-responsive'
-import DayView from "./DayView"
 import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
 
 export default function Calendar() {
@@ -131,7 +130,7 @@ export default function Calendar() {
                             if (index < 2) {
                               return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
                             }
-                            if(arr.length > 2 && index == arr.length-1)  return <Badge key={arr.length} pill color="dark">+{arr.length-2}</Badge>
+                            if(arr.length > 2 && index === arr.length-1)  return <Badge key={arr.length} pill color="dark">+{arr.length-2}</Badge>
                           }
                         )
                       }
