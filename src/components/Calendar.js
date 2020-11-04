@@ -2,34 +2,19 @@ import React, {useState} from 'react';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
 import DayView from './DayView';
-import Event from './Event';
-import { TabContent, TabPane, Nav, NavItem, NavLink, Container, Modal, ModalBody } from "reactstrap"
+import { TabContent, TabPane, Nav, NavItem, NavLink, Container} from "reactstrap"
 import classnames from 'classnames';
 import {faCalendarPlus} from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {Link, Redirect} from "react-router-dom" 
-import { useMediaQuery } from 'react-responsive'
+import {Link} from "react-router-dom" 
 
 export default function Calendar() {
 
   const [activeTab, setActiveTab] = useState('1');
-  const [modal, setModal] = useState(false);
-
+  
   const toggle = tab => {
     if(activeTab !== tab) setActiveTab(tab);
   }
-
-  const isDesktop = useMediaQuery({
-    query: "(min-device-width: 600px)"
-  })
-
-  /* function openCreateEvent() {
-    if(isDesktop) {
-      setModal(!modal)
-    } else {
-      window.location.href = "/event/new"
-    }
-  } */
 
   return (
     <Container>
@@ -69,11 +54,6 @@ export default function Calendar() {
       </div>
       </Link>
       <div>
-      <Modal toggle={() => setModal(!modal)} isOpen={modal}>
-        <ModalBody>
-          <Event />
-        </ModalBody>
-      </Modal>
     </div>
     </Container>
   )

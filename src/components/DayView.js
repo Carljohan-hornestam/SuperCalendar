@@ -57,8 +57,6 @@ export default function DayView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue]);
 
-  const days = moment.weekdays(true);
-
   function getCurrentDate() {
     return dayValue.format("YYYY-MM-DD");
   }
