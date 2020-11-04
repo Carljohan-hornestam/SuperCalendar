@@ -8,7 +8,7 @@ export default function Profile() {
   const {id} = useParams()
 
   const [formData, setFormData] = useState({
-    username: "",
+    userName: "",
     email: "",
     password: "",
     passwordCheck: "",
@@ -25,7 +25,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (id === "new") {
-      setFormData({ ...formData, username: "", email: "", password: "", passwordCheck: "", theme:""})
+      setFormData({ ...formData, userName: "", email: "", password: "", passwordCheck: "", theme:""})
       return
     }
 
@@ -85,7 +85,7 @@ export default function Profile() {
     return <Redirect to="/myCalendar" />;
   }
 
-  let { username, email, password, passwordCheck, theme } = formData;
+  let { userName, email, password, passwordCheck, theme } = formData;
 
   if (email === undefined) {
     return null;
@@ -122,8 +122,8 @@ export default function Profile() {
             <Input
               className="mt-3 p-1"
               type="text"
-              value={username}
-              name="username"
+              value={userName}
+              name="userName"
               placeholder="Användarnamn"
               onChange={handleInputChange}
               required
@@ -138,8 +138,10 @@ export default function Profile() {
               placeholder="Epost"
               onChange={handleInputChange}
               required
+              disabled={ id !== "new"}
             ></Input>
           </FormGroup>
+         
           <FormGroup>
             <Input
               className="mt-3 p-1"
@@ -152,12 +154,6 @@ export default function Profile() {
             ></Input>
           </FormGroup>
 
-          <FormGroup className="mt-3">
-            <ThemeSelector
-              theme={theme}
-              parentCallback={setTheme} />
-          </FormGroup>
-            
           <FormGroup>
             <Input
               className="mt-3 p-1"
@@ -169,14 +165,22 @@ export default function Profile() {
               required
             ></Input>
           </FormGroup>
+
           <FormGroup className={ passwordsMatch ? "d-none" : "d-block" }>
             <Label className="text-danger my-0 py-0">Lösenorden matchar inte!</Label>
           </FormGroup>
+
+          <FormGroup className={ passwordsMatch ? "my-3" : "mt-0" }>
+            <ThemeSelector
+              theme={theme}
+              parentCallback={setTheme} />
+          </FormGroup>
+
           <Col xs="12" className="text-center">
             <Button
               type="submit"
               color="primary"
-              className={ (passwordsMatch ? "my-3" : "mt-0 mb-3") + " w-50"}
+              className="my-3 w-50"
               disabled={ !passwordsMatch ||password.length < 6 }>
               { id === "new" ? "Registrera" : "Spara"}
             </Button>

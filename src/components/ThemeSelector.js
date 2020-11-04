@@ -32,7 +32,7 @@ export default function ThemeSelector(props) {
       value={theme}
       className="form-control"
       onChange={(e) => setThemeChoice(e.currentTarget.value)}>
-      { Object.entries(themeNames).map(([key, value]) => <option key={key} value={value}>{value} </option>) }
+      { Object.entries(themeNames).map(([key, value]) => <option value={value}>{value}</option>) }
     </Input>
   </div>;
 }
