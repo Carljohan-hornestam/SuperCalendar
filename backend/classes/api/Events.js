@@ -1,3 +1,5 @@
+const moment = require("moment");
+const { NULL } = require("node-sass");
 const router = require("express").Router();
 const db = require("./utils/DBHelper").getInstance();
 
@@ -8,12 +10,47 @@ router.get("/", (req, res) => {
   } else {
     let str = /* sql */ `SELECT * FROM Events 
     WHERE (creatorId = ${req.session.user.id} OR ownerId = ${req.session.user.id})` 
-    console.log('i get events, str: ', str);
+    //console.log('i get events, str: ', str);
     res.json(
       db.select(str)
       );
   }
 });
+
+function getLoopCounter(recurringEvent, startDateTimeIn, recurringInterval, recurringIntervalEndIn) {
+  let startDateTime = new Date(startDateTimeIn)
+  let recurringIntervalEnd = new Date(recurringIntervalEndIn)
+  if (recurringEvent == 1 && recurringInterval > 0) {  
+    let milliseconds = recurringIntervalEnd.getTime() - startDateTime.getTime()
+
+    switch(recurringInterval) {
+      case 1:
+        return Math.round(milliseconds / (1000 * 3600 * 24))
+        break
+
+      case 2:
+        return Math.round(milliseconds / (1000 * 3600 * 24 * 7))
+        break
+
+      case 3:
+        let timeBetween = (recurringIntervalEnd.getFullYear() - startDateTime.getFullYear()) * 12
+        timeBetween -= startDateTime.getMonth();
+        timeBetween += recurringIntervalEnd.getMonth();
+        return timeBetween
+        break
+      
+      case 4:
+        let yearMilli = milliseconds / (1000 * 3600 * 24)
+        return Math.abs(Math.floor(yearMilli / 365.25))
+        break
+
+      default:
+        console.log("OH NO!");
+        break;
+    }
+  }
+  return 0
+}
 
 router.post("/", (req, res) => {
   if (!req.session.user) {
@@ -21,31 +58,84 @@ router.post("/", (req, res) => {
     res.json({ success: false })
     return
   }
-  
   let invitations = req.body.participants
+  let recurringEvent = req.body.recurringEvent || 0
+  let recurringInterval = req.body.recurringInterval
+  let recurringIntervalEnd = new Date(req.body.intervalEnd)
+  delete req.body.intervalEnd
+  let timeBetween = getLoopCounter(recurringEvent, req.body.startDateTime, recurringInterval, recurringIntervalEnd)
   req.body.creatorId = req.session.user.id
   req.body.ownerId = req.session.user.id
   delete req.body.participants
-  let result = db.run(/*sql*/ `
-  INSERT INTO Events (${Object.keys(req.body)}) 
-  VALUES (${Object.keys(req.body).map(x => "$" + x)})
-  `, req.body)
-  let eventId = result.lastInsertRowid
-
   let results = []
-  results.push(result)
-  invitations.map( p => {
-    let result = db.run(
-    /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
-    VALUES (${eventId}, ${p.userId})`, {...p}
-    )
-    if (result.error) {
-      results.push({"error": "User could not be / is already invited!"})
-    } else {
-      results.push(result)
-    }
-  })
+  let i = 0
+  let originalStartDate = req.body.startDateTime
+  let originalEndDate = req.body.endDateTime
+  let recurringParentId = 0
 
+  do {
+    if(recurringEvent && recurringParentId !== 0) {
+      req.body.recurringParentId = recurringParentId
+    } else {
+      req.body.recurringParentId = null
+    }
+    let result = db.run(/*sql*/ `
+      INSERT INTO Events (${Object.keys(req.body)}) 
+      VALUES (${Object.keys(req.body).map(x => "$" + x)})
+      `, req.body)
+
+    let newStartDate
+    let newEndDate
+    console.log("startdatetime innan uträkning", req.body.startDateTime);
+    console.log("recurringInterval: ", recurringInterval);
+
+    switch (recurringInterval) {
+      case 1:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "d")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "d")
+        break;
+
+      case 2:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "w")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "w")
+        break;
+
+      case 3:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "M")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "M")
+        break;
+
+      case 4:
+        newStartDate = moment(originalStartDate, "YYYY-MM-DD, HH:mm").add(i + 1, "y")
+        newEndDate = moment(originalEndDate, "YYYY-MM-DD, HH:mm").add(i + 1, "y")
+        break;
+
+      default:
+        console.log("OH NO!");
+        break;
+    }
+    req.body.startDateTime = newStartDate.format('YYYY-MM-DD, HH:mm')
+    req.body.endDateTime = newEndDate.format('YYYY-MM-DD, HH:mm')
+    
+    let eventId = result.lastInsertRowid
+    if(recurringEvent && recurringParentId === 0) {
+      recurringParentId = eventId
+    }
+
+    results.push(result)
+    invitations.forEach( p => {
+      let result = db.run(
+      /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+      VALUES (${eventId}, ${p.userId})`, {...p}
+      )
+      if (result.error) {
+        results.push({"error": "User could not be / is already invited!"})
+      } else {
+        results.push(result)
+      }
+    })
+    i++
+  } while (i <= timeBetween)
   res.json(results)
 })
 
@@ -67,12 +157,15 @@ router.get("/:id", (req, res) => {
   }
   
   let mainEvent = event.find(x => +x.eventId === +req.params.id)
-  mainEvent.participants = event.map(x => {
+  mainEvent.participants = []
+  event.forEach(x => {
     if (+x.parentId === +req.params.id) {
-      return ({ "userId": x.userId, "userName": x.userName, "email": x.email})
+      mainEvent.participants.push({ "userId": x.userId, "userName": x.userName, "email": x.email })
     }
   })
+  
   delete mainEvent.userId
+  
   let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = ${req.params.id}`, req.params)
   mainEvent.invited = invited
   
@@ -80,24 +173,71 @@ router.get("/:id", (req, res) => {
 })
 
 router.put("/:id", (req, res) => {
+  let cascadeChange = req.body.cascadeChange || false
   if (!req.session.user) {
     res.status(403)
     res.json({ success: false})
     return
   }
+  let results = []
+  let result = {}
+  
+  // Get current invitations and participants from the database.
+  let invitations = db.select(/*sql*/`SELECT * FROM PendingInvitations WHERE eventId = $id`, req.params)
+  let participants = db.select(/*sql*/`SELECT * FROM Events WHERE parentId = $id`, req.params)
+  
+  // Compare if there's an invitation in the db that matches the userId in the participants list sent from frontend
+  // If found in both lists, remove from both lists
+  invitations.forEach(i => req.body.participants.forEach(u => {
+    if (i.invitedUserId === u.userId) {
+      req.body.participants.pop(u)
+      invitations.pop(i)
+    }
+  }))
+  
+  // Compare if there's a participant in the db that matches the userId in the participants list sent from frontend
+  // If found in both lists, remove from both lists
+  participants.forEach(p => req.body.participants.forEach(i => {
+    if (p.ownerId === i.userId) {
+      req.body.participants.pop(i)
+      participants.pop(p)
+    }
+  }))
+  
+  // Deletes any remaining invitations from the database because they are no longer invited
+  invitations.forEach(inv => {
+    result = db.run(/*sql*/`DELETE FROM PendingInvitations WHERE eventId = $id AND invitedUserId = ${inv.invitedUserId}`, req.params)
+    results.push(result)
+  })
 
-  //let invitations = db.select(/*sql*/`SELECT * FROM PendingInvitations WHERE eventId = $id AND invitedUserId NOT IN $participants`, req.body)
-  //let participants = db.select(/*sql*/`SELECT * FROM Events WHERE parentId = $id`, req.body)
+  // Deletes any remaining participants from the database because they are no longer welcome!
+  participants.forEach(part => {
+    result = db.run(/*sql*/`DELETE FROM Events WHERE parentId = $id AND ownerId = ${part.ownerId}`, req.params)
+    results.push(result)
+  })
 
+  // If there are any users left in the participants list from the frontend, send them invitations
+  req.body.participants.forEach(invite => {
+    result = db.run(/* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+      VALUES ($id, ${invite.userId})`, req.params
+    )
+    results.push(result)
+  })
 
-  let result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
-  WHERE id = $id AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
+  // Removes participants list from req.body so as to not confuse the database when doing an update.
+  delete req.body.participants
+  req.body.startDateTime = req.body.startDateTime.slice(0, 17)
+  req.body.endDateTime = req.body.endDateTime.slice(0,17)
+
+  result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  WHERE (id = $id OR parentId = $id) AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
   if (result.changes === 0) {
     res.status(403)
     res.json({ success: false})
     return
   }
-  res.json(result)
+  results.push(result)
+  res.json(results)
 })
 
 router.delete("/:id", (req, res) => {
@@ -122,19 +262,20 @@ router.get("/date/:startDateTime", (req, res) => {
     return
   }
   let date = req.params.startDateTime + "%"
-  console.log(req.params.startDateTime);
+  
   let result = db.select(/* sql */ `SELECT * FROM Events 
-  WHERE startDateTime LIKE '${date}' AND  ownerId = ${req.session.user.id}`, req.params)
+  WHERE startDateTime LIKE '${date}' AND  ownerId = ${req.session.user.id}
+  ORDER BY startDateTime`, req.params)
   res.json(result)
 })
 
-router.get("/invitations", (req, res) => {
+router.get("/invitations/get", (req, res) => {
   if (!req.session.user) {
     res.json({ success: false });
   } else {
     res.json(
       db.select(/* sql */`
-        SELECT * FROM PendingInvitations WHERE invitedUserId = ${req.session.user.id}`
+        SELECT * FROM vwInvitations WHERE invitedUserId = ${req.session.user.id}`
       )
     );
   }
@@ -156,7 +297,7 @@ router.post("/invitations", (req, res) => {
     return
   }
   let results = []
-  req.body.invitations.map( p => {
+  req.body.invitations.forEach(p => {
     let result = db.run(
     /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
     VALUES (${req.body.eventId}, ${p.id})`, {...req.body, ...p}
@@ -176,9 +317,9 @@ router.delete("/invitations/:eventId/:invitationId", (req, res) => {
     res.json({ success: false})
     return
   }
-  console.log(req.session.user.id);
+  //console.log(req.session.user.id);
   let creatorCheck = db.select(/*sql*/`SELECT * FROM Events WHERE id = $eventId AND creatorId = ${req.session.user.id} `, req.params)
-  console.log(creatorCheck);
+  //console.log(creatorCheck);
   if (creatorCheck.length === 0) {
     res.status(403)
     res.json({ success: false})

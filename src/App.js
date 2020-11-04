@@ -1,5 +1,4 @@
 import React, {useState, useEffect, createContext} from 'react';
-import ListPersons from "./components/ListPersons"
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom" 
 import Profile from './components/Profile'
 import Login from './components/Login'
@@ -7,52 +6,72 @@ import Header from "./components/Header"
 import Footer from './components/Footer';
 import Calendar from './components/Calendar'
 import Event from './components/Event'
+import moment from "moment" 
+import { ThemeWrapper } from './components/ThemeWrapper';
 
 export const Context = createContext()
 
+export function setTheme(value) {
+    document.documentElement.className = ""
+    document.documentElement.classList.add(`${value}`)
+}
+
 export default function App() {
 
-  const [contextVal, setContext] = useState({})
+  const [contextVal, setContext] = useState({
+    selectedDay: moment().format("YYYY-MM-DD")
+  })
+
   const updateContext = updates => setContext({
     ...contextVal,
     ...updates
   })
+  
+  const themeNames = { dark: `dark-theme`, light: `light-theme`, third: `third-theme`}; 
+  const [themeName, setThemeName] = useState(themeNames.dark)
 
   useEffect(() => {
     updateContext({ waitingForUserState: true });
+    setTheme(themeName);
     (async () => {
       let result = await (await fetch('/api/auth/whoami')).json();
-      updateContext({ waitingForUserState: false });
       if (result.error) { return; }
       // add the user data to the context variable
-      updateContext({ user: result });
+      // updateContext({ user: result });
+      let invitations = await (await fetch('/api/events/invitations/get')).json();
+      if (invitations.error) { return; }
+      updateContext({ waitingForUserState: false, user: result, invitations: invitations, theme: result.theme });
+      setThemeName(result.theme)
       return <Redirect to="/myCalendar" />
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  
+
   return (
     <Context.Provider value={[contextVal, updateContext]}>
-      <Router>
-        <Header />
-        <div className="container">
-          <Route exact path="/profile/:id">
-            <Profile />      
-          </Route>
-          <Route exact path="/mycalendar">
-            <Calendar />
-          </Route>
-          {/* <Route exact path="/profile/new">
-            <Profile />
-          </Route> */}
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/event/:id">
-            <Event />
-          </Route>
+      <ThemeWrapper themeName={contextVal.theme ? contextVal.theme : themeName}>
+        <div className="themed-content">
+          <Router>
+            <Header />
+            <div className="container">
+              <Route path="/">{!contextVal.user ? <Redirect push to="/login" /> : <Redirect push to="/myCalendar" />}
+              </Route>
+              <Route exact path="/mycalendar">
+                <Calendar />
+              </Route>
+              <Route exact path="/profile/:id">
+                <Profile />      
+              </Route>
+              <Route exact path="/login">
+                <Login />
+              </Route>
+              <Route exact path="/event/:id">
+                <Event />
+              </Route>
+            </div>
+            <Footer/>
+          </Router>
         </div>
-        <Footer/>
-      </Router>
+      </ThemeWrapper>
     </Context.Provider>
   );
 }

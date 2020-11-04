@@ -1,153 +1,150 @@
 import React, {useState, useEffect, useContext} from "react"
 import moment from "moment"
 import "moment/locale/sv"
-import {Row, Col} from 'reactstrap'
+import { Row, Col, Badge } from 'reactstrap'
+import {Link} from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowAltCircleRight, faArrowAltCircleLeft, faArrowAltCircleUp, faArrowAltCircleDown } from "@fortawesome/free-solid-svg-icons"
-import {Context} from "../App"
+import { faArrowAltCircleRight, faArrowAltCircleLeft, faAngleDoubleRight, faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons"
+import { Context } from "../App"
+import { useMediaQuery } from 'react-responsive'
+import DayView from "./DayView"
+import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
 
 export default function Calendar() {
     
-    moment.locale("sv")
+  moment.locale("sv")
 
-    const [calendar, setCalendar] = useState([])
-    const [value, setValue] = useState(moment())
-    const [year, setYear] = useState([])
-    const [redDays, setRedDays] = useState([])
-    let [context, updateContext] = useContext(Context)
+  const [calendar, setCalendar] = useState([])
+  const [dayValue, setDayValue] = useState(moment())
+  const [year, setYear] = useState([])
+  const [redDays, setRedDays] = useState([])
+  let [context, updateContext] = useContext(Context)
+  const [monthlySchedule, setMonthlySchedule] = useState([])
 
+  useEffect(() => {
+    getDaysInformation()
+    const startDay = dayValue.clone().startOf("month").startOf("week")
+    const endDay = dayValue.clone().endOf("month").endOf("week")
+    const day = startDay.clone().subtract(1, "day")
+    const monthDays = []
+    while(day.isBefore(endDay, "day")) {
+      monthDays.push(
+        Array(7)
+        .fill(0)
+        .map(() => day.add(1, "day").clone())
+      )
+    }
+    getMonthlySchedule();
+    setCalendar(monthDays)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dayValue])
 
+  const days = moment.weekdays(true)
 
-    useEffect(() => {
-        getDaysInformation()
-        const startDay = value.clone().startOf("month").startOf("week")
-        const endDay = value.clone().endOf("month").endOf("week")
-        const day = startDay.clone().subtract(1, "day")
-        const a = []
-        while(day.isBefore(endDay, "day")) {
-            a.push(
-                Array(7)
-                    .fill(0)
-                    .map(() => day.add(1, "day").clone())
-            )
+  async function getMonthlySchedule() {
+    let result = await (await getSchedule(dayValue, "YYYY-MM"))
+    setMonthlySchedule(result)
+  }
+
+  async function getDaysInformation(){
+    let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + dayValue.format("YYYY"))).json()
+    setYear(result)
+    setRedDays(getAllRedDays(result))
+  }
+
+  function getCurrentMonth() {
+    return dayValue.format("MMMM")
+  }
+
+  function getPreviousMonth() {
+    return dayValue.clone().subtract(1, "month")
+  }
+
+  function getNextMonth() {
+    return dayValue.clone().add(1, "month")
+  }
+
+  function getCurrentYear() {
+    return dayValue.format("YYYY")
+  }
+
+  function getPreviousYear() {
+    return dayValue.clone().subtract(1, "year")
+  }
+
+  function getNextYear() {
+    return dayValue.clone().add(1, "year")
+  }
+
+  /* let setSelectedDay = update => {
+    updateContext({selectedDay: update.format("YYYY-MM-DD"), selectedWeek: update.format("w")})
+  }
+ */
+  const isDesktop = useMediaQuery({
+    query: "(min-device-width: 600px)"
+  })
+
+  async function displaySchedule(day) {
+    updateContext({
+      selectedDay: day.format("YYYY-MM-DD"),
+      dailySchedule: await getSchedule(day, "YYYY-MM-DD"),
+      onThisDay: await getOnThisDay(day), 
+      randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent()))
+    })
+  }
+
+  return (
+    <div className="mt-3">
+      <Row className="bg-light">
+        <Col xs="auto">
+          <FontAwesomeIcon className="mr-2 pointer" size="lg" icon={faAngleDoubleLeft} onClick={() => setDayValue(getPreviousYear())} /> 
+          <FontAwesomeIcon className="pointer" size="lg" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousMonth())} />
+        </Col>
+        <Col className="text-center font-weight-bold">
+            {getCurrentMonth()} {getCurrentYear()} 
+        </Col>
+        <Col xs="auto" className="text-right pointer">
+          <FontAwesomeIcon icon={faArrowAltCircleRight} size="lg" onClick={() => setDayValue(getNextMonth())} />
+          <FontAwesomeIcon className="ml-2 pointer" size="lg" icon={faAngleDoubleRight} onClick={() => setDayValue(getNextYear())} /> 
+        </Col>
+      </Row>
+      <Row className="d-flex">
+        {
+          days.map( day => {
+            return <Col className="bg-dark text-white text-center" key={day}>{isDesktop ? day : day.slice(0, 1)}</Col>   
+          })
         }
-        setCalendar(a)
-        console.log(a);
-    }, [value])
-
-    
-    const days = moment.weekdaysShort(true)
-
-    async function getDaysInformation(){
-        let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + value.format("YYYY"))).json()
-        setYear(result)
-        getAllRedDays(result)
-      }
-
-    function getAllRedDays(year){
-        let data = year.dagar
-        let result = data.filter( (day) => {
-          if(day["röd dag"] === "Ja"){
-            return day
-          }
-        })
-        console.log("månad: ", result);
-        setRedDays(result)
-    }
-
-    function isRedDay(day) {
-        return day.day() === 0 || redDays.find( (redDay) => redDay.datum === day.format("YYYY-MM-DD"))
-    }
-
-    function isSelected(day) {
-        return value.isSame(day, "day")
-    }
-
-    function beforeToday(day) {
-        return day.isBefore(new Date(), "day")
-    }
-
-    function sameMonth(day) {
-        return day.isSame(value, "month")
-    }
-
-    function isToday(day) {
-        return day.isSame(new Date(), "day")
-    }
-
-    function dayStyles(day) {
-        if (isSelected(day)) return "bg-danger text-white"
-        if (isRedDay(day)) return "text-danger"
-        if (beforeToday(day)) return "text-secondary"
-        if (!sameMonth(day)) return "text-secondary"
-        if (isToday(day)) return "bg-secondary text-white"
-        return ""
-    }
-
-    function getCurrentMonth() {
-        return value.format("MMMM")
-    }
-
-    function getPreviousMonth() {
-        return value.clone().subtract(1, "month")
-    }
-
-    function getNextMonth() {
-        return value.clone().add(1, "month")
-    }
-
-    function getCurrentYear() {
-        return value.format("YYYY")
-    }
-
-    function getPreviousYear() {
-        return value.clone().subtract(1, "year")
-    }
-
-    function getNextYear() {
-        return value.clone().add(1, "year")
-    }
-
-    let setSelectedDay = update => {
-        updateContext({selectedDay: update.format("YYYY-MM-DD"), selectedWeek: update.format("w")})
-    }
-
-    return (
-        <div>
-            <h2>Calendar</h2>
-            <Row className="bg-light">
-                <Col xs="auto"><FontAwesomeIcon className="pointer" icon={faArrowAltCircleLeft} onClick={() => setValue(getPreviousMonth())} /></Col>
-                <Col className="text-center">
-                    {getCurrentMonth()} {getCurrentYear()} 
-                    <FontAwesomeIcon className="ml-2 pointer" icon={faArrowAltCircleUp} onClick={() => setValue(getNextYear())} /> 
-                    <FontAwesomeIcon className="ml-1 pointer" icon={faArrowAltCircleDown} onClick={() => setValue(getPreviousYear())} /> 
-                </Col>
-                <Col xs="auto" className="text-right pointer"><FontAwesomeIcon icon={faArrowAltCircleRight} onClick={() => setValue(getNextMonth())} /></Col>
-            </Row>
-            <Row className="d-flex">
-                {
-                    days.map( day => {
-                        return <Col className="bg-dark text-white text-center" key={day}>{day}</Col>   
-                      })
-                }
-            </Row>
-            <div>
-                {
-                    calendar.map(week => 
-                        <Row className="d-flex" key={week}>
-                            {
-                                week.map(day =>
-                                    <Col className="text-center pointer" onClick={(e) => { setValue(day); setSelectedDay(day);}} key={day}>
-                                        <div className={dayStyles(day)}>
-                                            {day.format("D")}
-                                        </div>
-                                    </Col>
-                                )
+      </Row>
+      <div>
+        {
+          calendar.map(week => 
+            <Row className="d-flex" key={week}>
+              {
+                week.map(day =>
+                  <Col className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-lg-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
+                    {day.format("D")}
+                    { isDesktop &&
+                      <Row className="mx-1">
+                      {
+                        monthlySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).map(
+                          (filteredEvent, index, arr) => {
+                            if (index < 2) {
+                              return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
                             }
-                        </Row>
-                    )}
+                            if(arr.length > 2 && index == arr.length-1)  return <Badge key={arr.length} pill color="dark">+{arr.length-2}</Badge>
+                          }
+                        )
+                      }
+                      </Row>
+                    }
+                  </Col>
 
-            </div>
-        </div>
-    )
+                )
+              }
+            </Row>
+          )
+        }
+      </div>
+    </div>
+  )
 }

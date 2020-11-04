@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { Row, Col, Button, Form, FormGroup, Input, Alert, Label } from  "reactstrap";
-import { Context } from "../App";
+import { Row, Col, Button, Form, FormGroup, Input, Alert } from  "reactstrap";
+import { Context, setTheme } from "../App";
 
 export default function Login() {
   // eslint-disable-next-line
@@ -9,7 +9,7 @@ export default function Login() {
     redirect: false,
   });
 
-  let [context, updateContext] = useContext(Context);
+  let [,updateContext] = useContext(Context);
   let [redirect, setRedirect] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -34,7 +34,10 @@ export default function Login() {
       setShowAlert(true);
       return;
     }
-    updateContext({ user: result });
+    let invitations = await (await fetch('/api/events/invitations/get')).json();
+      if (invitations.error) { return; }
+    updateContext({ user: result, invitations: invitations, theme: result.theme });
+    setTheme(result.theme)
     setRedirect({ redirect: true });
   }
 
