@@ -40,7 +40,7 @@ function getLoopCounter(recurringEvent, startDateTimeIn, recurringInterval, recu
         break
       
       case 4:
-        let yearMilli = milliseconds / (1000 * 3600 * 24)
+        let yearMilli = milliseconds / (1000 * 3600 * 24) + 1
         return Math.abs(Math.floor(yearMilli / 365.25))
         break
 
@@ -114,8 +114,10 @@ router.post("/", (req, res) => {
         console.log("OH NO!");
         break;
     }
-    req.body.startDateTime = newStartDate.format('YYYY-MM-DD, HH:mm')
-    req.body.endDateTime = newEndDate.format('YYYY-MM-DD, HH:mm')
+    if (recurringInterval > 0) {
+      req.body.startDateTime = newStartDate.format('YYYY-MM-DD, HH:mm')
+      req.body.endDateTime = newEndDate.format('YYYY-MM-DD, HH:mm')
+    }
     
     let eventId = result.lastInsertRowid
     if(recurringEvent && recurringParentId === 0) {
@@ -174,6 +176,9 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
   let cascadeChange = req.body.cascadeChange || false
+  delete req.body.cascadeChange
+  let str = ""
+
   if (!req.session.user) {
     res.status(403)
     res.json({ success: false})
@@ -188,49 +193,66 @@ router.put("/:id", (req, res) => {
   
   // Compare if there's an invitation in the db that matches the userId in the participants list sent from frontend
   // If found in both lists, remove from both lists
-  invitations.forEach(i => req.body.participants.forEach(u => {
-    if (i.invitedUserId === u.userId) {
-      req.body.participants.pop(u)
-      invitations.pop(i)
-    }
-  }))
+  if(req.body.participants !== undefined) {
+    invitations.forEach(i => req.body.participants.forEach(u => {
+      if (i.invitedUserId === u.userId) {
+        req.body.participants.pop(u)
+        invitations.pop(i)
+      }
+    }))
+    
+    // Compare if there's a participant in the db that matches the userId in the participants list sent from frontend
+    // If found in both lists, remove from both lists
+    participants.forEach(p => req.body.participants.forEach(i => {
+      if (p.ownerId === i.userId) {
+        req.body.participants.pop(i)
+        participants.pop(p)
+      }
+    }))
+    
+    // Deletes any remaining invitations from the database because they are no longer invited
+    invitations.forEach(inv => {
+      result = db.run(/*sql*/`DELETE FROM PendingInvitations WHERE eventId = $id AND invitedUserId = ${inv.invitedUserId}`, req.params)
+      results.push(result)
+    })
   
-  // Compare if there's a participant in the db that matches the userId in the participants list sent from frontend
-  // If found in both lists, remove from both lists
-  participants.forEach(p => req.body.participants.forEach(i => {
-    if (p.ownerId === i.userId) {
-      req.body.participants.pop(i)
-      participants.pop(p)
-    }
-  }))
+    // Deletes any remaining participants from the database because they are no longer welcome!
+    participants.forEach(part => {
+      result = db.run(/*sql*/`DELETE FROM Events WHERE parentId = $id AND ownerId = ${part.ownerId}`, req.params)
+      results.push(result)
+    })
   
-  // Deletes any remaining invitations from the database because they are no longer invited
-  invitations.forEach(inv => {
-    result = db.run(/*sql*/`DELETE FROM PendingInvitations WHERE eventId = $id AND invitedUserId = ${inv.invitedUserId}`, req.params)
-    results.push(result)
-  })
-
-  // Deletes any remaining participants from the database because they are no longer welcome!
-  participants.forEach(part => {
-    result = db.run(/*sql*/`DELETE FROM Events WHERE parentId = $id AND ownerId = ${part.ownerId}`, req.params)
-    results.push(result)
-  })
-
-  // If there are any users left in the participants list from the frontend, send them invitations
-  req.body.participants.forEach(invite => {
-    result = db.run(/* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
-      VALUES ($id, ${invite.userId})`, req.params
-    )
-    results.push(result)
-  })
-
-  // Removes participants list from req.body so as to not confuse the database when doing an update.
-  delete req.body.participants
-  req.body.startDateTime = req.body.startDateTime.slice(0, 17)
-  req.body.endDateTime = req.body.endDateTime.slice(0,17)
-
-  result = db.run(/* sql */ `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
-  WHERE (id = $id OR parentId = $id) AND creatorId = ${req.session.user.id}`, {...req.body, ...req.params})
+    // If there are any users left in the participants list from the frontend, send them invitations
+    req.body.participants.forEach(invite => {
+      result = db.run(/* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
+        VALUES ($id, ${invite.userId})`, req.params
+      )
+      results.push(result)
+    })
+    // Removes participants list from req.body so as to not confuse the database when doing an update.
+    delete req.body.participants
+    req.body.startDateTime = req.body.startDateTime.slice(0, 17)
+    req.body.endDateTime = req.body.endDateTime.slice(0,17)
+  }
+  const event = db.select(/* sql */ `SELECT * FROM Events WHERE id = $id`, req.params)
+  if (cascadeChange) {
+    console.log("1");
+    if (event[0].recurringParentId === null) {
+      console.log("2");
+      str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  WHERE (id = $id OR parentId = $id OR recurringParentId = $id) AND creatorId = ${req.session.user.id}`
+    } else {
+      console.log("3");
+      str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  WHERE (id = $id OR parentId = $id OR (recurringParentId = ${event[0].recurringParentId} AND startDateTime >= '${event[0].startDateTime}')) AND creatorId = ${req.session.user.id}`
+    } 
+  } else {
+    console.log("4");
+    str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
+  WHERE (id = $id OR parentId = $id ) AND creatorId = ${req.session.user.id}`
+  }
+  result = db.run(str, {...req.body, ...req.params})
+  console.log("result", result);
   if (result.changes === 0) {
     res.status(403)
     res.json({ success: false})
