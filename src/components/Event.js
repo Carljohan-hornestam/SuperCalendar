@@ -202,9 +202,10 @@ export default function Event() {
     formData.recurringInterval = recurringIntervalOptions.find(i => i.value === recInterval).key;
     formData.recurringInterval > 0 ? formData.recurringEvent = 1 : formData.recurringEvent = 0
     
-    if(id !== 'new') {
-      formData.cascade = doCascade ? 1 : 0
-    }
+    // if(id !== 'new') {
+    //   formData.cascadeChange = doCascade
+    //   delete formData.id
+    // }
 
     formData.participants = participants.map((user) => ({
       userId: user.value,
@@ -265,7 +266,6 @@ export default function Event() {
       return i.value === value
     })
     setRecInterval(a.value)
-    console.log("a: ", a);
   } // handleIntervalOptions
 
   async function handleDeleteEvent() {
@@ -384,10 +384,12 @@ export default function Event() {
             )}
           </Col>
         </Row>
-        <Row form>
+        <Row form className="my-2">
           <Col xs="12">
-            <FormGroup>
-              <Label for="exampleText">Titel</Label>
+            <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>Titel</InputGroupText>
+            </InputGroupAddon>
               <Input
                 className=""
                 type="text"
@@ -398,7 +400,7 @@ export default function Event() {
                 disabled={disabled}
                 onChange={handleInputChange}
               />
-            </FormGroup>
+            </InputGroup>
           </Col>
         </Row>
         <Row form>
@@ -582,7 +584,7 @@ export default function Event() {
                 icon={faCheck}
                 className="float-right text-success pointer"
                 disabled={disabled}
-                onClick={saveWrapper}
+                onClick={save}
               />
             ) : (
               ""
