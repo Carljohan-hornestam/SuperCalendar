@@ -54,7 +54,7 @@ export default function Header() {
   })
 
   async function handleInvitation(accept, invitationId, eventId) {
-    console.log('handleInvitation, accept:', accept, ' id:', invitationId);
+    //console.log('handleInvitation, accept:', accept, ' id:', invitationId);
 
     const body = {
         "userId": context.user.id,
@@ -68,7 +68,7 @@ export default function Header() {
         body: JSON.stringify(body),
       })).json();
 
-    console.log('Result from reply:', result);
+    //console.log('Result from reply:', result);
 
     let invitations = await (await fetch('/api/events/invitations/get')).json();
     if (invitations.error) { return; }
