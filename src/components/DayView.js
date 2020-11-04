@@ -108,7 +108,7 @@ export default function DayView() {
           <Col className="text-center">
             {nameDay.map((namn) => {
               return (
-                <span key={namn} className="mx-1">
+                <span key={namn} className={`${context.user.username === namn && "font-weight-bold"} mx-1 text-black}`}>
                   {namn}
                 </span>
               );

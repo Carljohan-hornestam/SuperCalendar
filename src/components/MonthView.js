@@ -120,14 +120,17 @@ export default function Calendar() {
                 week.map(day =>
                   <Col className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-lg-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
                     {day.format("D")}
-                    {day.format("MM-DD") === "06-06" && <div className="nationalDay"></div>}
+                    {day.format("MM-DD") === "06-06" && <div className="swedishFlag"></div>}
                     { isDesktop &&
                       <Row className="justify-content-center">
                         {
                           nameDays.map(dag => {
                             if (dag.datum === day.format("YYYY-MM-DD")) {
                               return (
-                                dag.namnsdag.map(namn => <span key={namn} className="mx-1 text-black">{namn}</span>)
+                                dag.namnsdag.map(namn => 
+                                  <span key={namn} className={`${context.user.username === namn && "font-weight-bold"} mx-1 text-black}`}>
+                                    {namn}{context.user.username === namn && <div className="swedishFlag"></div>}
+                                  </span>)
                               )
                             }
                           })

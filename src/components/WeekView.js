@@ -149,7 +149,7 @@ export default function WeekView() {
                       <span>
                         {day.format("D")}
                         {!isDesktop && weeklySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).length > 0 && <div className="eventIndicator"></div>}
-                        {day.format("MM-DD") === "06-06" && <div className="nationalDay"></div>}
+                        {day.format("MM-DD") === "06-06" && <div className="swedishFlag"></div>}
                       </span>
                     </Row>
                     { isDesktop &&
@@ -158,7 +158,10 @@ export default function WeekView() {
                           nameDays.map(dag => {
                             if (dag.datum === day.format("YYYY-MM-DD")) {
                               return (
-                                dag.namnsdag.map(namn => <span key={namn} className="mx-1 text-black">{namn}</span>)
+                                dag.namnsdag.map(namn => 
+                                  <span key={namn} className={`${context.user.username === namn && "font-weight-bold"} mx-1 text-black}`}>
+                                    {namn}{context.user.username === namn && <div className="swedishFlag"></div>}
+                                  </span>)
                               )
                             }
                           })
