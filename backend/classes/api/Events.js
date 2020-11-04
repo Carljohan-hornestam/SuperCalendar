@@ -10,7 +10,6 @@ router.get("/", (req, res) => {
   } else {
     let str = /* sql */ `SELECT * FROM Events 
     WHERE (creatorId = ${req.session.user.id} OR ownerId = ${req.session.user.id})` 
-    //console.log('i get events, str: ', str);
     res.json(
       db.select(str)
       );
@@ -86,8 +85,6 @@ router.post("/", (req, res) => {
 
     let newStartDate
     let newEndDate
-    console.log("startdatetime innan uträkning", req.body.startDateTime);
-    console.log("recurringInterval: ", recurringInterval);
 
     switch (recurringInterval) {
       case 1:
@@ -237,23 +234,19 @@ router.put("/:id", (req, res) => {
   }
   const event = db.select(/* sql */ `SELECT * FROM Events WHERE id = $id`, req.params)
   if (cascadeChange) {
-    console.log("1");
     if (event[0].recurringParentId === null) {
-      console.log("2");
       str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
   WHERE (id = $id OR parentId = $id OR recurringParentId = $id) AND creatorId = ${req.session.user.id}`
     } else {
-      console.log("3");
       str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
   WHERE (id = $id OR parentId = $id OR (recurringParentId = ${event[0].recurringParentId} AND startDateTime >= '${event[0].startDateTime}')) AND creatorId = ${req.session.user.id}`
     } 
   } else {
-    console.log("4");
     str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
   WHERE (id = $id OR parentId = $id ) AND creatorId = ${req.session.user.id}`
   }
+
   result = db.run(str, {...req.body, ...req.params})
-  console.log("result", result);
   if (result.changes === 0) {
     res.status(403)
     res.json({ success: false})
@@ -340,9 +333,9 @@ router.delete("/invitations/:eventId/:invitationId", (req, res) => {
     res.json({ success: false})
     return
   }
-  //console.log(req.session.user.id);
+ 
   let creatorCheck = db.select(/*sql*/`SELECT * FROM Events WHERE id = $eventId AND creatorId = ${req.session.user.id} `, req.params)
-  //console.log(creatorCheck);
+
   if (creatorCheck.length === 0) {
     res.status(403)
     res.json({ success: false})
@@ -390,5 +383,17 @@ router.post("/invitations/reply", (req, res) => {
     res.json({ success: true });
   }
 });
+
+router.get("/search/:search", (req, res) => {
+  if (!req.session.user) {
+    res.status(403)
+    res.json({ success: false });
+    return
+  }
+  let search =  "%" + req.params.search + "%"
+    let result = db.select(/* sql */ `SELECT * FROM Events 
+      WHERE (creatorId = ${req.session.user.id} OR ownerId = ${req.session.user.id}) AND title LIKE '${search}'`)
+    res.json(result)
+})
 
 module.exports = router;

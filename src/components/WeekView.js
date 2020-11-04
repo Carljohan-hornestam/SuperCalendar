@@ -10,7 +10,6 @@ import {
   CardSubtitle, CardBody, Row, Col, Badge
 } from 'reactstrap';
 import { Link } from "react-router-dom"
-import DayView from "./DayView"
 import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
 
 export default function WeekView() {
@@ -38,6 +37,7 @@ export default function WeekView() {
           .map(() => day.add(1, "day").clone())
       )
     }
+    displaySchedule(dayValue)
     setCalendar(weekDays)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue])
@@ -123,13 +123,6 @@ export default function WeekView() {
     })
   }
 
-  /*async function containsEvents(day) {
-    console.log("containsEvent day ", day);
-    let events = await getSchedule(day)
-    console.log("containsEvent events", events);
-    return events.length > 0
-  }*/
-
   return (
     <div className="mt-3">
       <Row className="dateBar mb-2">
@@ -192,25 +185,68 @@ export default function WeekView() {
           )
         }
         <Row className="mt-3 d-flex" style={{height: isDesktop ? "55vh" : "55vh" , overflowY: "scroll"}}>
-          { isDesktop ? (
+          {isDesktop ? (
             nameDays.map(day => {
-              return (<Col key={day.datum} style={{maxWidth: "14.285%"}}>
+              return (<Col key={day.datum} style={{ maxWidth: "14.285%" }}>
                 {weeklySchedule.map(event => {
                   return event.startDateTime.slice(0, 10) === day.datum ? (
-                      <Link key={event.id} to={"/event/" + event.id}>
-                        <Card className="m-1" inverse color="info">
-                          <CardBody className="p-2">
-                            <CardTitle className="font-weight-bold">{event.title}</CardTitle>
-                            <CardSubtitle>{event.startDateTime.slice(-5)}-{event.endDateTime.slice(-5)}</CardSubtitle>
-                            <CardText >{event.description}</CardText>
-                          </CardBody>
-                        </Card>
-                      </Link>
-                    ) : ""
-                  }
+                    <Link key={event.id} to={"/event/" + event.id}>
+                      <Card className="m-1" inverse color="info">
+                        <CardBody className="p-2">
+                          <CardTitle className="font-weight-bold">{event.title}</CardTitle>
+                          <CardSubtitle>{event.startDateTime.slice(-5)}-{event.endDateTime.slice(-5)}</CardSubtitle>
+                          <CardText >{event.description}</CardText>
+                        </CardBody>
+                      </Card>
+                    </Link>
+                  ) : ""
+                }
                 )}
               </Col>)
-            })) :  <DayView/>
+            })) :
+            ( context.onThisDay && context.onThisDay.events[+context.randomOnThisDay] && context.onThisDay.events[+context.randomOnThisDay].wikipedia
+                 && context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].wikipedia &&
+              <Col>
+                <Col className="w-100">
+                  <a href={ context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].wikipedia }>
+                    <Card inverse color="success">
+                      <CardBody className="p-2">
+                        <CardTitle className="font-weight-bold">
+                          { context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].title }
+                          ,{" "}
+                          { context.onThisDay.events[+context.randomOnThisDay].year }
+                        </CardTitle>
+                        <CardText>
+                          { context.onThisDay.events[+context.randomOnThisDay].description }
+                        </CardText>
+                      </CardBody>
+                    </Card>
+                  </a>
+                </Col>  
+                {
+                  nameDays.map(day => {
+                    if (day.datum === dayValue.format("YYYY-MM-DD")) {
+                      return (<Col className="w-100" key={day.datum}>
+                        {weeklySchedule.map(event => {
+                          return event.startDateTime.slice(0, 10) === day.datum ? (
+                            <Link key={event.id} to={"/event/" + event.id}>
+                              <Card className="mt-1" inverse color="info">
+                                <CardBody className="p-2">
+                                  <CardTitle className="font-weight-bold">{event.title}</CardTitle>
+                                  <CardSubtitle>{event.startDateTime.slice(-5)}-{event.endDateTime.slice(-5)}</CardSubtitle>
+                                  <CardText >{event.description}</CardText>
+                                </CardBody>
+                              </Card>
+                            </Link>
+                          ) : ""
+                        }
+                        )}
+                      </Col>)
+                    }
+                  })
+                }
+              </Col>
+            )
           }
         </Row>
       </div>

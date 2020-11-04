@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowAltCircleRight, faArrowAltCircleLeft, faAngleDoubleRight, faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons"
 import { Context } from "../App"
 import { useMediaQuery } from 'react-responsive'
-import {dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent} from "../functions/CommonCalendarFunctions"
+import { dayStyles, getAllRedDays, getSchedule, getOnThisDay, getRandomEvent } from "../functions/CommonCalendarFunctions"
 
 export default function Calendar() {
     
@@ -19,6 +19,7 @@ export default function Calendar() {
   const [redDays, setRedDays] = useState([])
   let [context, updateContext] = useContext(Context)
   const [monthlySchedule, setMonthlySchedule] = useState([])
+  const [nameDays, setNameDays] = useState([])
 
   useEffect(() => {
     getDaysInformation()
@@ -47,6 +48,7 @@ export default function Calendar() {
 
   async function getDaysInformation(){
     let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + dayValue.format("YYYY"))).json()
+    setNameDays(result.dagar)
     setYear(result)
     setRedDays(getAllRedDays(result))
   }
@@ -75,10 +77,6 @@ export default function Calendar() {
     return dayValue.clone().add(1, "year")
   }
 
-  /* let setSelectedDay = update => {
-    updateContext({selectedDay: update.format("YYYY-MM-DD"), selectedWeek: update.format("w")})
-  }
- */
   const isDesktop = useMediaQuery({
     query: "(min-device-width: 600px)"
   })
@@ -123,6 +121,19 @@ export default function Calendar() {
                   <Col className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-lg-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
                     {day.format("D")}
                     { isDesktop &&
+                      <Row className="justify-content-center">
+                        {
+                          nameDays.map(dag => {
+                            if (dag.datum === day.format("YYYY-MM-DD")) {
+                              return (
+                                dag.namnsdag.map(namn => <span key={namn} className="mx-1 text-black">{namn}</span>)
+                              )
+                            }
+                          })
+                        }
+                      </Row>
+                    }
+                    { isDesktop &&
                       <Row className="mx-1">
                       {
                         monthlySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).map(
@@ -137,7 +148,6 @@ export default function Calendar() {
                       </Row>
                     }
                   </Col>
-
                 )
               }
             </Row>

@@ -50,10 +50,6 @@ export default function DayView() {
     (async () => {setRandomEvent(Math.floor(Math.random() * Math.floor(getRandomEvent())))})();
     getDailySchedule();
     setCalendar(weekDays);
-    // setRandomEvent(Math.floor(Math.random() * Math.floor(getRandomEvent())))
-    // updateContext({ randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent())) })
-    console.log("randomOnEvent: ", randomEvent);
-    console.log("onThisDay: ", onThisDay);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue]);
 
