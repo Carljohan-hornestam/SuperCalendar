@@ -12,6 +12,9 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,6 +26,7 @@ import {
   faMinusCircle,
   faTrashAlt,
   faRedo,
+  faMapMarkerAlt
 } from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "./DateTimePicker";
 import { Context } from "../App";
@@ -53,15 +57,35 @@ export default function Event() {
     tid: "10:00",
   });
 
+  const [recIntervalEnd, setRecIntervalEnd] = useState({
+    datum: context.selectedDay 
+    ? context.selectedDay :
+    new Date().toLocaleDateString(),
+    tid: '10:00',
+  });
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
     recurringEvent: 0,
+    recurringInterval: 0,
     participants: [],
   });
 
   const [hasSelection, setHasSelection] = useState(false);
+
+  const [recInterval, setRecInterval] = useState(
+    'Aldrig'
+  );
+
+  const recurringIntervalOptions = [
+    {key: 0, value: `Aldrig`},
+    {key: 1, value: `Varje dag`},
+    {key: 2, value: `Varje vecka`},
+    {key: 3, value: `Varje månad`},
+    {key: 4, value: `Varje år`},
+  ];
 
   useEffect(() => {
     fetchUsers();
@@ -81,8 +105,8 @@ export default function Event() {
         title: "",
         description: "",
         location: "",
-        recurringEvent: 1,
-        recurringInterval: 1,
+        recurringEvent: 0,
+        recurringInterval: 0,
         participants: [],
       });
       return;
@@ -116,6 +140,10 @@ export default function Event() {
         ...result,
         participants: p,
       });
+
+      if (result.recurringEvent === 1) {        
+        setRecInterval(recurringIntervalOptions.find(i => i.key === result.recurringInterval).value);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]); // useEffect
@@ -154,14 +182,19 @@ export default function Event() {
   } // modalSuccess
 
   async function save(e) {
-    formData.endDateTime = convertDate(endTime)
-    formData.startDateTime = convertDate(startTime)
+    formData.endDateTime = convertDate(endTime);
+    formData.startDateTime = convertDate(startTime);
+    formData.intervalEnd = convertDate(recIntervalEnd);
+    formData.recurringInterval = recurringIntervalOptions.find(i => i.value === recInterval).key;
+    formData.recurringInterval > 0 ? formData.recurringEvent = 1 : formData.recurringEvent = 0
+    console.log("recInterval: ", recInterval);
+    console.log("formData.recurringInterval: ", formData.recurringInterval);
 
     formData.participants = participants.map((user) => ({
       userId: user.value,
     }));
 
-     e.preventDefault();
+    e.preventDefault();
     //Send the data to the REST api
     await fetch("/api/events/" + (id === "new" ? "" : id), {
       method: id === "new" ? "POST" : "PUT",
@@ -173,7 +206,7 @@ export default function Event() {
   } // save
 
   function convertDate(dateTime) {
-    return `${dateTime.datum}, ${dateTime.tid}`
+    return `${dateTime.datum}, ${dateTime.tid}`;
   }
 
   function filterAvailableParticipants() {
@@ -211,6 +244,14 @@ export default function Event() {
     setHasSelection(selectAvailable && selectAvailable.value);
   } // userListHasSelectedUsers
 
+  function handleIntervalOptions(value) {
+    let a = recurringIntervalOptions.find(i => {
+      return i.value === value
+    })
+    setRecInterval(a.value)
+    console.log("a: ", a);
+  } // handleIntervalOptions
+
   async function handleDeleteEvent() {
     await fetch("/api/events/" + id, {
       method: "DELETE",
@@ -221,7 +262,10 @@ export default function Event() {
   } // handleDeleteEvent
 
   const disabled = !(
-    (context.user && +context.user.id === +formData.ownerId) ||
+    (context.user &&
+      +context.user.id === +formData.creatorId &&
+      context.user &&
+      +context.user.id === +formData.ownerId) ||
     id === "new"
   );
 
@@ -283,7 +327,9 @@ export default function Event() {
               {id === "new" ? "Ny händelse" : title}
             </h5>
 
-            {id !== "new" && !disabled ? (
+            {id !== "new" &&
+            context.user &&
+            +context.user.id === +formData.ownerId ? (
               <FontAwesomeIcon
                 className=" float-right my-2 pointer"
                 size="lg"
@@ -343,6 +389,46 @@ export default function Event() {
         </Row>
         <Row form>
           <Col xs="12">
+            <InputGroup className="my-2">
+            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
+            <FontAwesomeIcon
+                  className=""
+                  size="xs"
+                  icon={faRedo}
+                />
+            </InputGroupText>
+            </InputGroupAddon>
+              <Input
+                type="select"
+                disabled={id !== 'new'}
+                value={recInterval}
+                className="form-control"
+                onChange={(e) => handleIntervalOptions(e.currentTarget.value)}
+              >
+                {recurringIntervalOptions.map(e => (
+                  <option key={e.key} value={e.value}>
+                    {e.value}
+                  </option>
+                ))}
+              </Input>
+            </InputGroup>
+          </Col>
+        </Row>
+        <Row form className={recInterval === 'Aldrig' ? 'd-none' : 'd-block'}>
+          <Col xs="12" md="6">
+          <DateTimePicker
+            name="recurringIntervalEnd"
+            header="Datum för sista händelse"
+            datetime={recIntervalEnd}
+            parentCallBack={setRecIntervalEnd}
+            disabled={disabled || id !== 'new'}
+            noTime
+          />
+          </Col>
+        </Row>
+        <Row form>
+          <Col xs="12">
             <FormGroup>
               <Label for="descriptionText">Beskrivning</Label>
               <Input
@@ -360,8 +446,16 @@ export default function Event() {
         </Row>
         <Row form>
           <Col xs="12">
-            <FormGroup>
-              <Label for="locationText">Plats</Label>
+            <InputGroup className="my-2">
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>
+              <FontAwesomeIcon
+                  className=""
+                  size="xs"
+                  icon={faMapMarkerAlt}
+                />
+              </InputGroupText>
+            </InputGroupAddon>
               <Input
                 className=""
                 type="text"
@@ -372,7 +466,7 @@ export default function Event() {
                 onChange={handleInputChange}
                 disabled={disabled}
               />
-            </FormGroup>
+            </InputGroup>
           </Col>
         </Row>
         <Row form>
@@ -383,9 +477,11 @@ export default function Event() {
               id === "new" ? (
                 <>
                   <FontAwesomeIcon
-                      size="lg"
-                      icon={faPlusCircle}
-                      className={`${disabled ? "plusButtonDisable":"plusButtonEnable" } float-right pointer`}
+                    size="lg"
+                    icon={faPlusCircle}
+                    className={`${
+                      disabled ? "plusButtonDisable" : "plusButtonEnable"
+                    } float-right pointer`}
                     onClick={disabled ? null : toggle}
                     //color={disabled ? "gray" : "green"}
                   />
@@ -401,7 +497,9 @@ export default function Event() {
                     color={disabled || !hasSelection ? "gray" : "red"}
                   />
                 </>
-              ) : ""}
+              ) : (
+                ""
+              )}
 
               {/* lägg in deltagare i value */}
               <Input

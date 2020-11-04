@@ -114,8 +114,10 @@ router.post("/", (req, res) => {
         console.log("OH NO!");
         break;
     }
+    if (recurringInterval > 0) {
     req.body.startDateTime = newStartDate.format('YYYY-MM-DD, HH:mm')
     req.body.endDateTime = newEndDate.format('YYYY-MM-DD, HH:mm')
+    }
     
     let eventId = result.lastInsertRowid
     if(recurringEvent && recurringParentId === 0) {
