@@ -177,6 +177,7 @@ router.get("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
   let cascadeChange = req.body.cascadeChange || false
   delete req.body.cascadeChange
+  delete req.body.intervalEnd
   let str = ""
 
   if (!req.session.user) {
