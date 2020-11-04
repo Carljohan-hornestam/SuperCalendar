@@ -37,8 +37,13 @@ export default function Event() {
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
+  const [cascadeModal, setCascadeModal] = useState(false);
+  const toggleCascadeModal = () => setCascadeModal(!cascadeModal);
+
   const [deleteModal, setDeleteModal] = useState(false);
   const toggleDeleteModal = () => setDeleteModal(!deleteModal);
+
+  const [doCascade, setDoCascade] = useState(false)
 
   const [context] = useContext(Context);
 
@@ -181,14 +186,25 @@ export default function Event() {
     toggle();
   } // modalSuccess
 
+  function saveWrapper(e) {
+    if (recInterval !== 'Aldrig' && id !== 'new') {
+      toggleCascadeModal()
+    }
+    else {
+      save(e)
+    }
+  }
+
   async function save(e) {
     formData.endDateTime = convertDate(endTime);
     formData.startDateTime = convertDate(startTime);
     formData.intervalEnd = convertDate(recIntervalEnd);
     formData.recurringInterval = recurringIntervalOptions.find(i => i.value === recInterval).key;
     formData.recurringInterval > 0 ? formData.recurringEvent = 1 : formData.recurringEvent = 0
-    console.log("recInterval: ", recInterval);
-    console.log("formData.recurringInterval: ", formData.recurringInterval);
+    
+    if(id !== 'new') {
+      formData.cascade = doCascade ? 1 : 0
+    }
 
     formData.participants = participants.map((user) => ({
       userId: user.value,
@@ -308,6 +324,33 @@ export default function Event() {
       </div>
 
       <div>
+        <Modal isOpen={cascadeModal} toggle={toggleCascadeModal}>
+          <ModalHeader toggle={toggleCascadeModal}>Ändra återkommande händelse</ModalHeader>
+          <ModalBody>
+            <Label 
+            className="mx-4"
+            for="cbCascade">
+            <Input
+              type="checkbox"
+              name="cbCascade"
+              value={doCascade}
+              onChange={() => setDoCascade(!doCascade)}
+            >
+            </Input>
+            Ändra alla återkommande händelser
+            </Label>
+          </ModalBody>
+          <ModalFooter>
+            <FontAwesomeIcon
+              size="2x"
+              icon={faCheck}
+              className="float-right text-success"
+              onClick={save}
+            />
+          </ModalFooter>
+        </Modal>
+      </div>
+      <div>
         <Modal isOpen={deleteModal} toggle={toggleDeleteModal}>
           <ModalHeader toggle={toggleDeleteModal}>Ta bort event</ModalHeader>
           <ModalBody>Vill du verkligen radera eventet?</ModalBody>
@@ -345,15 +388,6 @@ export default function Event() {
           <Col xs="12">
             <FormGroup>
               <Label for="exampleText">Titel</Label>
-              {recurringEvent ? (
-                <FontAwesomeIcon
-                  className=" float-right my-2"
-                  size="lg"
-                  icon={faRedo}
-                />
-              ) : (
-                ""
-              )}
               <Input
                 className=""
                 type="text"
@@ -548,7 +582,7 @@ export default function Event() {
                 icon={faCheck}
                 className="float-right text-success pointer"
                 disabled={disabled}
-                onClick={save}
+                onClick={saveWrapper}
               />
             ) : (
               ""
