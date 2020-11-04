@@ -149,6 +149,7 @@ export default function WeekView() {
                       <span>
                         {day.format("D")}
                         {!isDesktop && weeklySchedule.filter(event => event.startDateTime.slice(0, 10) === day.format("YYYY-MM-DD")).length > 0 && <div className="eventIndicator"></div>}
+                        {day.format("MM-DD") === "06-06" && <div className="nationalDay"></div>}
                       </span>
                     </Row>
                     { isDesktop &&

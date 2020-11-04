@@ -120,6 +120,7 @@ export default function Calendar() {
                 week.map(day =>
                   <Col className={`${dayStyles(day, dayValue, redDays)} text-center pointer m-lg-1 layout`} onClick={(e) => { setDayValue(day); displaySchedule(day);}} key={day}>
                     {day.format("D")}
+                    {day.format("MM-DD") === "06-06" && <div className="nationalDay"></div>}
                     { isDesktop &&
                       <Row className="justify-content-center">
                         {
