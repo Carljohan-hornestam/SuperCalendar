@@ -85,7 +85,7 @@ export default function DayView() {
 
   return (
     <div className="mt-3">
-      <Row className="row dayBar">
+      <Row className="row dateBar">
         <Col xs="auto">
           <FontAwesomeIcon
             className="pointer"
