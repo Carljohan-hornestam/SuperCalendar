@@ -17,6 +17,9 @@ import {
   InputGroupText,
 } from "reactstrap";
 
+import moment from "moment";
+import "moment/locale/sv";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTimes,
@@ -26,13 +29,15 @@ import {
   faMinusCircle,
   faTrashAlt,
   faRedo,
-  faMapMarkerAlt
+  faMapMarkerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "./DateTimePicker";
 import { Context } from "../App";
 
 export default function Event() {
   const { id } = useParams();
+
+  moment.locale("sv");
 
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
@@ -43,7 +48,9 @@ export default function Event() {
   const [deleteModal, setDeleteModal] = useState(false);
   const toggleDeleteModal = () => setDeleteModal(!deleteModal);
 
-  const [doCascade, setDoCascade] = useState(false)
+  const [doCascade, setDoCascade] = useState(false);
+
+  const [correctDateInput, setCorrectDateInput] = useState(true)
 
   const [context] = useContext(Context);
 
@@ -63,10 +70,10 @@ export default function Event() {
   });
 
   const [recIntervalEnd, setRecIntervalEnd] = useState({
-    datum: context.selectedDay 
-    ? context.selectedDay :
-    new Date().toLocaleDateString(),
-    tid: '10:00',
+    datum: context.selectedDay
+      ? context.selectedDay
+      : new Date().toLocaleDateString(),
+    tid: "10:00",
   });
 
   const [formData, setFormData] = useState({
@@ -80,16 +87,14 @@ export default function Event() {
 
   const [hasSelection, setHasSelection] = useState(false);
 
-  const [recInterval, setRecInterval] = useState(
-    'Aldrig'
-  );
+  const [recInterval, setRecInterval] = useState("Aldrig");
 
   const recurringIntervalOptions = [
-    {key: 0, value: `Aldrig`},
-    {key: 1, value: `Varje dag`},
-    {key: 2, value: `Varje vecka`},
-    {key: 3, value: `Varje månad`},
-    {key: 4, value: `Varje år`},
+    { key: 0, value: `Aldrig` },
+    { key: 1, value: `Varje dag` },
+    { key: 2, value: `Varje vecka` },
+    { key: 3, value: `Varje månad` },
+    { key: 4, value: `Varje år` },
   ];
 
   useEffect(() => {
@@ -146,8 +151,12 @@ export default function Event() {
         participants: p,
       });
 
-      if (result.recurringEvent === 1) {        
-        setRecInterval(recurringIntervalOptions.find(i => i.key === result.recurringInterval).value);
+      if (result.recurringEvent === 1) {
+        setRecInterval(
+          recurringIntervalOptions.find(
+            (i) => i.key === result.recurringInterval
+          ).value
+        );
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,21 +196,41 @@ export default function Event() {
   } // modalSuccess
 
   function saveWrapper(e) {
-    if (recInterval !== 'Aldrig' && id !== 'new') {
-      toggleCascadeModal()
-    }
-    else {
-      save(e)
+    if (recInterval !== "Aldrig" && id !== "new") {
+      toggleCascadeModal();
+    } else {
+      save(e);
     }
   }
 
+  function compareDates(startTime, endTime) {
+    
+    if (moment(endTime).isBefore(moment(startTime).add(15, "minutes"))) {
+      return false
+    }
+    if (moment(endTime).isAfter(moment(startTime).add(7, "days").hours(23).minutes(59))) {
+      return false
+    }
+
+    return true;
+  }
+  
   async function save(e) {
     formData.endDateTime = convertDate(endTime);
     formData.startDateTime = convertDate(startTime);
-    formData.intervalEnd = convertDate(recIntervalEnd);
-    formData.recurringInterval = recurringIntervalOptions.find(i => i.value === recInterval).key;
-    formData.recurringInterval > 0 ? formData.recurringEvent = 1 : formData.recurringEvent = 0
+    if (!compareDates(convertDate(startTime), convertDate(endTime))) {
+      setCorrectDateInput(false)
+      return
+    }
     
+    formData.intervalEnd = convertDate(recIntervalEnd);
+    formData.recurringInterval = recurringIntervalOptions.find(
+      (i) => i.value === recInterval
+    ).key;
+    formData.recurringInterval > 0
+      ? (formData.recurringEvent = 1)
+      : (formData.recurringEvent = 0);
+
     // if(id !== 'new') {
     //   formData.cascadeChange = doCascade
     //   delete formData.id
@@ -213,13 +242,13 @@ export default function Event() {
 
     e.preventDefault();
     //Send the data to the REST api
-    await fetch("/api/events/" + (id === "new" ? "" : id), {
-      method: id === "new" ? "POST" : "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+      await fetch("/api/events/" + (id === "new" ? "" : id), {
+        method: id === "new" ? "POST" : "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    setFormData({ done: true });
+      setFormData({ done: true });
   } // save
 
   function convertDate(dateTime) {
@@ -262,10 +291,10 @@ export default function Event() {
   } // userListHasSelectedUsers
 
   function handleIntervalOptions(value) {
-    let a = recurringIntervalOptions.find(i => {
-      return i.value === value
-    })
-    setRecInterval(a.value)
+    let a = recurringIntervalOptions.find((i) => {
+      return i.value === value;
+    });
+    setRecInterval(a.value);
   } // handleIntervalOptions
 
   async function handleDeleteEvent() {
@@ -325,19 +354,18 @@ export default function Event() {
 
       <div>
         <Modal isOpen={cascadeModal} toggle={toggleCascadeModal}>
-          <ModalHeader toggle={toggleCascadeModal}>Ändra återkommande händelse</ModalHeader>
+          <ModalHeader toggle={toggleCascadeModal}>
+            Ändra återkommande händelse
+          </ModalHeader>
           <ModalBody>
-            <Label 
-            className="mx-4"
-            for="cbCascade">
-            <Input
-              type="checkbox"
-              name="cbCascade"
-              value={doCascade}
-              onChange={() => setDoCascade(!doCascade)}
-            >
-            </Input>
-            Ändra alla återkommande händelser
+            <Label className="mx-4" for="cbCascade">
+              <Input
+                type="checkbox"
+                name="cbCascade"
+                value={doCascade}
+                onChange={() => setDoCascade(!doCascade)}
+              ></Input>
+              Ändra alla återkommande händelser
             </Label>
           </ModalBody>
           <ModalFooter>
@@ -387,9 +415,9 @@ export default function Event() {
         <Row form className="my-2">
           <Col xs="12">
             <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>Titel</InputGroupText>
-            </InputGroupAddon>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>Titel</InputGroupText>
+              </InputGroupAddon>
               <Input
                 className=""
                 type="text"
@@ -422,27 +450,28 @@ export default function Event() {
               disabled={disabled}
             />
           </Col>
+          <Col xs="12">
+        <FormGroup className={ correctDateInput ? "d-none" : "d-block" }>
+            <Label className="text-danger my-0 py-0">Eventet måste minst vara 15 minuter och max 7 dagar långt!</Label>
+          </FormGroup>
+          </Col>
         </Row>
         <Row form>
           <Col xs="12">
             <InputGroup className="my-2">
-            <InputGroupAddon addonType="prepend">
-            <InputGroupText>
-            <FontAwesomeIcon
-                  className=""
-                  size="xs"
-                  icon={faRedo}
-                />
-            </InputGroupText>
-            </InputGroupAddon>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <FontAwesomeIcon className="" size="xs" icon={faRedo} />
+                </InputGroupText>
+              </InputGroupAddon>
               <Input
                 type="select"
-                disabled={id !== 'new'}
+                disabled={id !== "new"}
                 value={recInterval}
                 className="form-control"
                 onChange={(e) => handleIntervalOptions(e.currentTarget.value)}
               >
-                {recurringIntervalOptions.map(e => (
+                {recurringIntervalOptions.map((e) => (
                   <option key={e.key} value={e.value}>
                     {e.value}
                   </option>
@@ -451,16 +480,16 @@ export default function Event() {
             </InputGroup>
           </Col>
         </Row>
-        <Row form className={recInterval === 'Aldrig' ? 'd-none' : 'd-block'}>
+        <Row form className={recInterval === "Aldrig" ? "d-none" : "d-block"}>
           <Col xs="12" md="6">
-          <DateTimePicker
-            name="recurringIntervalEnd"
-            header="Datum för sista händelse"
-            datetime={recIntervalEnd}
-            parentCallBack={setRecIntervalEnd}
-            disabled={disabled || id !== 'new'}
-            noTime
-          />
+            <DateTimePicker
+              name="recurringIntervalEnd"
+              header="Datum för sista händelse"
+              datetime={recIntervalEnd}
+              parentCallBack={setRecIntervalEnd}
+              disabled={disabled || id !== "new"}
+              noTime
+            />
           </Col>
         </Row>
         <Row form>
@@ -483,15 +512,15 @@ export default function Event() {
         <Row form>
           <Col xs="12">
             <InputGroup className="my-2">
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>
-              <FontAwesomeIcon
-                  className=""
-                  size="xs"
-                  icon={faMapMarkerAlt}
-                />
-              </InputGroupText>
-            </InputGroupAddon>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <FontAwesomeIcon
+                    className=""
+                    size="xs"
+                    icon={faMapMarkerAlt}
+                  />
+                </InputGroupText>
+              </InputGroupAddon>
               <Input
                 className=""
                 type="text"
