@@ -81,7 +81,7 @@ export default function Calendar() {
 
             {searchResult.map((res) => (
               <Link to={"event/" + res.id} key={res.id}>
-                <Card outline color="primary" className="mb-1">
+                <Card outline className="mb-1">
                   <CardHeader>
                     <strong>{res.title}</strong> (<small>id: {res.id}</small>)
                   </CardHeader>
@@ -145,7 +145,7 @@ export default function Calendar() {
           </TabPane>
         </TabContent>
         <Link to="/event/new">
-          <div className="float-right d-flex justify-content-center bg-danger fab fab-right">
+          <div className="float-right d-flex justify-content-center fab fab-right">
             <FontAwesomeIcon
               color="white"
               size="2x"
@@ -155,7 +155,7 @@ export default function Calendar() {
           </div>
         </Link>
         <div
-          className="float-left d-flex justify-content-center bg-secondary fab fab-left pointer"
+          className="float-left d-flex justify-content-center fab fab-left pointer"
           onClick={() => setSearchModal(!searchModal)}
         >
           <FontAwesomeIcon

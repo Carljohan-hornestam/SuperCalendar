@@ -82,7 +82,7 @@ export default function Header() {
           <ModalBody>
             {context.invitations && context.invitations.map((element) => {
               return (
-                <Card key={element.id} outline color="primary" className="mb-1">
+                <Card key={element.id} outline className="mb-1">
                   <CardHeader><strong>{element.title}</strong> (<small>id: {element.id}</small>)</CardHeader>
                   <CardBody>
                     <CardTitle>Inbjuden av: {element.userName} (<small>{element.email}</small>)</CardTitle>

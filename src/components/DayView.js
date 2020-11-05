@@ -130,8 +130,8 @@ export default function DayView() {
                         .wikipedia[0].wikipedia
                     }
                   >
-                    <Card className="m-1" inverse color="success">
-                      <CardBody>
+                    <Card className="m-1" inverse>
+                      <CardBody className="onThisDay">
                         <CardTitle className="font-weight-bold">
                           {
                             onThisDay.events[+randomEvent]
