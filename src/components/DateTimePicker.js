@@ -9,8 +9,7 @@ export default function DateTimePicker(props) {
 
   useEffect(() => {
     setdTPFormData({ ...props.datetime });
-    getList()
-    // setMinuteList(getList())
+    createList()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -23,7 +22,7 @@ export default function DateTimePicker(props) {
     }
   }
 
-  function getList() {
+  function createList() {
     document.getElementById('times').innerHTML = ([...Array(24 * 4).keys()].map((value) => {
       let h = ('0' + parseInt(value / 4)).slice(-2)
       let m = ('0' + value % 4 * 15).slice(-2)
@@ -65,7 +64,7 @@ export default function DateTimePicker(props) {
               value={dTPFormData.tid}
               onChange={handleInputChange}
               disabled={props.disabled}
-              list="times" />
+            />
           </FormGroup>
         </Col>
       </Row>
