@@ -44,7 +44,7 @@ router.post("/", (req, res) => {
 
 router.put("/:id", (req, res) => {
   if (
-    !req.session.user || req.session.user.id !== req.params.id
+    !req.session.user || +req.session.user.id !== +req.params.id
   ) {
     res.json({ success: false });
   } else {
@@ -62,7 +62,7 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
   if (
-    !req.session.user || req.session.user.id !== req.params.id
+    !req.session.user || +req.session.user.id !== +req.params.id
   ) {
     res.json({ success: false });
   } else {
