@@ -125,7 +125,7 @@ router.post("/", (req, res) => {
     invitations.forEach( p => {
       let result = db.run(
       /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
-      VALUES (${eventId}, ${p.userId})`, {...p}
+      VALUES (${eventId}, ${p.userId})`
       )
       if (result.error) {
         results.push({"error": "User could not be / is already invited!"})
@@ -145,8 +145,7 @@ router.get("/:id", (req, res) => {
     return
   }
   let event = db.select(/* sql */ `SELECT * FROM eventWParticipants 
-    WHERE eventId = ${req.params.id} OR parentId = ${req.params.id}`
-  )
+    WHERE eventId = $id OR parentId = $id`, req.params)
   //Check if user is a participant or creator, if NOT return
   let checkUser = event.find(e => +e.ownerId === +req.session.user.id || +e.creatorId === +req.session.user.id)
   if (checkUser === undefined) {
@@ -165,7 +164,7 @@ router.get("/:id", (req, res) => {
   
   delete mainEvent.userId
   
-  let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = ${req.params.id}`, req.params)
+  let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = $id`, req.params)
   mainEvent.invited = invited
   
   res.json(mainEvent)
@@ -236,14 +235,14 @@ router.put("/:id", (req, res) => {
   if (cascadeChange) {
     if (event[0].recurringParentId === null) {
       str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
-  WHERE (id = $id OR parentId = $id OR recurringParentId = $id) AND creatorId = ${req.session.user.id}`
+            WHERE (id = $id OR parentId = $id OR recurringParentId = $id) AND creatorId = ${req.session.user.id}`
     } else {
       str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
-  WHERE (id = $id OR parentId = $id OR (recurringParentId = ${event[0].recurringParentId} AND startDateTime >= '${event[0].startDateTime}')) AND creatorId = ${req.session.user.id}`
+            WHERE (id = $id OR parentId = $id OR (recurringParentId = ${event[0].recurringParentId} AND startDateTime >= '${event[0].startDateTime}')) AND creatorId = ${req.session.user.id}`
     } 
   } else {
     str = `UPDATE Events SET ${Object.keys(req.body).map((x) => x + "=$" + x)}
-  WHERE (id = $id OR parentId = $id ) AND creatorId = ${req.session.user.id}`
+          WHERE (id = $id OR parentId = $id ) AND creatorId = ${req.session.user.id}`
   }
 
   result = db.run(str, {...req.body, ...req.params})
@@ -316,7 +315,7 @@ router.post("/invitations", (req, res) => {
   req.body.invitations.forEach(p => {
     let result = db.run(
     /* sql */ `INSERT INTO PendingInvitations (eventId, invitedUserId) 
-    VALUES (${req.body.eventId}, ${p.id})`, {...req.body, ...p}
+    VALUES ($eventId, $id)`, {...req.body, ...p}
     )
     if (result.error) {
       results.push({"error": "User could not be / is already invited!"})
@@ -358,14 +357,13 @@ router.post("/invitations/reply", (req, res) => {
   } else {
     if (accept) {
       let invite = db.select(
-        `SELECT * FROM PendingInvitations WHERE id = ${pendingInvitationId}`
-      )[0];
+        /* sql */`SELECT * FROM PendingInvitations WHERE id = $pendingInvitationId`, req.body)[0];
       if (invite === undefined) {
         res.status(404);
         res.json({ error: 404 });
       }
       let event = db.select(
-        `SELECT * FROM Events WHERE id = ${invite.eventId}`
+        /* sql */`SELECT * FROM Events WHERE id = ${invite.eventId}`
       )[0];
       event.ownerId = req.session.user.id;
       event.parentId = event.id
@@ -379,7 +377,7 @@ router.post("/invitations/reply", (req, res) => {
       );
     }
     // ta bort pendinginvitation
-    db.run(`DELETE FROM PendingInvitations WHERE id = ${pendingInvitationId}`);
+    db.run(/* sql */`DELETE FROM PendingInvitations WHERE id = $pendingInvitationId`, req.body);
     res.json({ success: true });
   }
 });

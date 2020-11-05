@@ -16,10 +16,6 @@ export default function ThemeSelector(props) {
     document.documentElement.className = ""
     document.documentElement.classList.add(`${value}`)
 
-    let a = Object.entries(themeNames).find(i => {
-      return i[1] === value
-    })
-
     setTheme(value)
     props.parentCallback(value)
   }

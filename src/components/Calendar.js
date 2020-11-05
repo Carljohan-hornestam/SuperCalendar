@@ -16,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
   CardText,
-  CardSubtitle,
 } from "reactstrap";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,13 +23,10 @@ import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import {
-  Row,
-  Col,
   Input,
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
 } from "reactstrap";
 

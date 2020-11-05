@@ -22,13 +22,13 @@ import { getSchedule, getOnThisDay, getRandomEvent } from "../functions/CommonCa
 export default function DayView() {
   moment.locale("sv");
 
-  const [calendar, setCalendar] = useState([]);
+  const [, setCalendar] = useState([]);
   const [dayValue, setDayValue] = useState(moment());
   const [nameDay, setNameDay] = useState([]);
   const [dailySchedule, setDailySchedule] = useState([]);
-  let [context, updateContext] = useContext(Context);
-  let [onThisDay, setOnThisDay] = useState(context.onThisDay)
-  let [randomEvent, setRandomEvent] = useState()
+  const [context] = useContext(Context);
+  const [onThisDay, setOnThisDay] = useState(context.onThisDay)
+  const [randomEvent, setRandomEvent] = useState()
 
   const isDesktop = useMediaQuery({
     query: "(min-device-width: 600px)",
@@ -36,9 +36,6 @@ export default function DayView() {
 
   useEffect(() => {
     getNameday();
-    // updateContext({ selectedDay: dayValue.format("YYYY-MM-DD"), dailySchedule : getSchedule(dayValue, "YYYY-MM-DD") });
-    //(async () => { await getSchedule(dayValue, "YYYY-MM-DD") })();
-    // getCurrentDayEvents();
     const startDay = dayValue;
     const weekDays = [];
     weekDays.push(
@@ -46,10 +43,13 @@ export default function DayView() {
         .fill(0)
         .map(() => startDay)
     );
-    (async () => {setOnThisDay(await getOnThisDay(dayValue))})();
-    (async () => {setRandomEvent(Math.floor(Math.random() * Math.floor(getRandomEvent())))})();
+    
+    (async () => { setOnThisDay(await getOnThisDay(dayValue)) })();
+    (async () => { setRandomEvent(Math.floor(Math.random() * Math.floor(getRandomEvent()))) })();
+  
     getDailySchedule();
     setCalendar(weekDays);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue]);
 
@@ -82,6 +82,7 @@ export default function DayView() {
     ).json();
     setNameDay(result.dagar[0].namnsdag);
   }
+
   return (
     <div className="mt-3">
       <Row className="row bg-light">
@@ -121,7 +122,7 @@ export default function DayView() {
         >
           <Col className="mt-3">
             <Row className="justify-content-center">
-              <Col md="3" style={{ columnCount: "auto" }}>
+              <Col md="6" style={{ columnCount: "auto" }}>
                 {onThisDay && onThisDay.events[+randomEvent] && onThisDay.events[+randomEvent].wikipedia
                  && onThisDay.events[+randomEvent].wikipedia[0].wikipedia &&
                   <a

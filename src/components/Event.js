@@ -100,7 +100,7 @@ export default function Event() {
     setAvailableParticipants(await (await fetch("/api/users")).json());
   }
 
-  let { title, description, location, recurringEvent, participants } = formData;
+  let { title, description, location, participants } = formData;
 
   useEffect(() => {
     // If id is "new" then do nothing - we don't need to fetch data
@@ -185,15 +185,6 @@ export default function Event() {
 
     toggle();
   } // modalSuccess
-
-  function saveWrapper(e) {
-    if (recInterval !== 'Aldrig' && id !== 'new') {
-      toggleCascadeModal()
-    }
-    else {
-      save(e)
-    }
-  }
 
   async function save(e) {
     formData.endDateTime = convertDate(endTime);
