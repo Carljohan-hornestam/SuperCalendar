@@ -29,8 +29,7 @@ export default function Profile() {
       return
     }
 
-    setFormData({ username: context.user.username, email: context.user.email, theme: context.user.theme, password: '' })
-    console.log('Profile.useEffect - context.user:', context.user);
+    context.user && setFormData({ username: context.user.username, email: context.user.email, theme: context.user.theme, password: '' })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
@@ -83,15 +82,14 @@ export default function Profile() {
       updateContext({ user: result });
       setFormData({ done: true });
     } else {
-      console.log('update profile: ', formData);
 
       let user = {
-        username: context.user.username, email: context.user.email, theme: context.user.theme, password:''
+        username: username, email: context.user.email, theme: formData.theme, password:''
       }
-
       updateContext({ user: user });
       setShowAlert('Profilen har uppdaterats!')
     }
+    
   } // save
 
   if (formData.error || formData.done) {

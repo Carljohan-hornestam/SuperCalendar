@@ -7,7 +7,6 @@ import Footer from './components/Footer';
 import Calendar from './components/Calendar'
 import Event from './components/Event'
 import moment from "moment" 
-import { ThemeWrapper } from './components/ThemeWrapper';
 
 export const Context = createContext()
 
@@ -26,52 +25,51 @@ export default function App() {
     ...contextVal,
     ...updates
   })
-  
-  const themeNames = { dark: `dark-theme`, light: `light-theme`, third: `third-theme`}; 
-  const [themeName, setThemeName] = useState(themeNames.dark)
 
   useEffect(() => {
     updateContext({ waitingForUserState: true });
-    setTheme(themeName);
     (async () => {
       let result = await (await fetch('/api/auth/whoami')).json();
-      if (result.error) { return; }
+      if (result.error) {
+        updateContext({ waitingForUserState: false });
+        return;
+      }
       // add the user data to the context variable
       // updateContext({ user: result });
       let invitations = await (await fetch('/api/events/invitations/get')).json();
       if (invitations.error) { return; }
-      updateContext({ waitingForUserState: false, user: result, invitations: invitations, theme: result.theme });
-      setThemeName(result.theme)
+      updateContext({ waitingForUserState: false, user: result, invitations: invitations});
       return <Redirect to="/myCalendar" />
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  
+  if(contextVal.waitingForUserState){
+    return null
+  }
+  setTheme(contextVal.user ? contextVal.user.theme : "light-theme");
 
   return (
     <Context.Provider value={[contextVal, updateContext]}>
-      <ThemeWrapper themeName={contextVal.theme ? contextVal.theme : themeName}>
-        <div className="themed-content">
-          <Router>
-            <Header />
-            <div className="container">
-              <Route path="/">{!contextVal.user ? <Redirect push to="/login" /> : <Redirect push to="/myCalendar" />}
-              </Route>
-              <Route exact path="/mycalendar">
-                <Calendar />
-              </Route>
-              <Route exact path="/profile/:id">
-                <Profile />      
-              </Route>
-              <Route exact path="/login">
-                <Login />
-              </Route>
-              <Route exact path="/event/:id">
-                <Event />
-              </Route>
-            </div>
-            <Footer/>
-          </Router>
+      <Router>
+        <Header />
+        <div className="container">
+          <Route path="/">{!contextVal.user ? <Redirect push to="/login" /> : <Redirect push to="/myCalendar" />}
+          </Route>
+          <Route exact path="/mycalendar">
+            <Calendar />
+          </Route>
+          <Route exact path="/profile/:id">
+            <Profile />      
+          </Route>
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          <Route exact path="/event/:id">
+            <Event />
+          </Route>
         </div>
-      </ThemeWrapper>
+        <Footer/>
+      </Router>
     </Context.Provider>
   );
 }

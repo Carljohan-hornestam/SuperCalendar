@@ -9,7 +9,6 @@ export default function ThemeSelector(props) {
 
   useEffect(() => {
     setTheme(props.theTheme);
-    console.log('ThemeSelector.useEffect - theme:', props);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

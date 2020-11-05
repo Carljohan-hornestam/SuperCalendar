@@ -57,6 +57,9 @@ router.put("/:id", (req, res) => {
         { ...req.body, ...req.params }
       )
     );
+    let user = { ...req.body, id: +req.params.id }
+    req.session.user = user
+    req.session.save()
   }
 });
 
