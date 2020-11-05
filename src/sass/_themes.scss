@@ -28,6 +28,22 @@
     $quaternary: #ff4301;
     background-color: $primary;
     color: $quaternary;
+    .modal-body,
+    .modal-header,
+    .modal-footer {
+      background-color: $primary;
+    }
+    .close {
+      color: $quaternary;
+    }
+    .card {
+      background-color: $primary;
+      border-color: $tertiary;
+    }
+    .card-body {
+      background-color: $secondary;
+      color: $quaternary;
+    }
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
@@ -78,6 +94,22 @@
     $quaternary: #5d5d5a;
     background-color: $primary;
     color: $quaternary;
+    .modal-body,
+    .modal-header,
+    .modal-footer {
+      background-color: $primary;
+    }
+    .close {
+      color: $quaternary;
+    }
+    .card {
+      background-color: $primary;
+      border-color: $tertiary;
+    }
+    .card-body {
+      background-color: $secondary;
+      color: $quaternary;
+    }
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
@@ -128,6 +160,22 @@
     $quaternary: #ffc93c;
     background-color: $primary;
     color: $quaternary;
+    .modal-body,
+    .modal-header,
+    .modal-footer {
+      background-color: $primary;
+    }
+    .close {
+      color: $quaternary;
+    }
+    .card {
+      background-color: $primary;
+      border-color: $tertiary;
+    }
+    .card-body {
+      background-color: $secondary;
+      color: $quaternary;
+    }
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
