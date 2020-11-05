@@ -8,7 +8,7 @@ export default function ThemeSelector(props) {
   const [theme, setTheme] = useState('dark-theme')
 
   useEffect(() => {
-    setTheme(props.theme);
+    setTheme(props.theTheme);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -19,8 +19,6 @@ export default function ThemeSelector(props) {
     let a = Object.entries(themeNames).find(i => {
       return i[1] === value
     })
-
-    console.log("selecting target:", value, ", a:", a);
 
     setTheme(value)
     props.parentCallback(value)

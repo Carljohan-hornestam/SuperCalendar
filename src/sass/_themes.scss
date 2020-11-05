@@ -31,6 +31,7 @@
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
+      border-color: $tertiary;
     }
     .fab {
       box-shadow: 1px 1px 2px 2px $secondary;
@@ -80,6 +81,7 @@
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
+      border-color: $tertiary;
     }
     .fab {
       box-shadow: 1px 1px 2px 2px $secondary;
@@ -102,8 +104,7 @@
       color: $quaternary;
     }
     .tabsTheme .active {
-      border: none;
-      border-bottom: 1px solid $tertiary;
+      border: 1px solid $tertiary;
       background-color: $secondary;
       color: $quaternary;
     }
@@ -130,6 +131,7 @@
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
+      border-color: $tertiary;
     }
     .fab {
       box-shadow: 1px 1px 2px 2px $secondary;
@@ -152,8 +154,7 @@
       color: $quaternary;
     }
     .tabsTheme .active {
-      border: none;
-      border-bottom: 1px solid $tertiary;
+      border: 1px solid $tertiary;
       background-color: $secondary;
       color: $quaternary;
     }

@@ -20,7 +20,6 @@ class DBHelper {
   }
 
   select(sql, parameters) {
-    console.log("select dbhelper: ", sql, parameters);
     // When using the SQLite driver
     // we create (prepared) statements
     let statement = this.db.prepare(sql);

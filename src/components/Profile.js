@@ -29,21 +29,16 @@ export default function Profile() {
       return
     }
 
-    setFormData({ ...formData, ...context.user, passwordCheck: context.user.password, theme: context.user.theme })
+    context.user && setFormData({ username: context.user.username, email: context.user.email, theme: context.user.theme, password: '' })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   const setTheme = (newTheme) => {
-  // function setTheme(newTheme) {
-    console.log("I setTheme - newTheme:", newTheme);
     setFormData({ ...formData, theme: newTheme })
   }
 
-  async function save(e) {
-    e.preventDefault();
-    delete formData.passwordCheck
-
-    let result = await (
+  async function doSave() {
+   let result = await (
       await fetch("/api/users/" + (id === "new" ? "" : id), {
         method: (id === "new" ? "POST" : "PUT"),
         headers: { "Content-Type": "application/json" },
@@ -55,12 +50,25 @@ export default function Profile() {
       setShowAlert("Eposten finns redan!");
       let emailField = document.querySelector('[name="email"]');
       emailField.focus();
-      return;
+      return false;
+    }    
+
+    return true
+  }
+
+  async function save(e) {
+    e.preventDefault();
+    delete formData.passwordCheck
+
+    if (id !== 'new') {
+      delete formData.password
     }
+
+   if (!doSave()) return
 
     // On successful registration, login and redirect to calendar view
     if (id === "new") {
-      result = await (
+      let result = await (
         await fetch("/api/auth/login", {
           method: "POST",
           body: JSON.stringify({
@@ -70,22 +78,25 @@ export default function Profile() {
           headers: { "Content-Type": "application/json" },
         })
       ).json();
-      updateContext({ user: result });
-    } else {
-      updateContext(formData);
-    }
 
-    // Done, so redirect if new user
-    if (id === "new") {
+      updateContext({ user: result });
       setFormData({ done: true });
+    } else {
+
+      let user = {
+        username: username, email: context.user.email, theme: formData.theme, password:''
+      }
+      updateContext({ user: user });
+      setShowAlert('Profilen har uppdaterats!')
     }
-  }
+    
+  } // save
 
   if (formData.error || formData.done) {
     return <Redirect to="/myCalendar" />;
   }
 
-  let { username, email, password, passwordCheck, theme } = formData;
+  let { username, email, password, passwordCheck } = formData;
 
   if (email === undefined) {
     return null;
@@ -104,6 +115,19 @@ export default function Profile() {
       setPasswordsMatch(password === e.currentTarget.value)
     }
   };
+
+  function changePassword() {
+    delete formData.email
+    delete formData.theme
+    delete formData.username
+    delete formData.passwordCheck
+
+    if (doSave()) {
+      setShowAlert('Lösenordet har ändrats!')    
+    }
+
+    setFormData({ ...formData, username: context.user.username, email: context.user.email, theme: context.user.theme, password:'' })
+  }
 
   return (
     <Row className="justify-content-center row mt-3">
@@ -129,6 +153,7 @@ export default function Profile() {
               required
             ></Input>
           </FormGroup>
+
           <FormGroup>
             <Input
               className="mt-3 p-1"
@@ -141,51 +166,65 @@ export default function Profile() {
               disabled={ id !== "new"}
             ></Input>
           </FormGroup>
-         
-          <FormGroup>
-            <Input
-              className="mt-3 p-1"
-              type="password"
-              value={password}
-              name="password"
-              placeholder="Lösenord (minst sex tecken)"
-              onChange={handleInputChange}
-              required
-            ></Input>
-          </FormGroup>
 
-          <FormGroup>
-            <Input
-              className="mt-3 p-1"
-              type="password"
-              value={passwordCheck}
-              name="passwordCheck"
-              placeholder="Upprepa lösenord"
-              onChange={handleInputChange}
-              required
-            ></Input>
-          </FormGroup>
-
-          <FormGroup className={ passwordsMatch ? "d-none" : "d-block" }>
-            <Label className="text-danger my-0 py-0">Lösenorden matchar inte!</Label>
-          </FormGroup>
-
-          <FormGroup className={ passwordsMatch ? "my-3" : "mt-0" }>
+          <FormGroup
+            className="mt-3"
+          >
             <ThemeSelector
-              theme={theme}
+              theTheme={context.user && context.user.theme}
               parentCallback={setTheme} />
           </FormGroup>
 
-          <Col xs="12" className="text-center">
-            <Button
-              type="submit"
-              color="primary"
-              className="my-3 w-50"
-              disabled={ !passwordsMatch ||password.length < 6 }>
-              { id === "new" ? "Registrera" : "Spara"}
-            </Button>
-          </Col>
-          <div className={id === "new" ? "d-block" : "d-none"}>
+          {id !== "new" ? <>
+            <Col xs="12" className="text-center">
+              <Button
+                type="submit"
+                color="primary"
+                className="my-3 w-50"
+              >
+                Uppdatera profil
+              </Button>
+            </Col>
+            </> : ''          
+         }            
+            <FormGroup>
+              <Input
+                className="mt-3 p-1"
+                type="password"
+                value={password}
+                name="password"
+                placeholder="Lösenord (minst sex tecken)"
+                onChange={handleInputChange}
+                required={id === "new"}
+              ></Input>
+            </FormGroup>
+
+            <FormGroup>
+              <Input
+                className="mt-3 p-1"
+                type="password"
+                value={passwordCheck}
+                name="passwordCheck"
+                placeholder="Upprepa lösenord"
+                onChange={handleInputChange}
+                required={id === "new"}
+              ></Input>
+            </FormGroup>
+
+            <FormGroup className={ passwordsMatch ? "d-none" : "d-block" }>
+              <Label className="text-danger my-0 py-0">Lösenorden matchar inte!</Label>
+            </FormGroup>
+
+          {id === "new" ? <>
+            <Col xs="12" className="text-center">
+              <Button
+                type="submit"
+                color="primary"
+                className="my-3 w-50"
+                disabled={ !passwordsMatch ||password.length < 6 }>
+                Registrera
+              </Button>
+            </Col>
             <Col xs="12">
             <Link to="/login" className="mt-3">
               Har du redan ett konto?
@@ -193,7 +232,17 @@ export default function Profile() {
               Logga in
             </Link>
             </Col>
-          </div>
+          </> :
+            <Col xs="12" className="text-center">
+              <Button
+                color="primary"
+                className="my-3 w-50"
+                disabled={!passwordsMatch || (password && password.length < 6)}
+                onClick={ changePassword }>
+                Ändra lösenordet
+              </Button>
+            </Col>
+         }  
         </Form>
       </Col>
     </Row>

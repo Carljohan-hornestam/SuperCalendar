@@ -32,7 +32,7 @@ import {
   faTimes,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { Context, setTheme } from "../App";
+import { Context } from "../App";
 import { useMediaQuery } from 'react-responsive'
 
 export default function Header() {
@@ -45,8 +45,7 @@ export default function Header() {
 
   const logout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
-    updateContext({ user: false, invitations: null, theme: "dark-theme" });
-    setTheme("dark-theme")
+    updateContext({ user: null, invitations: null });
   };
 
   const isDesktop = useMediaQuery({
@@ -130,12 +129,13 @@ export default function Header() {
           <Collapse isOpen={isOpen} navbar>
             {context.user ? (
               <Nav className="ml-auto" navbar>
+                <div className="d-none d-md-block mt-3 mr-2">Inloggad som: {context.user.username}</div>
                 <NavItem>
                   <NavLink
                     tag={RouterNavLink}
                     className="nav-link text-center"
                     to={ "/profile/" + context.user.id } >
-                    <span className="d-block d-md-none">Profil</span>
+                    <span className="d-block d-md-none">Profil - {context.user.username}</span>
                     <FontAwesomeIcon
                       className="d-none d-md-block"
                       size="2x"
