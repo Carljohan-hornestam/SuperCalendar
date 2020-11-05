@@ -18,11 +18,11 @@ export default function WeekView() {
 
   const [calendar, setCalendar] = useState([])
   const [dayValue, setDayValue] = useState(moment())
-  const [year, setYear] = useState([])
+  const [, setYear] = useState([])
   const [nameDays, setNameDays] = useState([])
   const [weeklySchedule, setWeeklySchedule] = useState([])
   const [redDays, setRedDays] = useState([])
-  let [context, updateContext] = useContext(Context)
+  const [context, updateContext] = useContext(Context)
 
   useEffect(() => {
     getYear();
@@ -164,6 +164,7 @@ export default function WeekView() {
                                   </span>)
                               )
                             }
+                            return ''
                           })
                         }
                       </Row>
@@ -176,7 +177,8 @@ export default function WeekView() {
                             if (index < 2) {
                               return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
                             }
-                            if(arr.length > 2 && index === arr.length-1)  return <Badge pill color="dark">+{arr.length-2}</Badge>
+                            if(arr.length > 2 && index === arr.length-1)  return <Badge pill key={index} color="dark">+{arr.length-2}</Badge>
+                            return ''
                           }
                         )
                       }
@@ -247,6 +249,7 @@ export default function WeekView() {
                         )}
                       </Col>)
                     }
+                    return ''
                   })
                 }
               </Col>

@@ -56,26 +56,6 @@ export default function Event() {
 
   const [availableParticipants, setAvailableParticipants] = useState([]);
 
-  const [startTime, setStartTime] = useState({
-    datum: context.selectedDay
-      ? context.selectedDay
-      : new Date().toLocaleDateString(),
-    tid: "09:00",
-  });
-  const [endTime, setEndTime] = useState({
-    datum: context.selectedDay
-      ? context.selectedDay
-      : new Date().toLocaleDateString(),
-    tid: "10:00",
-  });
-
-  const [recIntervalEnd, setRecIntervalEnd] = useState({
-    datum: context.selectedDay
-      ? context.selectedDay
-      : new Date().toLocaleDateString(),
-    tid: "10:00",
-  });
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -85,10 +65,23 @@ export default function Event() {
     participants: [],
   });
 
+  const [startTime, setStartTime] = useState({
+    datum: context.selectedDay ? context.selectedDay : new Date().toLocaleDateString(),
+    tid: "09:00",
+  });
+
+  const [endTime, setEndTime] = useState({
+    datum: context.selectedDay ? context.selectedDay : new Date().toLocaleDateString(),
+    tid: "10:00",
+  });
+
+  const [recIntervalEnd, setRecIntervalEnd] = useState({
+    datum: context.selectedDay ? context.selectedDay : new Date().toLocaleDateString(),
+    tid: '10:00',
+  });
+
   const [hasSelection, setHasSelection] = useState(false);
-
-  const [recInterval, setRecInterval] = useState("Aldrig");
-
+  const [recInterval, setRecInterval] = useState('Aldrig');
   const recurringIntervalOptions = [
     { key: 0, value: `Aldrig` },
     { key: 1, value: `Varje dag` },
@@ -97,17 +90,21 @@ export default function Event() {
     { key: 4, value: `Varje år` },
   ];
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
+  let { title, description, location, participants } = formData;
+  
   async function fetchUsers() {
     setAvailableParticipants(await (await fetch("/api/users")).json());
   }
 
-  let { title, description, location, recurringEvent, participants } = formData;
+  const [waitingToLoad, setWaitingToLoad] = useState(false)
 
   useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    setWaitingToLoad(true)
+
     // If id is "new" then do nothing - we don't need to fetch data
     if (id === "new") {
       setFormData({
@@ -119,10 +116,10 @@ export default function Event() {
         recurringInterval: 0,
         participants: [],
       });
+      setWaitingToLoad(false)
       return;
     }
-    // Since you should not make useEffect functions async, we need to create another function that is async
-    // in order to use await with our fetch
+
     (async () => {
       let result = await (await fetch("/api/events/" + id)).json();
       let p1 =
@@ -140,12 +137,16 @@ export default function Event() {
             label: user.email,
             accepted: user.accepted,
           }));
+
       result.id = result.eventId;
       delete result.eventId;
       delete result.userName;
       delete result.email;
       delete result.invited;
 
+      setEndTime({ datum: result.endDateTime.substr(0, 10), tid: result.endDateTime.substr(12, 5) })
+      setStartTime({ datum: result.startDateTime.substr(0, 10), tid: result.startDateTime.substr(12, 5) })
+      
       setFormData({
         ...result,
         participants: p,
@@ -158,9 +159,14 @@ export default function Event() {
           ).value
         );
       }
+      setWaitingToLoad(false)
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]); // useEffect
+
+  if (waitingToLoad) {
+    return null
+  }
 
   const handleInputChange = (e) => {
     setFormData({
@@ -195,16 +201,7 @@ export default function Event() {
     toggle();
   } // modalSuccess
 
-  function saveWrapper(e) {
-    if (recInterval !== "Aldrig" && id !== "new") {
-      toggleCascadeModal();
-    } else {
-      save(e);
-    }
-  }
-
   function compareDates(startTime, endTime) {
-    
     if (moment(endTime).isBefore(moment(startTime).add(15, "minutes"))) {
       return false
     }
@@ -419,7 +416,6 @@ export default function Event() {
                 <InputGroupText>Titel</InputGroupText>
               </InputGroupAddon>
               <Input
-                className=""
                 type="text"
                 value={title}
                 name="title"
@@ -427,6 +423,7 @@ export default function Event() {
                 placeholder="Titel"
                 disabled={disabled}
                 onChange={handleInputChange}
+                required={true}
               />
             </InputGroup>
           </Col>

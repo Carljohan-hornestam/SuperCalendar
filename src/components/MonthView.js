@@ -15,9 +15,9 @@ export default function Calendar() {
 
   const [calendar, setCalendar] = useState([])
   const [dayValue, setDayValue] = useState(moment())
-  const [year, setYear] = useState([])
+  const [, setYear] = useState([])
   const [redDays, setRedDays] = useState([])
-  let [context, updateContext] = useContext(Context)
+  const [context, updateContext] = useContext(Context)
   const [monthlySchedule, setMonthlySchedule] = useState([])
   const [nameDays, setNameDays] = useState([])
 
@@ -34,8 +34,10 @@ export default function Calendar() {
         .map(() => day.add(1, "day").clone())
       )
     }
+
     getMonthlySchedule();
     setCalendar(monthDays)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue])
 
@@ -132,6 +134,8 @@ export default function Calendar() {
                                     {namn}{context.user.username === namn && <div className="swedishFlag"></div>}
                                   </span>)
                               )
+                            } else {
+                              return ''
                             }
                           })
                         }
@@ -145,7 +149,8 @@ export default function Calendar() {
                             if (index < 2) {
                               return <Badge key={index} className="calbadge" tag={Link} to={`event/${ filteredEvent.id}`} pill color="info" >{filteredEvent.title}</Badge>
                             }
-                            if(arr.length > 2 && index === arr.length-1)  return <Badge key={arr.length} pill color="dark">+{arr.length-2}</Badge>
+                            if (arr.length > 2 && index === arr.length - 1) return <Badge key={arr.length} pill color="dark">+{arr.length - 2}</Badge>
+                            return ''
                           }
                         )
                       }

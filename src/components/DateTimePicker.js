@@ -8,41 +8,34 @@ export default function DateTimePicker(props) {
   });
 
   useEffect(() => {
-    getTimeValues()
-    setdTPFormData({...props.datetime});
+    setdTPFormData({ ...props.datetime });
+    createList()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleInputChange = (e) => { 
     setdTPFormData({ ...dTPFormData, [e.currentTarget.name]: e.currentTarget.value })
-    // console.log('Hej i handleInputChange..... name:', e.currentTarget.name, ', value:', e.currentTarget.value, ', dTPFormData', dTPFormData);
     if (e.currentTarget.name === 'datum') {
       props.parentCallBack({ datum: e.currentTarget.value, tid: dTPFormData.tid })
     } else {    
       props.parentCallBack({ datum: dTPFormData.datum, tid: e.currentTarget.value })
     }
   }
-  
-  let timeArr = []
-  let str = ""
 
-  function getTimeValues() {
-    for(let timmar = 0; timmar < 24; timmar++){
-      for (let minuter = 0; minuter <= 45; minuter += 15) {
-        let hour = timmar < 10 ? "0" + timmar : timmar
-        let min = minuter == 0 ? "0" + minuter : minuter
-        timeArr.push(`${hour}:${min}`)
-        //let time = `${hour}:${min}`
-
-        //return <option value={`${hour}:${min}`} />
-      }
-    }
-    timeArr.map(x => str += `<option value="${x}">${x}</option>\n`)
-    document.getElementById('times').innerHTML = str;
+  function createList() {
+    document.getElementById('times').innerHTML = ([...Array(24 * 4).keys()].map((value) => {
+      let h = ('0' + parseInt(value / 4)).slice(-2)
+      let m = ('0' + value % 4 * 15).slice(-2)
+      let t = `${h}:${m}`
+      return `<option value="${t}" />`
+    }).join("\n"))
   }
 
   return (
     <>
+      <datalist id="times">
+      </datalist>
+
       <Row form>
         <Col className="pl-1">
           <Label>{props.header}</Label>
@@ -64,17 +57,13 @@ export default function DateTimePicker(props) {
         <Col xs="6" className={props.noTime ? 'd-none' : 'd-block'}>
           <FormGroup>
             <Input
-            list="times"
-            className="form-control"
-            name="tid"
-            type="time"
-            value={dTPFormData.tid}
-            onChange={handleInputChange}
-            disabled={props.disabled}
+              className="form-control"
+              type="time"
+              name="tid"
+              value={dTPFormData.tid}
+              onChange={handleInputChange}
+              disabled={props.disabled}
             />
-            <datalist id="times">
-        
-            </datalist>
           </FormGroup>
         </Col>
       </Row>

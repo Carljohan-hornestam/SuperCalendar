@@ -61,13 +61,11 @@ export default function Header() {
         "accept": accept
       }
 
-    let result = await (await fetch("/api/events/invitations/reply/" , {
+    await (await fetch("/api/events/invitations/reply/" , {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })).json();
-
-    //console.log('Result from reply:', result);
 
     let invitations = await (await fetch('/api/events/invitations/get')).json();
     if (invitations.error) { return; }
