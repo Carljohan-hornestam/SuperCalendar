@@ -85,7 +85,7 @@ export default function DayView() {
 
   return (
     <div className="mt-3">
-      <Row className="row bg-light">
+      <Row className="row dayBar">
         <Col xs="auto">
           <FontAwesomeIcon
             className="pointer"
@@ -117,10 +117,10 @@ export default function DayView() {
           </Col>
         </Row>
         <Row
-          className="d-flex mt-3"
-          style={{ height: isDesktop ? "60vh" : "55vh", overflowY: "scroll" }}
+          className="d-flex mt-1"
+          style={{ height: isDesktop ? "60vh" : "50vh", overflowY: "scroll" }}
         >
-          <Col className="mt-3">
+          <Col>
             <Row className="justify-content-center">
               <Col md="6" style={{ columnCount: "auto" }}>
                 {onThisDay && onThisDay.events[+randomEvent] && onThisDay.events[+randomEvent].wikipedia

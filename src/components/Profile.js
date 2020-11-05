@@ -29,7 +29,7 @@ export default function Profile() {
       return
     }
 
-    context.user && setFormData({ username: context.user.username, email: context.user.email, theme: context.user.theme, password: '' })
+    context.user && setFormData({ username: context.user.username, email: context.user.email, theme: context.user.theme, password: '', passwordCheck: ''})
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 

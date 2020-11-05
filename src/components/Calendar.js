@@ -51,7 +51,7 @@ export default function Calendar() {
   return (
     <>
       <div>
-        <Modal isOpen={searchModal} toggle={() => setSearchModal(!searchModal)}>
+        <Modal className="baloo2Font" isOpen={searchModal} toggle={() => setSearchModal(!searchModal)}>
           <ModalHeader toggle={() => setSearchModal(!searchModal)}>
             Sök kalenderhändelse
           </ModalHeader>
@@ -79,7 +79,7 @@ export default function Calendar() {
               <Link to={"event/" + res.id} key={res.id}>
                 <Card outline className="mb-1">
                   <CardHeader>
-                    <strong>{res.title}</strong> (<small>id: {res.id}</small>)
+                    <strong>{res.title}</strong>
                   </CardHeader>
                   <CardBody>
                     <CardTitle>{res.description}</CardTitle>

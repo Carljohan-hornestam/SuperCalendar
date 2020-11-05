@@ -75,13 +75,13 @@ export default function Header() {
   return (
     <>
       <div>
-        <Modal className="gochiHandFont" isOpen={modal} toggle={toggleModal}>
-          <ModalHeader className="baloo2Font" toggle={toggleModal}>Dina inbjudningar</ModalHeader>
+        <Modal className="baloo2Font" isOpen={modal} toggle={toggleModal}>
+          <ModalHeader toggle={toggleModal}>Dina inbjudningar</ModalHeader>
           <ModalBody>
             {context.invitations && context.invitations.map((element) => {
               return (
                 <Card key={element.id} outline className="mb-1">
-                  <CardHeader><strong>{element.title}</strong> (<small>id: {element.id}</small>)</CardHeader>
+                  <CardHeader><strong>{element.title}</strong></CardHeader>
                   <CardBody>
                     <CardTitle>Inbjuden av: {element.userName} (<small>{element.email}</small>)</CardTitle>
                     <CardSubtitle>{element.description}</CardSubtitle>
@@ -113,10 +113,8 @@ export default function Header() {
 
       <div className="header carterOneFont">
         <Navbar color="dark" dark expand="md">
-          <NavbarBrand>
-            <RouterNavLink to="/myCalendar">
-              <img alt="" src={Logo} width="252px" height="35px" />
-            </RouterNavLink>
+          <NavbarBrand tag={RouterNavLink} to="/myCalendar">
+            <img alt="" src={Logo} width="252px" height="35px" />
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           { !isDesktop && context.invitations && context.invitations.length ? (

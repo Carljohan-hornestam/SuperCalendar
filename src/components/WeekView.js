@@ -23,8 +23,11 @@ export default function WeekView() {
   const [weeklySchedule, setWeeklySchedule] = useState([])
   const [redDays, setRedDays] = useState([])
   const [context, updateContext] = useContext(Context)
+  const [waitingToLoad, setWaitingToLoad] = useState(false)
 
   useEffect(() => {
+    setWaitingToLoad(true)
+    //context.selectedDay && setDayValue(moment(context.selectedDay))
     getYear();
     const startDay = dayValue.clone().startOf("week")
     const endDay = dayValue.clone().endOf("week")
@@ -39,6 +42,7 @@ export default function WeekView() {
     }
     displaySchedule(dayValue)
     setCalendar(weekDays)
+    setWaitingToLoad(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue])
 
@@ -47,6 +51,10 @@ export default function WeekView() {
     query: "(min-device-width: 600px)"
   })
 
+  if (waitingToLoad) {
+    return null
+  }
+  
   async function getYear() {
     let year = getCurrentYear()
     let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + year)).json()
@@ -190,7 +198,7 @@ export default function WeekView() {
             </Row>
           )
         }
-        <Row className="mt-3 d-flex" style={{height: isDesktop ? "55vh" : "55vh" , overflowY: "scroll"}}>
+        <Row className="mt-3 d-flex" style={{height: isDesktop ? "55vh" : "46vh" , overflowY: "scroll"}}>
           {isDesktop ? (
             nameDays.map(day => {
               return (<Col key={day.datum} style={{ maxWidth: "14.285%" }}>
@@ -216,7 +224,7 @@ export default function WeekView() {
                 <Col className="w-100">
                   <a href={ context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].wikipedia }>
                     <Card inverse color="success">
-                      <CardBody className="p-2">
+                      <CardBody className="p-2 onThisDay">
                         <CardTitle className="font-weight-bold">
                           { context.onThisDay.events[+context.randomOnThisDay].wikipedia[0].title }
                           ,{" "}

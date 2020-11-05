@@ -94,7 +94,7 @@ export default function Calendar() {
 
   return (
     <div className="mt-3">
-      <Row className="bg-light">
+      <Row className="dateBar">
         <Col xs="auto">
           <FontAwesomeIcon className="mr-2 pointer" size="lg" icon={faAngleDoubleLeft} onClick={() => setDayValue(getPreviousYear())} /> 
           <FontAwesomeIcon className="pointer" size="lg" icon={faArrowAltCircleLeft} onClick={() => setDayValue(getPreviousMonth())} />
@@ -107,10 +107,10 @@ export default function Calendar() {
           <FontAwesomeIcon className="ml-2 pointer" size="lg" icon={faAngleDoubleRight} onClick={() => setDayValue(getNextYear())} /> 
         </Col>
       </Row>
-      <Row className="d-flex">
+      <Row className="d-flex dayBar">
         {
           days.map( day => {
-            return <Col className="bg-dark text-white text-center" key={day}>{isDesktop ? day : day.slice(0, 1)}</Col>   
+            return <Col className="text-center" key={day}>{isDesktop ? day : day.slice(0, 1)}</Col>   
           })
         }
       </Row>

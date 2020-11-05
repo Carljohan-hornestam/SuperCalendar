@@ -202,10 +202,10 @@ export default function Event() {
   } // modalSuccess
 
   function compareDates(startTime, endTime) {
-    if (moment(endTime).isBefore(moment(startTime).add(15, "minutes"))) {
+    if (moment(endTime, "YYYY-MM-DD, HH:mm").isBefore(moment(startTime, "YYYY-MM-DD, HH:mm").add(15, "minutes"))) {
       return false
     }
-    if (moment(endTime).isAfter(moment(startTime).add(7, "days").hours(23).minutes(59))) {
+    if (moment(endTime, "YYYY-MM-DD, HH:mm").isAfter(moment(startTime, "YYYY-MM-DD, HH:mm").add(7, "days").hours(23).minutes(59))) {
       return false
     }
 
