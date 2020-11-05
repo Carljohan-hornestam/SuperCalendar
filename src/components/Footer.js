@@ -7,7 +7,7 @@ import {Link} from "react-router-dom"
 export default function Footer(){
 
   return (
-    <footer className="footer fixed-bottom">
+    <footer className="footer fixed-bottom carterOneFont">
         <div className="navbar bg-dark text-white">
           <span><FontAwesomeIcon icon={faCopyright} />SuperCalendar</span> 
           <span>

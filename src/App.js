@@ -52,7 +52,7 @@ export default function App() {
     <Context.Provider value={[contextVal, updateContext]}>
       <Router>
         <Header />
-        <div className="container">
+        <div className="container baloo2Font">
           <Route path="/">{!contextVal.user ? <Redirect push to="/login" /> : <Redirect push to="/myCalendar" />}
           </Route>
           <Route exact path="/mycalendar">

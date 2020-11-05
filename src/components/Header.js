@@ -77,8 +77,8 @@ export default function Header() {
   return (
     <>
       <div>
-        <Modal isOpen={modal} toggle={toggleModal}>
-          <ModalHeader toggle={toggleModal}>Dina inbjudningar</ModalHeader>
+        <Modal className="gochiHandFont" isOpen={modal} toggle={toggleModal}>
+          <ModalHeader className="baloo2Font" toggle={toggleModal}>Dina inbjudningar</ModalHeader>
           <ModalBody>
             {context.invitations && context.invitations.map((element) => {
               return (
@@ -107,13 +107,13 @@ export default function Header() {
             )})}
             
           </ModalBody>
-          <ModalFooter className="justify-content-center">
+          <ModalFooter className="justify-content-center baloo2Font">
             <div>Klicka på&nbsp;<span className="text-danger"><strong>X</strong></span> för att radera och <span className="text-success"><strong>&#x2713;</strong></span>&nbsp;för att acceptera.</div>
           </ModalFooter>
         </Modal>
       </div>
 
-      <div className="header">
+      <div className="header carterOneFont">
         <Navbar color="dark" dark expand="md">
           <NavbarBrand>
             <RouterNavLink to="/myCalendar">
