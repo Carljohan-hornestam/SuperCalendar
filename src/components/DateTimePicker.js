@@ -41,8 +41,6 @@ export default function DateTimePicker(props) {
     document.getElementById('times').innerHTML = str;
   }
 
-  
-      
   return (
     <>
       <Row form>

@@ -22,14 +22,14 @@ function sameMonth(day, dayValue) {
 
 function getTextColor(day, dayValue, redDays){
   if (isSelected(day, dayValue)) return "text-white"
-  if (isRedDay(day, redDays)) return "redDay"
+  if (isRedDay(day, redDays)) return "redDayText"
   if (beforeToday(day)) return "text-secondary"
   if (!sameMonth(day, dayValue)) return "text-secondary"
   if (isToday(day)) return "text-white"
   return ""
 }
 function getBackgroundColor(day, dayValue, redDays) {
-  if (isSelected(day, dayValue)) return "bg-danger"
+  if (isSelected(day, dayValue)) return "selectedDayBackground"
   if (isRedDay(day, redDays)) return ""
   if (beforeToday(day)) return ""
   if (!sameMonth(day, dayValue)) return ""

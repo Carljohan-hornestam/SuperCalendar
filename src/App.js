@@ -46,7 +46,7 @@ export default function App() {
   if(contextVal.waitingForUserState){
     return null
   }
-  setTheme(contextVal.user ? contextVal.user.theme : "light-theme");
+  setTheme(contextVal.user ? contextVal.user.theme : "dark-theme");
 
   return (
     <Context.Provider value={[contextVal, updateContext]}>

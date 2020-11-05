@@ -44,6 +44,10 @@
       background-color: $secondary;
       color: $quaternary;
     }
+    .onThisDay {
+      background-color: #16697a;
+      color: #ffa62b;
+    }
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
@@ -51,6 +55,11 @@
     }
     .fab {
       box-shadow: 1px 1px 2px 2px $secondary;
+      background-color: $tertiary;
+      transition: all 200ms ease-in;
+      &:hover {
+        transform: scale(1.1);
+      }
     }
     .calbadge {
       background-color: $primary;
@@ -81,8 +90,11 @@
     .dateBar {
       background-color: $primary;
     }
-    .redDay {
+    .redDayText {
       color: $danger;
+    }
+    .selectedDayBackground {
+      background-color: $tertiary;
     }
   }
 
@@ -110,6 +122,10 @@
       background-color: $secondary;
       color: $quaternary;
     }
+    .onThisDay {
+      background-color: #c3aed6;
+      color: #4b5d67;
+    }
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
@@ -117,6 +133,11 @@
     }
     .fab {
       box-shadow: 1px 1px 2px 2px $secondary;
+      background-color: $tertiary;
+      transition: all 200ms ease-in;
+      &:hover {
+        transform: scale(1.1);
+      }
     }
     .calbadge {
       background-color: $primary;
@@ -147,8 +168,11 @@
     .dateBar {
       background-color: $primary;
     }
-    .redDay {
+    .redDayText {
       color: $danger;
+    }
+    .selectedDayBackground {
+      background-color: $tertiary;
     }
   }
 
@@ -176,6 +200,10 @@
       background-color: $secondary;
       color: $quaternary;
     }
+    .onThisDay {
+      background-color: #44000d;
+      color: #f9d276;
+    }
     .btn-primary {
       background-color: $quaternary;
       color: $primary;
@@ -183,6 +211,11 @@
     }
     .fab {
       box-shadow: 1px 1px 2px 2px $secondary;
+      background-color: $tertiary;
+      transition: all 200ms ease-in;
+      &:hover {
+        transform: scale(1.1);
+      }
     }
     .calbadge {
       background-color: $primary;
@@ -213,8 +246,11 @@
     .dateBar {
       background-color: $primary;
     }
-    .redDay {
+    .redDayText {
       color: $danger;
+    }
+    .selectedDayBackground {
+      background-color: $tertiary;
     }
   }
 }
