@@ -25,7 +25,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (id === "new") {
-      setFormData({ ...formData, username: "", email: "", password: "", passwordCheck: "", theme:""})
+      setFormData({ ...formData, username: "", email: "", password: "", passwordCheck: "", theme:"dark-theme"})
       return
     }
 
@@ -38,7 +38,8 @@ export default function Profile() {
   }
 
   async function doSave() {
-   let result = await (
+    let returnVal = true
+    let result = await (
       await fetch("/api/users/" + (id === "new" ? "" : id), {
         method: (id === "new" ? "POST" : "PUT"),
         headers: { "Content-Type": "application/json" },
@@ -50,10 +51,9 @@ export default function Profile() {
       setShowAlert("Eposten finns redan!");
       let emailField = document.querySelector('[name="email"]');
       emailField.focus();
-      return false;
-    }    
-
-    return true
+      returnVal = false;
+    } 
+    return returnVal;
   }
 
   async function save(e) {
@@ -64,7 +64,7 @@ export default function Profile() {
       delete formData.password
     }
 
-   if (!doSave()) return
+    if (!await doSave()) {return}
 
     // On successful registration, login and redirect to calendar view
     if (id === "new") {
