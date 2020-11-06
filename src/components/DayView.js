@@ -11,6 +11,7 @@ import {
 import {Link} from 'react-router-dom'
 import { useMediaQuery } from "react-responsive";
 import moment from "moment";
+import "moment/locale/sv"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowAltCircleRight,
@@ -121,8 +122,8 @@ export default function DayView() {
           style={{ height: isDesktop ? "60vh" : "50vh", overflowY: "scroll" }}
         >
           <Col>
-            <Row className="justify-content-center">
-              <Col md="6" style={{ columnCount: "auto" }}>
+            <Row className="justify-content-center d-flex">
+                <Col xs="12" md="6" className="order-md-last">
                 {onThisDay && onThisDay.events[+randomEvent] && onThisDay.events[+randomEvent].wikipedia
                  && onThisDay.events[+randomEvent].wikipedia[0].wikipedia &&
                   <a
@@ -155,6 +156,8 @@ export default function DayView() {
                     </Card>
                   </a>
                 }
+                </Col>
+                <Col xs="12" md="6">
                 {dailySchedule &&
                   dailySchedule.map((event) => (
                     <Link key={event.id} to={"/event/" + event.id}>
@@ -172,7 +175,7 @@ export default function DayView() {
                       </Card>
                     </Link>
                   ))}
-              </Col>
+                </Col>
             </Row>
           </Col>
         </Row>
