@@ -123,7 +123,7 @@ export default function DayView() {
         >
           <Col>
             <Row className="justify-content-center d-flex">
-                <Col xs="12" md="6" className="order-md-last">
+                <Col xs="12" md={{size: 6, order:2}}>
                 {onThisDay && onThisDay.events[+randomEvent] && onThisDay.events[+randomEvent].wikipedia
                  && onThisDay.events[+randomEvent].wikipedia[0].wikipedia &&
                   <a
@@ -157,7 +157,7 @@ export default function DayView() {
                   </a>
                 }
                 </Col>
-                <Col xs="12" md="6">
+                <Col xs="12" md={{size: 6, order:1}} >
                 {dailySchedule &&
                   dailySchedule.map((event) => (
                     <Link key={event.id} to={"/event/" + event.id}>
