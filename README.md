@@ -1,6 +1,12 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-
+Grupparbete, Androidutveckling<br/>
+Medlemmar:<br/>
+<ul>
+<li>Jan-Erik "Janis" Karlsson - BitLord69</li>
+<li>Joacim Norbeck - nekcoj</li>
+<li>Alexander Persson - miniharald</li>
+<li>Carl-Johan "Calle" Hornestam - Carljohan-hornestam</li>
 
 ### Install Redis (in-memory database, used for Sessions)
 - Windows: https://github.com/tporadowski/redis/releases (Current version: 5.0.9 msi)
