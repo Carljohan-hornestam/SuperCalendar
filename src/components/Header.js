@@ -22,6 +22,8 @@ import {
 } from "reactstrap";
 import Logo from "../images/supercalender.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import moment from "moment"
+import "moment/locale/sv"
 import {
   faSignOutAlt,
   faSignInAlt,
@@ -36,6 +38,7 @@ import { Context } from "../App";
 import { useMediaQuery } from 'react-responsive'
 
 export default function Header() {
+  moment.locale("sv")
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   let [context, updateContext] = useContext(Context);
@@ -79,6 +82,7 @@ export default function Header() {
           <ModalHeader toggle={toggleModal}>Dina inbjudningar</ModalHeader>
           <ModalBody>
             {context.invitations && context.invitations.map((element) => {
+              if (moment(element.startDateTime, "YYYY-MM-DD, HH:mm").isAfter(moment().subtract(1, "d"))) {
               return (
                 <Card key={element.id} outline className="mb-1">
                   <CardHeader><strong>{element.title}</strong></CardHeader>
@@ -102,7 +106,9 @@ export default function Header() {
                       />
                   </CardFooter>
                 </Card>
-            )})}
+              )}
+              return
+            })}
             
           </ModalBody>
           <ModalFooter className="justify-content-center baloo2Font">
