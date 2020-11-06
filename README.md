@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Grupparbete, Androidutveckling<br/>
+Grupparbete, Avancerad JavaScript<br/>
 Medlemmar:<br/>
 <ul>
 <li>Jan-Erik "Janis" Karlsson - BitLord69</li>
