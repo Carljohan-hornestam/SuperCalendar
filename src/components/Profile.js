@@ -237,7 +237,7 @@ export default function Profile() {
               <Button
                 color="primary"
                 className="my-3 w-50"
-                disabled={(!passwordsMatch || (password && password.length < 6))}
+                disabled={!!(!passwordsMatch || (password && password.length < 6))}
                 onClick={ changePassword }>
                 Ändra lösenordet
               </Button>

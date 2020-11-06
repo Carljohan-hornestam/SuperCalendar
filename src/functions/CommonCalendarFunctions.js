@@ -51,8 +51,8 @@ module.exports = {
     },
 
   getSchedule:
-    async function getSchedule(day, format){
-      return await(await fetch("/api/events/date/" + day.format(format))).json()
+    async function getSchedule(day, format) {
+      return await (await fetch("/api/events/date/" + day.format(format))).json()
     },
 
   getOnThisDay:
