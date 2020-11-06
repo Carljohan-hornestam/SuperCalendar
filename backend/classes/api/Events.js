@@ -144,9 +144,15 @@ router.get("/:id", (req, res) => {
     res.json({ success: false })
     return
   }
-  let event = db.select(/* sql */ `SELECT * FROM eventWParticipants 
-    WHERE eventId = $id OR parentId = $id`, req.params)
+  let eventParam = db.select(/* sql */ `SELECT * FROM Events WHERE id = $id`, req.params)
+  
+  if (eventParam[0].parentId !== null) {
+    req.params.id = eventParam[0].parentId
+  }
+
+  let event = db.select(/* sql */ `SELECT * FROM eventWParticipants WHERE parentId = $id OR eventId = $id`, req.params)
   //Check if user is a participant or creator, if NOT return
+  
   let checkUser = event.find(e => +e.ownerId === +req.session.user.id || +e.creatorId === +req.session.user.id)
   if (checkUser === undefined) {
     res.status(403)
@@ -155,9 +161,10 @@ router.get("/:id", (req, res) => {
   }
   
   let mainEvent = event.find(x => +x.eventId === +req.params.id)
+  
   mainEvent.participants = []
   event.forEach(x => {
-    if (+x.parentId === +req.params.id) {
+    if (+x.parentId !== +req.params.id && +req.session.user.id !== +x.ownerId) {
       mainEvent.participants.push({ "userId": x.userId, "userName": x.userName, "email": x.email })
     }
   })
@@ -166,7 +173,6 @@ router.get("/:id", (req, res) => {
   
   let invited = db.select(/*sql*/`SELECT * FROM invitedWUserInfo WHERE eventId = $id`, req.params)
   mainEvent.invited = invited
-  
   res.json(mainEvent)
 })
 
