@@ -11,8 +11,10 @@ import moment from "moment"
 export const Context = createContext()
 
 export function setTheme(value) {
+  //document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.className = ""
     document.documentElement.classList.add(`${value}`)
+  //})
 }
 
 export default function App() {

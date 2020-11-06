@@ -28,7 +28,6 @@ export default function WeekView() {
   useEffect(() => {
     setWaitingToLoad(true)
     //context.selectedDay && setDayValue(moment(context.selectedDay))
-    getYear();
     const startDay = dayValue.clone().startOf("week")
     const endDay = dayValue.clone().endOf("week")
     const day = startDay.clone().subtract(1, "day")
@@ -36,15 +35,20 @@ export default function WeekView() {
     while (day.isBefore(endDay, "day")) {
       weekDays.push(
         Array(7)
-          .fill(0)
-          .map(() => day.add(1, "day").clone())
-      )
-    }
-    displaySchedule(dayValue)
-    setCalendar(weekDays)
+        .fill(0)
+        .map(() => day.add(1, "day").clone())
+        )
+      }
+    (async () => {
+      getYear();
+      displaySchedule(dayValue)
+      setCalendar(weekDays)
+    })()
     setWaitingToLoad(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dayValue])
+  
+  
 
   const days = moment.weekdaysShort(true)
   const isDesktop = useMediaQuery({
@@ -60,7 +64,7 @@ export default function WeekView() {
     let result = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + year)).json()
     let nextYear = +year + 1
     let lastResultDayOfWeek = parseInt(result.dagar[result.dagar.length - 1]["dag i vecka"])
-  
+    
     for (let index = 1; lastResultDayOfWeek < 7; index++) {
       let extraResult = await (await fetch("http://sholiday.faboul.se/dagar/v2.1/" + nextYear + "/" + 1 + "/" + index)).json()
       extraResult.dagar.forEach(dag => {
@@ -68,7 +72,7 @@ export default function WeekView() {
       })
       lastResultDayOfWeek = lastResultDayOfWeek + 1
     }
-
+    
     setYear(result)
     getNamedaysForWeek(result)
     setRedDays(getAllRedDays(result))
@@ -125,7 +129,6 @@ export default function WeekView() {
   async function displaySchedule(day) {
     updateContext({
       selectedDay: day.format("YYYY-MM-DD"),
-      dailySchedule: await getSchedule(day, "YYYY-MM-DD"),
       onThisDay: await getOnThisDay(day), 
       randomOnThisDay: Math.floor(Math.random() * Math.floor(getRandomEvent()))
     })

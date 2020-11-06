@@ -131,13 +131,13 @@ export default function Calendar() {
         </Nav>
         <TabContent activeTab={activeTab}>
           <TabPane tabId="0">
-            <DayView />
+            {activeTab === "0" && <DayView />}
           </TabPane>
           <TabPane tabId="1">
-            <WeekView />
+            {activeTab === "1" && <WeekView />}
           </TabPane>
           <TabPane tabId="2">
-            <MonthView />
+            {activeTab === "2" && <MonthView />}
           </TabPane>
         </TabContent>
         <Link to="/event/new">
